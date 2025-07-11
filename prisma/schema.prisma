@@ -19,7 +19,7 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   role      Role
-  musician  Musician? // if user is a musician
+  musician  Musician? 
   bookings  Booking[] @relation("BookerBookings")
 }
 
@@ -46,7 +46,7 @@ model Booking {
   eventType   String
   location    String
   message     String
-  status      String   // pending, accepted, declined
+  status      String   
 }
 
 model Review {
