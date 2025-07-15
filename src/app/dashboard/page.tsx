@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 
@@ -6,7 +6,7 @@ export default async function Dashboard() {
   const user = await currentUser();
   console.log(user);
   if (!user) {
-    redirect("/");
+    redirect("/sign-in");
   }
 
   const loggedUser = await prisma.user.findUnique({
@@ -17,17 +17,24 @@ export default async function Dashboard() {
     await prisma.user.create({
       data: {
         clerkUserId: user.id,
-        name: `${user.firstName} ${user.lastName}`,
-        imageUrl: user.imageUrl,
-        email: user.emailAddresses[0].emailAddress,
+        name: `${user.firstName ?? ""} ${user.lastName ?? ""}`,
+        email: user.emailAddresses[0]?.emailAddress ?? "",
+        imageUrl: user.imageUrl ?? "",
       },
     });
+    redirect("/select-role");
   }
-  return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold">
-        Welcome, {user?.firstName} to your dashboard 🎶
-      </h1>
-    </div>
-  );
+
+  if (!loggedUser.role) {
+    redirect("/select-role"); // User has no role yet
+  }
+
+  // Redirect to appropriate dashboard
+  if (loggedUser.role === "MUSICIAN") {
+    redirect("/dashboard/musician");
+  } else if (loggedUser.role === "BOOKER") {
+    redirect("/dashboard/booker");
+  }
+
+  return null;
 }
