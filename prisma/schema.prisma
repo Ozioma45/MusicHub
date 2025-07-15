@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -16,9 +15,14 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  role      Role
+ id              String @id @default(cuid())
+  clerkUserId     String @unique
+  email           String @unique
+  name            String?
+  imageUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  role      Role?
   musician  Musician? 
   bookings  Booking[] @relation("BookerBookings")
 }
@@ -46,7 +50,7 @@ model Booking {
   eventType   String
   location    String
   message     String
-  status      String   
+  status BookingStatus  
 }
 
 model Review {
@@ -61,5 +65,13 @@ model Review {
 enum Role {
   MUSICIAN
   BOOKER
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+  COMPLETED
 }
 
