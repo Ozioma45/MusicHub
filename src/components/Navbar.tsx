@@ -1,5 +1,11 @@
 import { Music } from "lucide-react";
-import { SignedOut, SignInButton, UserButton, SignedIn } from "@clerk/nextjs";
+import {
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+  SignedIn,
+} from "@clerk/nextjs";
 import React from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -13,20 +19,20 @@ const Navbar = () => {
             <Music className="h-6 w-6" />
             <span className="font-bold">Music Hub.</span>
           </Link>
-          <nav>
-            <Link
-              href="/dashboard"
-              className="text-sm font-medium text-muted-foreground transition-color hover:text-foreground"
-            >
-              Dashboard
-            </Link>
-          </nav>
         </div>
         <SignedOut>
-          <SignInButton mode="modal">
-            <Button variant="outline">Sign in</Button>
-          </SignInButton>
+          <div className="flex gap-2">
+            <SignInButton mode="modal">
+              <Button variant="outline">Log in</Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button className="bg-purple-700 hover:bg-purple-800 text-white font-semibold">
+                Sign up
+              </Button>
+            </SignUpButton>
+          </div>
         </SignedOut>
+
         <SignedIn>
           <UserButton />
         </SignedIn>
