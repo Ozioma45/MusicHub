@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.25.1",
+    "@faker-js/faker": "^9.9.0",
     "@prisma/client": "^6.11.1",
     "@radix-ui/react-slot": "^1.2.3",
     "axios": "^1.10.0",

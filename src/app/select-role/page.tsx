@@ -16,7 +16,11 @@ export default function SelectRolePage() {
       clerkUserId: user.id,
     });
 
-    router.push("/dashboard");
+    if (role === "MUSICIAN") {
+      router.push("/musician/setup"); // New route for setup
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   return (

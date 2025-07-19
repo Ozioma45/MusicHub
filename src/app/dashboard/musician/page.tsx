@@ -1,6 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
+import MainLayout from "@/components/MainLayout";
 
 export default async function MusicianDashboard() {
   const user = await currentUser();
@@ -15,9 +16,11 @@ export default async function MusicianDashboard() {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">🎸 Musician Dashboard</h1>
-      <p>Welcome {user?.firstName}</p>
-    </div>
+    <MainLayout>
+      <div className="p-6">
+        <h1 className="text-2xl font-bold">🎸 Musician Dashboard</h1>
+        <p>Welcome {user?.firstName}</p>
+      </div>
+    </MainLayout>
   );
 }

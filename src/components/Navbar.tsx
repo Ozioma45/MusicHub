@@ -34,7 +34,17 @@ const Navbar = () => {
         </SignedOut>
 
         <SignedIn>
-          <UserButton />
+          <div className="flex gap-2">
+            <UserButton />
+            <nav>
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium text-muted-foreground transition-color hover:text-foreground"
+              >
+                Dashboard
+              </Link>
+            </nav>
+          </div>
         </SignedIn>
       </div>
     </div>

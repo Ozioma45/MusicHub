@@ -19,7 +19,6 @@ export default function SignUpPage() {
               },
             }}
             path="/sign-up"
-            fallbackRedirectUrl="/select-role"
           />
         </div>
       </div>
