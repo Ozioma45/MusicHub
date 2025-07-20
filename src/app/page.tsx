@@ -1,7 +1,7 @@
 import MainLayout from "../components/MainLayout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Music2, Mic2, CalendarCheck, Users } from "lucide-react";
+import { Mic2, CalendarCheck, Users } from "lucide-react";
 
 export default function Home() {
   return (

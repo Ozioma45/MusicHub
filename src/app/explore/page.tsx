@@ -10,6 +10,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import Link from "next/link";
+import MainLayout from "@/components/MainLayout";
 
 export default function ExplorePage() {
   const [musicians, setMusicians] = useState([]);
@@ -31,61 +32,63 @@ export default function ExplorePage() {
   }, [filters]);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
-      <h1 className="text-2xl font-bold">Explore Musicians</h1>
+    <MainLayout>
+      <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
+        <h1 className="text-2xl font-bold">Explore Musicians</h1>
 
-      <div className="flex flex-wrap gap-4">
-        <Input
-          placeholder="Search by name..."
-          value={filters.name}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, name: e.target.value }))
-          }
-        />
-        <Input
-          placeholder="Location..."
-          value={filters.location}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, location: e.target.value }))
-          }
-        />
-        <Select
-          value={filters.genre}
-          onValueChange={(value) =>
-            setFilters((prev) => ({ ...prev, genre: value }))
-          }
-        >
-          <SelectTrigger className="w-[200px]">Select Genre</SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="Afrobeat">Afrobeat</SelectItem>
-            <SelectItem value="Jazz">Jazz</SelectItem>
-            <SelectItem value="Gospel">Gospel</SelectItem>
-            <SelectItem value="Hip Hop">Hip Hop</SelectItem>
-            {/* Add more genres as needed */}
-          </SelectContent>
-        </Select>
-      </div>
+        <div className="flex flex-wrap gap-4">
+          <Input
+            placeholder="Search by name..."
+            value={filters.name}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, name: e.target.value }))
+            }
+          />
+          <Input
+            placeholder="Location..."
+            value={filters.location}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, location: e.target.value }))
+            }
+          />
+          <Select
+            value={filters.genre}
+            onValueChange={(value) =>
+              setFilters((prev) => ({ ...prev, genre: value }))
+            }
+          >
+            <SelectTrigger className="w-[200px]">Select Genre</SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="Afrobeat">Afrobeat</SelectItem>
+              <SelectItem value="Jazz">Jazz</SelectItem>
+              <SelectItem value="Gospel">Gospel</SelectItem>
+              <SelectItem value="Hip Hop">Hip Hop</SelectItem>
+              {/* Add more genres as needed */}
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {musicians.map((m: any) => (
-          <Card key={m.id}>
-            <CardContent className="p-4 space-y-1">
-              <h3 className="font-semibold text-lg">{m.name}</h3>
-              <p className="text-muted-foreground text-sm">
-                {m.genre} · {m.location}
-              </p>
-              <p className="text-sm">{m.bio.slice(0, 60)}...</p>
-              <Link
-                href={`/musician/${m.id}`}
-                className="text-blue-600 text-sm underline"
-              >
-                View Profile
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {musicians.map((m: any) => (
+            <Card key={m.id}>
+              <CardContent className="p-4 space-y-1">
+                <h3 className="font-semibold text-lg">{m.name}</h3>
+                <p className="text-muted-foreground text-sm">
+                  {m.genre} · {m.location}
+                </p>
+                <p className="text-sm">{m.bio.slice(0, 60)}...</p>
+                <Link
+                  href={`/musician/${m.id}`}
+                  className="text-blue-600 text-sm underline"
+                >
+                  View Profile
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }
