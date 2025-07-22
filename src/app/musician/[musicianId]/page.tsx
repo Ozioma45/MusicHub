@@ -80,11 +80,16 @@ export default function MusicianProfilePage() {
         </div>
       </div>
 
-      <Button className="w-full mt-4" asChild>
-        <a href={`/booking/request?musicianId=${musician.id}`}>
-          Request Booking
-        </a>
-      </Button>
+      <div className="mt-4 gap-5 flex">
+        <Button asChild className="w-full md:w-1/2">
+          <a href={`/booking/request?musicianId=${musician.id}`}>
+            Request Booking
+          </a>
+        </Button>
+        <Button asChild className="w-full md:w-1/2">
+          <a href={`/review/submit?musicianId=${musician.id}`}>Submit Review</a>
+        </Button>
+      </div>
     </div>
   );
 }
