@@ -8,6 +8,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const user = await prisma.user.findUnique({
+    where: { clerkUserId: userId },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
   const body = await req.json();
 
   console.log("Review payload:", body);
@@ -24,6 +32,7 @@ export async function POST(req: Request) {
         musicianId,
         rating,
         comment,
+        userId: user.id,
       },
     });
 

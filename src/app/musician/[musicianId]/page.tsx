@@ -16,6 +16,11 @@ type Musician = {
     id: string;
     rating: number;
     comment: string;
+    createdAt: string;
+    user: {
+      name: string;
+      imageUrl: string;
+    };
   }[];
   user: {
     imageUrl: string;
@@ -72,9 +77,22 @@ export default function MusicianProfilePage() {
         <div className="space-y-2">
           {musician.reviews.length === 0 && <p>No reviews yet.</p>}
           {musician.reviews.map((review) => (
-            <div key={review.id} className="p-4 border rounded-md bg-muted/30">
-              <p className="font-medium">Rating: {review.rating}/5</p>
-              <p className="text-sm text-muted-foreground">{review.comment}</p>
+            <div key={review.id} className="border-b py-4">
+              <div className="flex items-center gap-3 mb-1">
+                <img
+                  src={review.user.imageUrl || "/placeholder.png"}
+                  alt={review.user.name || "User"}
+                  className="w-8 h-8 rounded-full"
+                />
+                <span className="font-medium">
+                  {review.user.name || "Anonymous"}
+                </span>
+              </div>
+              <div className="text-yellow-500">⭐ {review.rating}/5</div>
+              <p className="text-gray-700 mt-1">{review.comment}</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {new Date(review.createdAt).toLocaleDateString()}
+              </p>
             </div>
           ))}
         </div>

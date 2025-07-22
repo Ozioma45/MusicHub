@@ -13,7 +13,11 @@ export async function GET(
       where: { id: musicianId },
       include: {
         user: true,
-        reviews: true,
+        reviews: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
