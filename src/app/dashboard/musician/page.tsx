@@ -39,8 +39,12 @@ export default async function MusicianDashboardPage() {
         </p>
 
         <div className="flex gap-4 mb-6">
-          <Button variant="outline">Edit Profile</Button>
-          <Button>View Profile</Button>
+          <Button variant="outline" asChild>
+            <a href="/dashboard/musician/edit">Edit Profile</a>
+          </Button>
+          <Button asChild>
+            <a href="/dashboard/musician/view">View Profile</a>
+          </Button>
         </div>
 
         <h2 className="text-xl font-semibold mt-10 mb-4">

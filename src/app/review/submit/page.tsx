@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import MainLayout from "@/components/MainLayout";
 
 export default function SubmitReviewPage() {
   const searchParams = useSearchParams();
@@ -43,36 +44,38 @@ export default function SubmitReviewPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Leave a Review</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="rating">Rating (1–5)</Label>
-          <Input
-            type="number"
-            min="1"
-            max="5"
-            name="rating"
-            value={rating}
-            onChange={(e) => setRating(Number(e.target.value))}
-            required
-          />
-        </div>
-        <div>
-          <Label htmlFor="comment">Comment</Label>
-          <Textarea
-            name="comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Tell us how it went..."
-            rows={4}
-          />
-        </div>
-        <Button type="submit" disabled={loading}>
-          {loading ? "Submitting..." : "Submit Review"}
-        </Button>
-      </form>
-    </div>
+    <MainLayout>
+      <div className="max-w-xl mx-auto p-6 space-y-6">
+        <h1 className="text-2xl font-bold">Leave a Review</h1>
+        {error && <p className="text-red-500">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="rating">Rating (1–5)</Label>
+            <Input
+              type="number"
+              min="1"
+              max="5"
+              name="rating"
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="comment">Comment</Label>
+            <Textarea
+              name="comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Tell us how it went..."
+              rows={4}
+            />
+          </div>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Submitting..." : "Submit Review"}
+          </Button>
+        </form>
+      </div>
+    </MainLayout>
   );
 }
