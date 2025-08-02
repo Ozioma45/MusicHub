@@ -12,10 +12,32 @@ import {
 import Link from "next/link";
 import MainLayout from "@/components/MainLayout";
 
-export default function ExplorePage() {
+export default function ExplorePage({
+  searchParams,
+}: {
+  searchParams?: { genre?: string };
+}) {
   const [musicians, setMusicians] = useState([]);
-  const [filters, setFilters] = useState({ name: "", genre: "", location: "" });
+  const [genres, setGenres] = useState([]);
+  const [filters, setFilters] = useState({
+    name: "",
+    genre: searchParams?.genre || "",
+    location: "",
+  });
 
+  // Fetch genres
+  useEffect(() => {
+    const fetchGenres = async () => {
+      const res = await fetch("/api/genres");
+      if (res.ok) {
+        const data = await res.json();
+        setGenres(data);
+      }
+    };
+    fetchGenres();
+  }, []);
+
+  // Fetch musicians
   useEffect(() => {
     const fetchMusicians = async () => {
       const queryObj = {
@@ -34,8 +56,13 @@ export default function ExplorePage() {
   return (
     <MainLayout>
       <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
-        <h1 className="text-2xl font-bold">Explore Musicians</h1>
+        <h1 className="text-2xl font-bold">
+          {filters.genre
+            ? `Musicians in ${filters.genre}`
+            : "Explore Musicians"}
+        </h1>
 
+        {/* Filters */}
         <div className="flex flex-wrap gap-4">
           <Input
             placeholder="Search by name..."
@@ -60,32 +87,59 @@ export default function ExplorePage() {
             <SelectTrigger className="w-[200px]">Select Genre</SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="Afrobeat">Afrobeat</SelectItem>
-              <SelectItem value="Jazz">Jazz</SelectItem>
-              <SelectItem value="Gospel">Gospel</SelectItem>
-              <SelectItem value="Hip Hop">Hip Hop</SelectItem>
-              {/* Add more genres as needed */}
+              {genres.map((g: any, i) => (
+                <SelectItem key={i} value={g.genre}>
+                  {g.genre} ({g._count.genre})
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {musicians.map((m: any) => (
-            <Card key={m.id}>
-              <CardContent className="p-4 space-y-1">
-                <h3 className="font-semibold text-lg">{m.name}</h3>
-                <p className="text-muted-foreground text-sm">
-                  {m.genre} · {m.location}
+        {/* Genre Tags (Popular Genres) */}
+        <div className="flex flex-wrap gap-3">
+          {genres.map((g: any, idx) => (
+            <button
+              key={idx}
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, genre: g.genre }))
+              }
+              className={`cursor-pointer px-4 py-2 rounded-full text-sm ${
+                filters.genre === g.genre
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+            >
+              {g.genre} ({g._count.genre})
+            </button>
+          ))}
+        </div>
+
+        {/* Musicians List */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+          {musicians.map((musician: any) => (
+            <div
+              key={musician.id}
+              className="bg-white rounded-lg shadow hover:shadow-lg overflow-hidden"
+            >
+              <img
+                src={musician.coverImage || "/default-cover.jpg"}
+                alt={musician.name}
+                className="w-full h-40 object-cover"
+              />
+              <div className="p-4 text-left">
+                <h3 className="text-lg font-semibold">{musician.name}</h3>
+                <p className="text-sm text-gray-600">
+                  {musician.genre} • {musician.location}
                 </p>
-                <p className="text-sm">{m.bio.slice(0, 60)}...</p>
                 <Link
-                  href={`/musician/${m.id}`}
-                  className="text-blue-600 text-sm underline"
+                  href={`/musician/${musician.id}`}
+                  className="text-blue-600 mt-2 inline-block"
                 >
                   View Profile
                 </Link>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>

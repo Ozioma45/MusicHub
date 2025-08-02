@@ -3,6 +3,7 @@ import MainLayout from "../components/MainLayout";
 
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturedMusicians from "@/components/landing/FeaturedMusicians";
+import PopularGenres from "@/components/landing/PopularGenres";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <HeroSection />
       <HowItWorks />
       <FeaturedMusicians />
+      <PopularGenres />
     </MainLayout>
   );
 }

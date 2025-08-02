@@ -40,12 +40,14 @@ export default async function FeaturedMusicians() {
           ))}
         </div>
 
-        <Link
-          href="/explore"
-          className="font-semibold text-muted-foreground hover:text-foreground"
-        >
-          View All Musicians
-        </Link>
+        <div className="mt-8 sm:mt-10 md:mt-12">
+          <Link
+            href="/explore"
+            className="font-semibold text-muted-foreground hover:text-foreground"
+          >
+            View All Musicians
+          </Link>
+        </div>
       </div>
     </section>
   );

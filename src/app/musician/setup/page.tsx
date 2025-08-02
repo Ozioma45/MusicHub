@@ -34,7 +34,7 @@ export default function SetupMusicianPage() {
     window.cloudinary.openUploadWidget(
       {
         cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: "unsigned_upload",
+        uploadPreset: "musiconnect",
         sources: ["local", "url", "camera"],
         cropping: true,
         multiple: false,

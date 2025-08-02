@@ -36,6 +36,7 @@ model Musician {
   genre       String
   location    String
   bio         String
+  coverImage  String?
   mediaUrls   String[]
   reviews     Review[]
   bookings    Booking[] @relation("MusicianBookings")
