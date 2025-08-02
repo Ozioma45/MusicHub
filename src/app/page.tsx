@@ -5,6 +5,7 @@ import HeroSection from "@/components/landing/HeroSection";
 import FeaturedMusicians from "@/components/landing/FeaturedMusicians";
 import PopularGenres from "@/components/landing/PopularGenres";
 import TestimonialsCarousel from "@/components/landing/Testimonials";
+import WhyChooseSection from "@/components/landing/WhyMusiconnect";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <FeaturedMusicians />
       <PopularGenres />
       <TestimonialsCarousel />
+      <WhyChooseSection />
     </MainLayout>
   );
 }

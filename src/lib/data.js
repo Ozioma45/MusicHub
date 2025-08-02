@@ -1,4 +1,5 @@
 import { Search, CalendarCheck, Sparkles } from "lucide-react";
+import { Music, Star, Calendar, Award, CreditCard, Users } from "lucide-react";
 
 export const steps = [
   {
@@ -42,5 +43,44 @@ export const testimonials = [
     quote:
       "MusiConnect has connected me to incredible gigs. The platform is easy to use and payments are always on time.",
     image: "https://randomuser.me/api/portraits/women/65.jpg",
+  },
+];
+
+export const features = [
+  {
+    icon: Music,
+    title: "Diverse Talent Pool",
+    description:
+      "Access a wide range of musicians across all genres and styles.",
+  },
+  {
+    icon: Star,
+    title: "Verified Professionals",
+    description:
+      "Book with confidence from a curated selection of top-rated artists.",
+  },
+  {
+    icon: Calendar,
+    title: "Seamless Booking",
+    description:
+      "Our intuitive platform makes finding and booking talent simple and fast.",
+  },
+  {
+    icon: Award,
+    title: "Quality Guaranteed",
+    description:
+      "We ensure every performance meets the highest standards of excellence.",
+  },
+  {
+    icon: CreditCard,
+    title: "Secure Payments",
+    description:
+      "All transactions are safely processed through our trusted system.",
+  },
+  {
+    icon: Users,
+    title: "Dedicated Support",
+    description:
+      "Our team is here to assist you every step of the way, ensuring a smooth experience.",
   },
 ];
