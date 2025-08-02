@@ -13,7 +13,7 @@ export default function SignInPage() {
           <SignIn
             appearance={{
               elements: {
-                formButtonPrimary: "bg-purple-700 hover:bg-purple-800",
+                formButtonPrimary: "bg-blue-700 hover:bg-blue-800",
               },
             }}
             path="/sign-in"

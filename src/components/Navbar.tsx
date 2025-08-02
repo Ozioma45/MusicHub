@@ -1,4 +1,6 @@
-import { Music } from "lucide-react";
+"use client";
+
+import { Music, Menu, X } from "lucide-react";
 import {
   SignedOut,
   SignInButton,
@@ -6,47 +8,106 @@ import {
   UserButton,
   SignedIn,
 } from "@clerk/nextjs";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 
 const Navbar = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <div className="sticky top-0 z-30 border-b bg-background px-4 sm:px-6">
       <div className="flex items-center justify-between mx-auto max-w-4xl h-16">
+        {/* Logo */}
         <div className="flex gap-4">
           <Link href="/" className="flex items-center gap-2">
             <Music className="h-6 w-6" />
-            <span className="font-bold">Music Hub.</span>
+            <span className="font-bold">MusiConnect.</span>
           </Link>
         </div>
-        <SignedOut>
-          <div className="flex gap-2">
-            <SignInButton mode="modal">
-              <Button variant="outline">Log in</Button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <Button className="bg-purple-700 hover:bg-purple-800 text-white font-semibold">
-                Sign up
-              </Button>
-            </SignUpButton>
-          </div>
-        </SignedOut>
 
-        <SignedIn>
-          <div className="flex gap-2">
-            <UserButton />
-            <nav>
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-4">
+          <Link href="/explore" className="font-semibold">
+            Find Musician
+          </Link>
+
+          <SignedOut>
+            <div className="flex gap-2">
+              <SignInButton mode="modal">
+                <Button variant="outline">Log in</Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button className="bg-blue-700 hover:bg-blue-800 text-white font-semibold">
+                  Sign up
+                </Button>
+              </SignUpButton>
+            </div>
+          </SignedOut>
+
+          <SignedIn>
+            <div className="flex gap-2">
+              <UserButton />
               <Link
                 href="/dashboard"
-                className="text-sm font-medium text-muted-foreground transition-color hover:text-foreground"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground"
               >
                 Dashboard
               </Link>
-            </nav>
-          </div>
-        </SignedIn>
+            </div>
+          </SignedIn>
+        </div>
+
+        {/* Hamburger Button */}
+        <div className="md:hidden">
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="md:hidden px-4 pb-4 mt-2 space-y-3">
+          <Link href="/explore" className="block font-semibold text-center">
+            Find Musician
+          </Link>
+
+          <SignedOut>
+            <div className="space-y-2">
+              <SignInButton mode="modal">
+                <Button variant="outline" className="w-full">
+                  Log in
+                </Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold">
+                  Sign up
+                </Button>
+              </SignUpButton>
+            </div>
+          </SignedOut>
+
+          <SignedIn>
+            <div className="space-y-2">
+              <UserButton />
+              <Link
+                href="/dashboard"
+                className="block text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                Dashboard
+              </Link>
+            </div>
+          </SignedIn>
+        </div>
+      )}
     </div>
   );
 };

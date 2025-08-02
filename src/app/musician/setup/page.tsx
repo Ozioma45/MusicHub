@@ -14,12 +14,41 @@ export default function SetupMusicianPage() {
     genre: "",
     location: "",
     bio: "",
+    coverImage: "",
   });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleImageUpload = () => {
+    // @ts-ignore
+    if (!window.cloudinary) {
+      console.error("Cloudinary widget is not loaded.");
+      return;
+    }
+
+    // @ts-ignore
+    window.cloudinary.openUploadWidget(
+      {
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: "unsigned_upload",
+        sources: ["local", "url", "camera"],
+        cropping: true,
+        multiple: false,
+        folder: "musicians",
+      },
+      (error: any, result: any) => {
+        if (!error && result && result.event === "success") {
+          setForm((prev) => ({
+            ...prev,
+            coverImage: result.info.secure_url,
+          }));
+        }
+      }
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +58,7 @@ export default function SetupMusicianPage() {
     await axios.post("/api/musician/setup", {
       clerkUserId: user.id,
       ...form,
-      mediaUrls: [], // start empty for now
+      mediaUrls: [],
     });
 
     router.push("/dashboard");
@@ -76,9 +105,27 @@ export default function SetupMusicianPage() {
           required
           className="w-full p-3 border rounded h-32"
         />
+
+        <div>
+          <button
+            type="button"
+            onClick={handleImageUpload}
+            className="bg-gray-200 px-4 py-2 rounded"
+          >
+            Upload Cover Image
+          </button>
+          {form.coverImage && (
+            <img
+              src={form.coverImage}
+              alt="Cover"
+              className="mt-2 w-full rounded-lg"
+            />
+          )}
+        </div>
+
         <button
           type="submit"
-          className="bg-purple-600 text-white px-6 py-3 rounded-lg"
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg"
         >
           Save & Continue
         </button>

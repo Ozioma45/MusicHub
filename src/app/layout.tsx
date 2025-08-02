@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,8 +16,14 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+        <head>
+          <Script
+            src="https://widget.cloudinary.com/v2.0/global/all.js"
+            strategy="beforeInteractive"
+          />
+        </head>
         <body>
-          <div className="max-w-4xl mx-auto px-4">{children}</div>
+          <div className="w-full max-w-[1400px] mx-auto">{children}</div>
         </body>
       </html>
     </ClerkProvider>

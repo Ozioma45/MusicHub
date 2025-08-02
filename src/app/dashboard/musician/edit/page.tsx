@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
-import { toast } from "sonner"; // optional for feedback
+import { toast } from "sonner";
 
 export default function EditMusicianProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -16,6 +16,7 @@ export default function EditMusicianProfilePage() {
     genre: "",
     location: "",
     bio: "",
+    coverImage: "",
     mediaUrls: "",
   });
 
@@ -33,6 +34,7 @@ export default function EditMusicianProfilePage() {
         genre: data.genre || "",
         location: data.location || "",
         bio: data.bio || "",
+        coverImage: data.coverImage || "",
         mediaUrls: (data.mediaUrls || []).join(", "),
       });
 
@@ -46,6 +48,26 @@ export default function EditMusicianProfilePage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleImageUpload = () => {
+    // @ts-ignore
+    window.cloudinary.openUploadWidget(
+      {
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: "musiconnect",
+        sources: ["local", "url", "camera"],
+        cropping: true,
+        multiple: false,
+        folder: "musicians",
+      },
+      (error: any, result: any) => {
+        if (!error && result && result.event === "success") {
+          setForm({ ...form, coverImage: result.info.secure_url });
+          toast.success("Cover image uploaded!");
+        }
+      }
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,12 +124,28 @@ export default function EditMusicianProfilePage() {
             value={form.bio}
             onChange={handleChange}
           />
+
+          {/* Cover Image Upload */}
+          <div>
+            <Button type="button" variant="outline" onClick={handleImageUpload}>
+              Upload Cover Image
+            </Button>
+            {form.coverImage && (
+              <img
+                src={form.coverImage}
+                alt="Cover"
+                className="mt-3 w-full rounded-lg object-cover"
+              />
+            )}
+          </div>
+
           <Textarea
             name="mediaUrls"
             placeholder="Media URLs (comma-separated)"
             value={form.mediaUrls}
             onChange={handleChange}
           />
+
           <Button type="submit" disabled={loading}>
             {loading ? "Saving..." : "Save Changes"}
           </Button>

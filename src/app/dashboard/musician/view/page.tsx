@@ -24,6 +24,15 @@ export default async function ViewMusicianProfilePage() {
       <div className="max-w-2xl mx-auto py-10">
         <h1 className="text-2xl font-bold mb-6">🎧 Your Profile</h1>
 
+        {/* ✅ Show Cover Image if available */}
+        {musician.coverImage && (
+          <img
+            src={musician.coverImage}
+            alt="Cover"
+            className="w-full h-60 object-cover rounded-lg mb-6"
+          />
+        )}
+
         <div className="space-y-2">
           <p>
             <strong>Name:</strong> {musician.name}

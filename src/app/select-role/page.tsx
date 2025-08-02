@@ -29,7 +29,7 @@ export default function SelectRolePage() {
       <p className="mb-6">Are you a musician or looking to book one?</p>
       <div className="flex gap-6 justify-center">
         <button
-          className="bg-purple-600 text-white px-6 py-3 rounded-xl cursor-pointer"
+          className="bg-blue-600 text-white px-6 py-3 rounded-xl cursor-pointer"
           onClick={() => handleSelect("MUSICIAN")}
         >
           I'm a Musician

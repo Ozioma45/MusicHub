@@ -36,7 +36,7 @@ export async function PUT(req: Request) {
   }
 
   const body = await req.json();
-  const { name, genre, location, bio, mediaUrls } = body;
+  const { name, genre, location, bio, coverImage, mediaUrls } = body;
 
   const updated = await prisma.musician.update({
     where: { userId: dbUser.id },
@@ -45,6 +45,7 @@ export async function PUT(req: Request) {
       genre,
       location,
       bio,
+      coverImage,
       mediaUrls,
     },
   });

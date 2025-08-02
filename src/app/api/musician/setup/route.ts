@@ -5,7 +5,8 @@ import { prisma } from "@/lib/db";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { clerkUserId, name, genre, location, bio, mediaUrls } = body;
+  const { clerkUserId, name, genre, location, bio, coverImage, mediaUrls } =
+    body;
 
   try {
     // Find the user in the DB
@@ -23,6 +24,7 @@ export async function POST(req: Request) {
         genre,
         location,
         bio,
+        coverImage,
         mediaUrls,
         user: {
           connect: { id: user.id },
