@@ -4,6 +4,7 @@ import MainLayout from "../components/MainLayout";
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturedMusicians from "@/components/landing/FeaturedMusicians";
 import PopularGenres from "@/components/landing/PopularGenres";
+import TestimonialsCarousel from "@/components/landing/Testimonials";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <HowItWorks />
       <FeaturedMusicians />
       <PopularGenres />
+      <TestimonialsCarousel />
     </MainLayout>
   );
 }

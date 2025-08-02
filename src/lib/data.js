@@ -20,3 +20,27 @@ export const steps = [
       "Enjoy unforgettable live music performances at your special events.",
   },
 ];
+
+export const testimonials = [
+  {
+    name: "Sarah J.",
+    role: "Event Organizer",
+    quote:
+      "MusiConnect made booking a jazz band for our wedding incredibly easy. The band was phenomenal and truly made our day unforgettable!",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+  },
+  {
+    name: "Michael Smith",
+    role: "Corporate Event Planner",
+    quote:
+      "The variety of musicians on MusiConnect is amazing. My event was a hit because of the talented band I booked here.",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+  },
+  {
+    name: "Aisha Bello",
+    role: "Musician",
+    quote:
+      "MusiConnect has connected me to incredible gigs. The platform is easy to use and payments are always on time.",
+    image: "https://randomuser.me/api/portraits/women/65.jpg",
+  },
+];
