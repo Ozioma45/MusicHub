@@ -81,3 +81,8 @@ enum BookingStatus {
   COMPLETED
 }
 
+model Subscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
