@@ -7,6 +7,7 @@ import PopularGenres from "@/components/landing/PopularGenres";
 import TestimonialsCarousel from "@/components/landing/Testimonials";
 import WhyChooseSection from "@/components/landing/WhyMusiconnect";
 import SubscribeSection from "@/components/landing/SubscribeSection";
+import CallToActionSection from "@/components/landing/CtaSection";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <PopularGenres />
       <TestimonialsCarousel />
       <WhyChooseSection />
+      <CallToActionSection />
       <SubscribeSection />
     </MainLayout>
   );

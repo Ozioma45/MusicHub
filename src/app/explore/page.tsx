@@ -11,17 +11,17 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import MainLayout from "@/components/MainLayout";
+import { useSearchParams } from "next/navigation";
 
-export default function ExplorePage({
-  searchParams,
-}: {
-  searchParams?: { genre?: string };
-}) {
+export default function ExplorePage() {
+  const searchParams = useSearchParams(); //
+  const genreFromURL = searchParams.get("genre") || "";
+
   const [musicians, setMusicians] = useState([]);
   const [genres, setGenres] = useState([]);
   const [filters, setFilters] = useState({
     name: "",
-    genre: searchParams?.genre || "",
+    genre: genreFromURL,
     location: "",
   });
 

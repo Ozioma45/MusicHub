@@ -1,8 +1,9 @@
-// next.config.ts
-import type { NextConfig } from "next";
-
 /** @type {import('next').NextConfig} */
-const nextConfig: NextConfig = {
+const nextConfig = {
+  experimental: {
+    serverActions: {},
+  },
+  transpilePackages: ["@clerk/nextjs"],
   images: {
     remotePatterns: [
       {
@@ -13,4 +14,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
