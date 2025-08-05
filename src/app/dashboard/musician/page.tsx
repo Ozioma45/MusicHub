@@ -5,6 +5,17 @@ import { redirect } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
 import { Button } from "@/components/ui/button";
 
+type Booking = {
+  id: string;
+  client: {
+    name?: string | null;
+  };
+  eventType: string;
+  location: string;
+  date: Date;
+  status: string;
+};
+
 export default async function MusicianDashboardPage() {
   const user = await currentUser();
   if (!user) redirect("/sign-in");
@@ -54,7 +65,7 @@ export default async function MusicianDashboardPage() {
           {bookings.length === 0 ? (
             <p className="text-muted-foreground">No bookings yet.</p>
           ) : (
-            bookings.map((booking) => (
+            bookings.map((booking: Booking) => (
               <div key={booking.id} className="border p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-lg">
                   🎤 Booking from {booking.client.name || "Unknown"}
@@ -63,7 +74,14 @@ export default async function MusicianDashboardPage() {
                   Event: {booking.eventType} | Location: {booking.location}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Date: {new Date(booking.date).toLocaleDateString()} | Status:{" "}
+                  Date:{" "}
+                  {new Date(booking.date).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}{" "}
+                  | Status:{" "}
                   <span className="font-semibold">{booking.status}</span>
                 </p>
 

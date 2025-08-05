@@ -1,11 +1,12 @@
-// /app/dashboard/musician/view/page.tsx
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
+import Image from "next/image";
 
 export default async function ViewMusicianProfilePage() {
   const user = await currentUser();
+
   if (!user) redirect("/sign-in");
 
   const dbUser = await prisma.user.findUnique({
@@ -26,11 +27,14 @@ export default async function ViewMusicianProfilePage() {
 
         {/* ✅ Show Cover Image if available */}
         {musician.coverImage && (
-          <img
-            src={musician.coverImage}
-            alt="Cover"
-            className="w-full h-60 object-cover rounded-lg mb-6"
-          />
+          <div className="w-full h-60 relative rounded-lg overflow-hidden mb-6">
+            <Image
+              src={musician.coverImage}
+              alt="Cover"
+              fill
+              className="object-cover"
+            />
+          </div>
         )}
 
         <div className="space-y-2">
@@ -49,7 +53,7 @@ export default async function ViewMusicianProfilePage() {
           <div>
             <strong>Media URLs:</strong>
             <ul className="list-disc pl-5">
-              {musician.mediaUrls.map((url, index) => (
+              {musician.mediaUrls.map((url: string, index: number) => (
                 <li key={index}>
                   <a
                     href={url}

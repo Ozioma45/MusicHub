@@ -4,9 +4,9 @@ import type { NextRequest } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { musicianId: string } }
+  context: { params: Promise<{ musicianId: string }> }
 ) {
-  const musicianId = context.params.musicianId;
+  const { musicianId } = await context.params;
 
   try {
     const musician = await prisma.musician.findUnique({

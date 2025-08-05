@@ -1,9 +1,17 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/db";
-import { Button } from "@/components/ui/button";
+
+type Musician = {
+  id: string;
+  name: string;
+  genre: string;
+  location: string;
+  coverImage?: string | null;
+};
 
 export default async function FeaturedMusicians() {
-  const musicians = await prisma.musician.findMany({
+  const musicians: Musician[] = await prisma.musician.findMany({
     take: 5,
     orderBy: { name: "asc" },
   });
@@ -14,14 +22,16 @@ export default async function FeaturedMusicians() {
         <h2 className="text-3xl font-bold mb-12">Featured Musicians</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-          {musicians.map((musician: any) => (
+          {musicians.map((musician) => (
             <div
               key={musician.id}
               className="bg-white rounded-lg shadow hover:shadow-lg overflow-hidden"
             >
-              <img
+              <Image
                 src={musician.coverImage || "/default-cover.jpg"}
                 alt={musician.name}
+                width={400}
+                height={160}
                 className="w-full h-40 object-cover"
               />
               <div className="p-4 text-left">
@@ -30,7 +40,7 @@ export default async function FeaturedMusicians() {
                   {musician.genre} • {musician.location}
                 </p>
                 <Link
-                  href={`/musician/${musician.id}`}
+                  href={`/get-musician/${musician.id}`}
                   className="text-blue-600 mt-2 inline-block"
                 >
                   View Profile

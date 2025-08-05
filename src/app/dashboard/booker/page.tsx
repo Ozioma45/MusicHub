@@ -6,6 +6,17 @@ import MainLayout from "@/components/MainLayout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+type Booking = {
+  id: string;
+  musician?: {
+    name?: string;
+  };
+  eventType: string;
+  location: string;
+  date: Date;
+  status: string;
+};
+
 export default async function BookerDashboardPage() {
   const user = await currentUser();
   if (!user) redirect("/sign-in");
@@ -21,7 +32,7 @@ export default async function BookerDashboardPage() {
   });
 
   if (!dbUser || dbUser.role !== "BOOKER") {
-    redirect("/dashboard"); // fallback to dashboard if role mismatch
+    redirect("/dashboard");
   }
 
   return (
@@ -47,7 +58,7 @@ export default async function BookerDashboardPage() {
           {dbUser.bookings.length === 0 ? (
             <p className="text-muted-foreground">No bookings yet.</p>
           ) : (
-            dbUser.bookings.map((booking) => (
+            dbUser.bookings.map((booking: Booking) => (
               <div key={booking.id} className="border p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-lg">
                   {booking.musician?.name || "Unknown Musician"}

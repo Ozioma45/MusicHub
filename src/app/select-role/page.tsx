@@ -32,13 +32,13 @@ export default function SelectRolePage() {
           className="bg-blue-600 text-white px-6 py-3 rounded-xl cursor-pointer"
           onClick={() => handleSelect("MUSICIAN")}
         >
-          I'm a Musician
+          I&apos;m a Musician
         </button>
         <button
           className="bg-blue-600 text-white px-6 py-3 rounded-xl cursor-pointer"
           onClick={() => handleSelect("BOOKER")}
         >
-          I'm a Booker
+          I&apos;m a Booker
         </button>
       </div>
     </div>

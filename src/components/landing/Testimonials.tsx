@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 import { testimonials } from "../../lib/data";
 
@@ -41,10 +42,12 @@ export default function TestimonialsCarousel() {
               transition={{ duration: 0.4 }}
               className="flex items-center gap-6 bg-white shadow-md rounded-lg p-6 max-w-3xl"
             >
-              <img
+              <Image
                 src={testimonial.image}
                 alt={testimonial.name}
-                className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+                width={64} // equivalent to w-16
+                height={64} // equivalent to h-16
+                className="rounded-full object-cover border-2 border-blue-500"
               />
               <div className="text-left">
                 <p className="italic text-gray-700 mb-2">

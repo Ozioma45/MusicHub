@@ -1,4 +1,3 @@
-// /app/dashboard/musician/edit/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function EditMusicianProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,7 @@ export default function EditMusicianProfilePage() {
   };
 
   const handleImageUpload = () => {
-    // @ts-ignore
+    // @ts-expect-error : Cloudinary is loaded via script tag and lacks type definition
     window.cloudinary.openUploadWidget(
       {
         cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -61,10 +61,20 @@ export default function EditMusicianProfilePage() {
         multiple: false,
         folder: "musicians",
       },
-      (error: any, result: any) => {
-        if (!error && result && result.event === "success") {
-          setForm({ ...form, coverImage: result.info.secure_url });
-          toast.success("Cover image uploaded!");
+      (error: unknown, result: unknown) => {
+        if (
+          !error &&
+          typeof result === "object" &&
+          result &&
+          "event" in result &&
+          (result as { event: string }).event === "success"
+        ) {
+          const url = (result as { info?: { secure_url?: string } }).info
+            ?.secure_url;
+          if (url) {
+            setForm({ ...form, coverImage: url });
+            toast.success("Cover image uploaded!");
+          }
         }
       }
     );
@@ -131,9 +141,11 @@ export default function EditMusicianProfilePage() {
               Upload Cover Image
             </Button>
             {form.coverImage && (
-              <img
+              <Image
                 src={form.coverImage}
                 alt="Cover"
+                width={800}
+                height={400}
                 className="mt-3 w-full rounded-lg object-cover"
               />
             )}

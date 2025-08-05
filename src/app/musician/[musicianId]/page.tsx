@@ -33,7 +33,7 @@ export default function MusicianProfilePage() {
 
   useEffect(() => {
     const fetchMusician = async () => {
-      const res = await fetch(`/api/musician/${musicianId}`);
+      const res = await fetch(`/api/get-musician/${musicianId}`);
       const data = await res.json();
       setMusician(data);
     };
@@ -79,11 +79,14 @@ export default function MusicianProfilePage() {
           {musician.reviews.map((review) => (
             <div key={review.id} className="border-b py-4">
               <div className="flex items-center gap-3 mb-1">
-                <img
+                <Image
                   src={review.user.imageUrl || "/placeholder.png"}
                   alt={review.user.name || "User"}
-                  className="w-8 h-8 rounded-full"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
                 />
+
                 <span className="font-medium">
                   {review.user.name || "Anonymous"}
                 </span>

@@ -4,6 +4,14 @@ import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Image from "next/image";
+
+type CloudinaryResult = {
+  event: string;
+  info: {
+    secure_url: string;
+  };
+};
 
 export default function SetupMusicianPage() {
   const { user } = useUser();
@@ -24,13 +32,13 @@ export default function SetupMusicianPage() {
   };
 
   const handleImageUpload = () => {
-    // @ts-ignore
+    // @ts-expect-error: Cloudinary widget is a global script not typed
     if (!window.cloudinary) {
       console.error("Cloudinary widget is not loaded.");
       return;
     }
 
-    // @ts-ignore
+    // @ts-expect-error: Cloudinary widget is a global script not typed
     window.cloudinary.openUploadWidget(
       {
         cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -40,7 +48,7 @@ export default function SetupMusicianPage() {
         multiple: false,
         folder: "musicians",
       },
-      (error: any, result: any) => {
+      (error: Error | null, result: CloudinaryResult) => {
         if (!error && result && result.event === "success") {
           setForm((prev) => ({
             ...prev,
@@ -115,11 +123,15 @@ export default function SetupMusicianPage() {
             Upload Cover Image
           </button>
           {form.coverImage && (
-            <img
-              src={form.coverImage}
-              alt="Cover"
-              className="mt-2 w-full rounded-lg"
-            />
+            <div className="relative w-full h-52 mt-2 rounded-lg overflow-hidden">
+              <Image
+                src={form.coverImage}
+                alt="Cover"
+                fill
+                className="object-cover rounded-lg"
+                sizes="100vw"
+              />
+            </div>
           )}
         </div>
 
