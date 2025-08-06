@@ -34,14 +34,14 @@ const Navbar = () => {
 
           <SignedOut>
             <div className="flex gap-2">
-              <SignInButton mode="modal">
+              <Link href="/sign-in">
                 <Button variant="outline">Log in</Button>
-              </SignInButton>
-              <SignUpButton mode="modal">
+              </Link>
+              <Link href="/sign-up">
                 <Button className="bg-blue-700 hover:bg-blue-800 text-white font-semibold">
                   Sign up
                 </Button>
-              </SignUpButton>
+              </Link>
             </div>
           </SignedOut>
 
@@ -82,16 +82,16 @@ const Navbar = () => {
 
           <SignedOut>
             <div className="space-y-2">
-              <SignInButton mode="modal">
+              <Link href="/sign-in">
                 <Button variant="outline" className="w-full">
                   Log in
                 </Button>
-              </SignInButton>
-              <SignUpButton mode="modal">
+              </Link>
+              <Link href="sign-up">
                 <Button className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold">
                   Sign up
                 </Button>
-              </SignUpButton>
+              </Link>
             </div>
           </SignedOut>
 
