@@ -172,7 +172,7 @@ export default function ExploreContent() {
                   {musician.genre} • {musician.location}
                 </p>
                 <Link
-                  href={`/get-musician/${musician.id}`}
+                  href={`/musician/${musician.id}`}
                   className="text-blue-600 mt-2 inline-block"
                 >
                   View Profile
