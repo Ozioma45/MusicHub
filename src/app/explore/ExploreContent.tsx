@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 import {
   Select,
   SelectTrigger,
@@ -12,6 +11,7 @@ import {
 import Link from "next/link";
 import MainLayout from "@/components/MainLayout";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 interface Musician {
   id: string;
@@ -35,7 +35,7 @@ type MusicianFilter = {
 };
 
 export default function ExploreContent() {
-  const searchParams = useSearchParams(); //
+  const searchParams = useSearchParams();
   const genreFromURL = searchParams.get("genre") || "";
 
   const [musicians, setMusicians] = useState<Musician[]>([]);
@@ -76,30 +76,36 @@ export default function ExploreContent() {
     fetchMusicians();
   }, [filters]);
 
+  const handleSearch = () => {
+    // Trigger filtering (already handled by useEffect)
+  };
+
   return (
     <MainLayout>
-      <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
+      <div className="max-w-6xl mx-auto px-4 py-10 space-y-6">
         <h1 className="text-2xl font-bold">
           {filters.genre
             ? `Musicians in ${filters.genre}`
             : "Explore Musicians"}
         </h1>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-4">
+        {/* Search Bar */}
+        <div className="flex flex-col md:flex-row gap-4 items-stretch bg-white p-4 rounded-lg shadow-sm">
           <Input
-            placeholder="Search by name..."
+            placeholder="Musician Name or Genre"
             value={filters.name}
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, name: e.target.value }))
             }
+            className="flex-1"
           />
           <Input
-            placeholder="Location..."
+            placeholder="Location"
             value={filters.location}
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, location: e.target.value }))
             }
+            className="flex-1"
           />
           <Select
             value={filters.genre}
@@ -107,7 +113,7 @@ export default function ExploreContent() {
               setFilters((prev) => ({ ...prev, genre: value }))
             }
           >
-            <SelectTrigger className="w-[200px]">Select Genre</SelectTrigger>
+            <SelectTrigger className="w-full md:w-[200px]">Genre</SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
               {genres.map((g, i) => (
@@ -117,9 +123,15 @@ export default function ExploreContent() {
               ))}
             </SelectContent>
           </Select>
+          <button
+            onClick={handleSearch}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            Find Musicians
+          </button>
         </div>
 
-        {/* Genre Tags (Popular Genres) */}
+        {/* Genre Tags */}
         <div className="flex flex-wrap gap-3">
           {genres.map((g, idx) => (
             <button
@@ -139,7 +151,7 @@ export default function ExploreContent() {
         </div>
 
         {/* Musicians List */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {musicians.map((musician) => (
             <div
               key={musician.id}
