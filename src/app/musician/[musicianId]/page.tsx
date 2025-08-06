@@ -33,7 +33,7 @@ export default function MusicianProfilePage() {
 
   useEffect(() => {
     const fetchMusician = async () => {
-      const res = await fetch(`/api/get-musician/${musicianId}`);
+      const res = await fetch(`/api/musician/${musicianId}`);
       const data = await res.json();
       setMusician(data);
     };
