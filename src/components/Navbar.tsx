@@ -1,13 +1,7 @@
 "use client";
 
 import { Music, Menu, X } from "lucide-react";
-import {
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-  SignedIn,
-} from "@clerk/nextjs";
+import { SignedOut, UserButton, SignedIn } from "@clerk/nextjs";
 import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
