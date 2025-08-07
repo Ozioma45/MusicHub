@@ -11,14 +11,43 @@ export async function GET() {
 
   const dbUser = await prisma.user.findUnique({
     where: { clerkUserId: user.id },
-    include: { musician: true },
+    include: {
+      musician: {
+        include: {
+          bookings: true,
+          reviews: {
+            include: {
+              user: true, // This is the booker
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!dbUser || dbUser.role !== "MUSICIAN" || !dbUser.musician) {
     return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
 
-  return NextResponse.json(dbUser.musician);
+  const musician = dbUser.musician;
+
+  // Transform reviews to shape expected by frontend
+  const reviews = musician.reviews.map((review) => ({
+    id: review.id,
+    rating: review.rating,
+    comment: review.comment,
+    createdAt: review.createdAt,
+    booker: {
+      name: review.user.name || "Anonymous",
+      imageUrl: review.user.imageUrl || "",
+    },
+  }));
+
+  return NextResponse.json({
+    ...musician,
+    imageUrl: dbUser.imageUrl,
+    reviews,
+  });
 }
 
 // PUT update profile
