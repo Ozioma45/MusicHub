@@ -4,10 +4,13 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Booking = {
   id: string;
+  clientId: string;
   client: {
+    id: string;
     name?: string | null;
   };
   eventType: string;
@@ -68,8 +71,12 @@ export default async function MusicianDashboardPage() {
             bookings.map((booking: Booking) => (
               <div key={booking.id} className="border p-4 rounded-lg shadow-sm">
                 <h3 className="font-semibold text-lg">
-                  🎤 Booking from {booking.client.name || "Unknown"}
+                  🎤 Booking from{" "}
+                  <Link href={`/booker/${booking.client?.id || "#"}`}>
+                    {booking.client.name || "Unknown"}
+                  </Link>
                 </h3>
+
                 <p className="text-sm text-muted-foreground">
                   Event: {booking.eventType} | Location: {booking.location}
                 </p>
