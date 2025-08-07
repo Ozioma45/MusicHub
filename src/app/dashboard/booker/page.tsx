@@ -68,7 +68,7 @@ export default async function BookerDashboardPage() {
               </h1>
               <p className="text-muted-foreground">
                 Here's a quick overview of your bookings and favorite artists.
-                Let’s make more unforgettable events!
+                Let&apos;s make more unforgettable events!
               </p>
             </div>
             <Image
