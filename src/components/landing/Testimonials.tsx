@@ -32,7 +32,7 @@ export default function TestimonialsCarousel() {
       <div className="max-w-4xl mx-auto text-center px-6">
         <h2 className="text-3xl font-bold mb-8">What Our Community Says</h2>
 
-        <div className="relative flex items-center justify-center">
+        <div className="relative flex items-center justify-center max-w-3xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={index}
@@ -64,7 +64,7 @@ export default function TestimonialsCarousel() {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute -left-14 top-1/2 transform -translate-y-1/2"
+            className="absolute -left-2 top-1/2 transform -translate-y-1/2"
             onClick={prevTestimonial}
           >
             <ChevronLeft className="w-6 h-6" />
@@ -74,7 +74,7 @@ export default function TestimonialsCarousel() {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute -right-14 top-1/2 transform -translate-y-1/2"
+            className="absolute -right-2 top-1/2 transform -translate-y-1/2"
             onClick={nextTestimonial}
           >
             <ChevronRight className="w-6 h-6" />

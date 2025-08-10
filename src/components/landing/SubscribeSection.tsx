@@ -36,7 +36,7 @@ export default function SubscribeSection() {
 
       <form
         onSubmit={handleSubmit}
-        className="flex justify-center items-center gap-2 max-w-md mx-auto"
+        className="flex flex-col sm:flex-row justify-center items-center gap-2 max-w-md mx-auto"
       >
         <input
           type="email"
