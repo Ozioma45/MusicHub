@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import MainLayout from "@/components/MainLayout";
+import { Star } from "lucide-react";
+import clsx from "clsx";
 
 export default function SubmitReviewPage() {
   const searchParams = useSearchParams();
@@ -16,6 +18,7 @@ export default function SubmitReviewPage() {
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,11 +36,10 @@ export default function SubmitReviewPage() {
 
       if (!res.ok) throw new Error("Review failed");
 
-      toast.success("Review Added Successfully");
+      toast.success("Review Added Successfully 🎉");
       router.push("/explore?review=success");
     } catch (err) {
-      toast.error("Failed to submit review.");
-      console.log(err);
+      toast.error("Failed to submit review ❌");
       setError("Failed to submit review.");
     } finally {
       setLoading(false);
@@ -46,22 +48,38 @@ export default function SubmitReviewPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-xl mx-auto p-6 space-y-6">
-        <h1 className="text-2xl font-bold">Leave a Review</h1>
-        {error && <p className="text-red-500">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="rating">Rating (1–5)</Label>
-            <Input
-              type="number"
-              min="1"
-              max="5"
-              name="rating"
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-              required
-            />
+      <div className="max-w-xl mx-auto p-6 sm:p-8 rounded-xl shadow-lg bg-white dark:bg-neutral-900">
+        <h1 className="text-3xl font-extrabold tracking-tight text-center mb-6">
+          Leave a Review
+        </h1>
+
+        {error && (
+          <p className="text-red-500 text-sm text-center mb-4">{error}</p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Rating Stars */}
+          <div className="text-center">
+            <Label className="block mb-2 font-medium">Your Rating</Label>
+            <div className="flex justify-center space-x-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(null)}
+                  onClick={() => setRating(star)}
+                  className={clsx(
+                    "w-8 h-8 cursor-pointer transition-colors duration-200",
+                    (hoverRating || rating) >= star
+                      ? "text-yellow-400 fill-yellow-400"
+                      : "text-gray-300 dark:text-gray-600"
+                  )}
+                />
+              ))}
+            </div>
           </div>
+
+          {/* Comment */}
           <div>
             <Label htmlFor="comment">Comment</Label>
             <Textarea
@@ -69,10 +87,18 @@ export default function SubmitReviewPage() {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Tell us how it went..."
-              rows={4}
+              rows={5}
+              className="mt-1"
+              required
             />
           </div>
-          <Button type="submit" disabled={loading}>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 text-lg font-medium"
+          >
             {loading ? "Submitting..." : "Submit Review"}
           </Button>
         </form>

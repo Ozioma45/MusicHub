@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import { Star } from "lucide-react";
+import clsx from "clsx";
+
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
 import Link from "next/link";
@@ -55,6 +58,25 @@ export default function MusicianProfilePage() {
     };
     if (musicianId) fetchMusician();
   }, [musicianId]);
+
+  // Helper: render stars
+  function StarRating({ rating }: { rating: number }) {
+    return (
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={clsx(
+              "w-4 h-4",
+              rating >= star
+                ? "text-yellow-400 fill-yellow-400"
+                : "text-gray-300 dark:text-gray-600"
+            )}
+          />
+        ))}
+      </div>
+    );
+  }
 
   if (!musician) return <div className="text-center py-10">Loading...</div>;
 
@@ -181,25 +203,30 @@ export default function MusicianProfilePage() {
           ) : (
             <div className="space-y-4">
               {musician.reviews.map((r) => (
-                <div key={r.id} className="border-b pb-3">
-                  <div className="flex gap-2 items-center">
+                <div
+                  key={r.id}
+                  className="p-4 rounded-lg border bg-gray-50 dark:bg-neutral-800"
+                >
+                  <div className="flex items-center gap-3 mb-2">
                     <Image
                       src={r.user.imageUrl || "/default-avatar.png"}
                       alt={r.user.name || "Anonymous"}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
+                      width={40}
+                      height={40}
+                      className="rounded-full border"
                     />
-                    <span className="font-medium">
-                      {r.user.name || "Anonymous"}
-                    </span>
-                    <span className="text-yellow-500 text-sm">
-                      ⭐ {r.rating}/5
-                    </span>
+                    <div>
+                      <p className="font-semibold">
+                        {r.user.name || "Anonymous"}
+                      </p>
+                      <StarRating rating={r.rating} />
+                    </div>
                   </div>
-                  <p className="text-gray-700 mt-1">{r.comment}</p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(r.createdAt).toDateString()}
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {r.comment}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {new Date(r.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               ))}
