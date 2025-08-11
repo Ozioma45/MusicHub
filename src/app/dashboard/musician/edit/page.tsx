@@ -17,13 +17,12 @@ export default function EditMusicianProfilePage() {
     location: "",
     bio: "",
     coverImage: "",
-    mediaUrls: "",
+    mediaUrls: [] as string[],
   });
 
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch current musician data
     const fetchProfile = async () => {
       const res = await fetch("/api/musician/profile");
       if (!res.ok) return toast.error("Failed to load profile.");
@@ -35,7 +34,7 @@ export default function EditMusicianProfilePage() {
         location: data.location || "",
         bio: data.bio || "",
         coverImage: data.coverImage || "",
-        mediaUrls: (data.mediaUrls || []).join(", "),
+        mediaUrls: data.mediaUrls || [],
       });
 
       setLoading(false);
@@ -51,7 +50,7 @@ export default function EditMusicianProfilePage() {
   };
 
   const handleImageUpload = () => {
-    // @ts-expect-error : Cloudinary is loaded via script tag and lacks type definition
+    // @ts-expect-error
     window.cloudinary.openUploadWidget(
       {
         cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -80,14 +79,39 @@ export default function EditMusicianProfilePage() {
     );
   };
 
+  const handleVideoUpload = () => {
+    // @ts-expect-error
+    window.cloudinary.openUploadWidget(
+      {
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: "musiconnect_videos",
+        sources: ["local", "camera"],
+        resourceType: "video",
+        multiple: true,
+        folder: "musicians/videos",
+        maxFileSize: 30 * 1024 * 1024, // 50 MB limit
+        maxVideoDuration: 60, // 60 seconds limit
+      },
+      (error: unknown, result: unknown) => {
+        if (!error && Array.isArray((result as any).info?.files)) {
+          const uploadedUrls = (result as any).info.files.map(
+            (file: any) => file.uploadInfo.secure_url
+          );
+          setForm((prev) => ({
+            ...prev,
+            mediaUrls: [...prev.mediaUrls, ...uploadedUrls],
+          }));
+          toast.success(`${uploadedUrls.length} video(s) uploaded!`);
+        }
+      }
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {
-      ...form,
-      mediaUrls: form.mediaUrls.split(",").map((url) => url.trim()),
-    };
+    const payload = { ...form };
 
     const res = await fetch("/api/musician/profile", {
       method: "PUT",
@@ -151,12 +175,38 @@ export default function EditMusicianProfilePage() {
             )}
           </div>
 
-          <Textarea
-            name="mediaUrls"
-            placeholder="Media URLs (comma-separated)"
-            value={form.mediaUrls}
-            onChange={handleChange}
-          />
+          {/* Video Upload */}
+          <div>
+            <Button type="button" variant="outline" onClick={handleVideoUpload}>
+              Upload Videos (Max 30MB, 60s each)
+            </Button>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+              {form.mediaUrls.map((url, i) => (
+                <div key={i} className="relative group">
+                  <video
+                    src={url}
+                    controls
+                    className="rounded-lg w-full border aspect-video object-cover"
+                  />
+
+                  {/* Delete button overlay */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        mediaUrls: prev.mediaUrls.filter((_, idx) => idx !== i),
+                      }))
+                    }
+                    className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded opacity-80 hover:opacity-100 transition"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <Button type="submit" disabled={loading}>
             {loading ? "Saving..." : "Save Changes"}

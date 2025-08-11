@@ -10,12 +10,12 @@ export default function CallToActionSection() {
 
       <div className="flex justify-center gap-4">
         <Link href="/sign-up">
-          <button className="bg-white text-sky-600 px-6 py-3 rounded hover:bg-gray-100 font-medium">
+          <button className="bg-white text-sky-600 px-6 py-3 rounded hover:bg-gray-100 font-medium cursor-pointer">
             Sign Up Now
           </button>
         </Link>
         <Link href="/explore">
-          <button className="bg-white text-sky-600 px-6 py-3 rounded hover:bg-gray-100 font-medium">
+          <button className="bg-white text-sky-600 px-6 py-3 rounded hover:bg-gray-100 font-medium cursor-pointer">
             Explore Artists
           </button>
         </Link>
