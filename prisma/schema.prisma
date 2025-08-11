@@ -26,6 +26,7 @@ model User {
   musician  Musician? 
   reviews     Review[]
   bookings  Booking[] @relation("BookerBookings")
+  suggestions     Suggestion[] @relation("UserSuggestions")
 }
 
 model Musician {
@@ -85,4 +86,15 @@ model Subscriber {
   id        String   @id @default(uuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+model Suggestion {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  createdAt DateTime @default(now())
+
+  // Relation to User
+  user      User     @relation("UserSuggestions", fields: [userId], references: [id])
 }

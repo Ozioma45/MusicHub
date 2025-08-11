@@ -22,9 +22,13 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-4">
-          <Link href="/explore" className="font-semibold">
-            Find Musician
+          <Link href="/suggestions" className="font-semibold">
+            Suggestion Box
           </Link>
+
+          {/* <Link href="/explore" className="font-semibold">
+            Find Musician
+          </Link> */}
 
           <SignedOut>
             <div className="flex gap-2">
