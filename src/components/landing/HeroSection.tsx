@@ -28,7 +28,7 @@ export default function HeroSection() {
           <Link href="/sign-in">
             <Button
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
             >
               Get Started
             </Button>
@@ -37,7 +37,7 @@ export default function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="bg-white text-blue-700 hover:bg-blue-100"
+              className="bg-white text-blue-700 hover:bg-blue-100 cursor-pointer"
             >
               Explore Musicians
             </Button>
