@@ -32,7 +32,7 @@ export default function SubscribeSection() {
   return (
     <section className="py-12 bg-white text-center">
       <h2 className="text-xl font-bold mb-2">MusiConnect</h2>
-      <p className="mb-6 text-gray-600">Stay up to date with new artists!</p>
+      <p className="mb-6 text-gray-600">Stay up to date with new updates!</p>
 
       <form
         onSubmit={handleSubmit}
@@ -48,7 +48,7 @@ export default function SubscribeSection() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
         >
           {loading ? "Subscribing..." : "Subscribe"}
         </button>

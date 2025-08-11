@@ -88,6 +88,7 @@ export default async function BookerDashboardPage() {
               Discover Musicians
             </Button>
           </Link>
+
           <Link href="booker/profile">
             <Button
               variant="outline"
@@ -123,8 +124,10 @@ export default async function BookerDashboardPage() {
                       <div className="w-[50px] h-[50px] rounded-full bg-gray-300" />
                     )}
                     <div>
-                      <h3 className="font-semibold text-lg">
-                        {booking.musician?.name || "Unknown Musician"}
+                      <h3 className="font-semibold text-lg cursor-pointer">
+                        <Link href={`/musician/${booking.musician?.id}`}>
+                          {booking.musician?.name || "Unknown Musician"}
+                        </Link>
                       </h3>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <CalendarDays className="w-4 h-4" />
@@ -147,13 +150,6 @@ export default async function BookerDashboardPage() {
                       >
                         {booking.status}
                       </span>
-
-                      <Link
-                        href={`/musician/${booking.musician?.id}`}
-                        className="text-blue-600 mt-2 text-sm hover:underline"
-                      >
-                        View Profile
-                      </Link>
                     </div>
                   </span>
                 </div>
@@ -187,8 +183,10 @@ export default async function BookerDashboardPage() {
                       <div className="w-[50px] h-[50px] rounded-full bg-gray-300" />
                     )}
                     <div>
-                      <h3 className="font-semibold text-lg">
-                        {booking.musician?.name || "Unknown Musician"}
+                      <h3 className="font-semibold text-lg cursor-pointer">
+                        <Link href={`/musician/${booking.musician?.id}`}>
+                          {booking.musician?.name || "Unknown Musician"}
+                        </Link>
                       </h3>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <CalendarDays className="w-4 h-4" />
@@ -200,10 +198,9 @@ export default async function BookerDashboardPage() {
                       </p>
                     </div>
                   </div>
+
                   <span
-                    className={`px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(
-                      booking.status
-                    )}`}
+                    className={`px-3 py-1 text-sm rounded-full font-medium`}
                   >
                     <div className="flex flex-col items-end">
                       <span
@@ -213,12 +210,13 @@ export default async function BookerDashboardPage() {
                       >
                         {booking.status}
                       </span>
-                      <Link
+
+                      {/* <Link
                         href={`/musician/${booking.musician?.id}`}
                         className="text-blue-600 mt-2 text-sm hover:underline"
                       >
                         View Profile
-                      </Link>
+                      </Link> */}
                     </div>
                   </span>
                 </div>

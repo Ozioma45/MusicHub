@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import SubscribeSection from "@/components/landing/SubscribeSection";
 
 type Booking = {
   id: string;
@@ -140,11 +140,12 @@ export default function BookerProfilePage() {
         </section>
 
         {/* Contact Button */}
-        <div className="mt-6">
+        {/*  <div className="mt-6">
           <Button className="w-full md:w-auto bg-blue-700 hover:bg-blue-800 text-white">
             Contact {booker.name}
           </Button>
-        </div>
+        </div> */}
+        <SubscribeSection />
       </div>
     </MainLayout>
   );
