@@ -121,8 +121,13 @@ export default function EditMusicianProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
+    if (form.bio.trim().length < 20) {
+      toast.error("Your bio must be at least 20 characters long.");
+      return;
+    }
+
+    setLoading(true);
     const payload = { ...form };
 
     const res = await fetch("/api/musician/profile", {
@@ -166,7 +171,7 @@ export default function EditMusicianProfilePage() {
           />
           <Textarea
             name="bio"
-            placeholder="Bio"
+            placeholder="Bio (min 20 characters)"
             value={form.bio}
             onChange={handleChange}
           />
@@ -201,8 +206,6 @@ export default function EditMusicianProfilePage() {
                     controls
                     className="rounded-lg w-full border aspect-video object-cover"
                   />
-
-                  {/* Delete button overlay */}
                   <button
                     type="button"
                     onClick={() =>

@@ -63,6 +63,11 @@ export default function SetupMusicianPage() {
     e.preventDefault();
     if (!user) return;
 
+    if (form.bio.trim().length < 20) {
+      alert("Your bio must be at least 20 characters long.");
+      return;
+    }
+
     await axios.post("/api/musician/setup", {
       clerkUserId: user.id,
       ...form,
@@ -107,7 +112,7 @@ export default function SetupMusicianPage() {
         />
         <textarea
           name="bio"
-          placeholder="Tell us about yourself"
+          placeholder="Tell us about yourself (min 20 characters)"
           value={form.bio}
           onChange={handleChange}
           required
