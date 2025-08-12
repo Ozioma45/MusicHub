@@ -47,17 +47,21 @@ export default function BookingRequestPage() {
         },
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        toast.error("Booking Failed. Try again");
-        throw new Error("Booking failed");
+        const errMsg = data?.error || "Booking failed. Please try again.";
+        toast.error(errMsg);
+        setError(errMsg);
+        return;
       }
 
       toast.success("Booking Request Sent successfully");
       router.push("/dashboard?success=1");
     } catch (err) {
+      console.error(err);
       toast.error("Failed to send booking request.");
       setError("Failed to send booking request.");
-      console.log(err);
     } finally {
       setLoading(false);
     }

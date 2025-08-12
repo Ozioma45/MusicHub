@@ -8,10 +8,42 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await req.json();
-  const { musicianId, date, eventType, location, message } = body;
-
   try {
+    const body = await req.json();
+    const { musicianId, date, eventType, location, message } = body;
+
+    if (!musicianId || !date || !eventType || !location) {
+      return NextResponse.json(
+        { error: "All required fields must be filled" },
+        { status: 400 }
+      );
+    }
+
+    // Find the musician being booked
+    const musician = await prisma.musician.findUnique({
+      where: { id: musicianId },
+      select: {
+        user: {
+          select: { clerkUserId: true },
+        },
+      },
+    });
+
+    if (!musician) {
+      return NextResponse.json(
+        { error: "Musician not found" },
+        { status: 404 }
+      );
+    }
+
+    // Prevent self-booking
+    if (musician.user.clerkUserId === userId) {
+      return NextResponse.json(
+        { error: "You cannot book yourself" },
+        { status: 400 }
+      );
+    }
+
     const booking = await prisma.booking.create({
       data: {
         client: {
