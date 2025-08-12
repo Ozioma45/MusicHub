@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -41,6 +40,7 @@ export default function SubmitReviewPage() {
     } catch (err) {
       toast.error("Failed to submit review ❌");
       setError("Failed to submit review.");
+      console.log(err);
     } finally {
       setLoading(false);
     }

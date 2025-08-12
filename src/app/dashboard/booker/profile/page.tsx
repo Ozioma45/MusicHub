@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function BookerProfilePage() {
   const clerkUser = await currentUser();
@@ -26,10 +27,12 @@ export default async function BookerProfilePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
       <div className="flex flex-col sm:flex-row items-center gap-6">
-        <img
+        <Image
           src={user.imageUrl || "/placeholder-avatar.jpg"}
           alt={user.name || "Booker"}
-          className="w-28 h-28 rounded-full object-cover border shadow"
+          width={112}
+          height={112}
+          className="rounded-full object-cover border shadow"
         />
         <div className="text-center sm:text-left space-y-2">
           <h2 className="text-2xl font-bold">

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
-import { useUser } from "@clerk/nextjs"; // Clerk auth
 import Link from "next/link";
 
 type Booking = {
@@ -39,7 +38,6 @@ type Musician = {
 };
 
 export default function MusicianProfilePage() {
-  const { user } = useUser();
   const [musician, setMusician] = useState<Musician | null>(null);
 
   useEffect(() => {

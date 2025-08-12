@@ -57,6 +57,7 @@ export default function BookingRequestPage() {
     } catch (err) {
       toast.error("Failed to send booking request.");
       setError("Failed to send booking request.");
+      console.log(err);
     } finally {
       setLoading(false);
     }

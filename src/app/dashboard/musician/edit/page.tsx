@@ -9,6 +9,18 @@ import MainLayout from "@/components/MainLayout";
 import { toast } from "sonner";
 import Image from "next/image";
 
+interface CloudinaryFile {
+  uploadInfo: {
+    secure_url: string;
+  };
+}
+
+interface CloudinaryResult {
+  info?: {
+    files?: CloudinaryFile[];
+  };
+}
+
 export default function EditMusicianProfilePage() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
@@ -50,7 +62,7 @@ export default function EditMusicianProfilePage() {
   };
 
   const handleImageUpload = () => {
-    // @ts-expect-error
+    // @ts-expect-error : Cloudinary is loaded via script tag and lacks type definition
     window.cloudinary.openUploadWidget(
       {
         cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -80,7 +92,7 @@ export default function EditMusicianProfilePage() {
   };
 
   const handleVideoUpload = () => {
-    // @ts-expect-error
+    // @ts-expect-error : Cloudinary is loaded via script tag and lacks type definition
     window.cloudinary.openUploadWidget(
       {
         cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -92,10 +104,10 @@ export default function EditMusicianProfilePage() {
         maxFileSize: 30 * 1024 * 1024, // 50 MB limit
         maxVideoDuration: 60, // 60 seconds limit
       },
-      (error: unknown, result: unknown) => {
-        if (!error && Array.isArray((result as any).info?.files)) {
-          const uploadedUrls = (result as any).info.files.map(
-            (file: any) => file.uploadInfo.secure_url
+      (error: unknown, result: CloudinaryResult) => {
+        if (!error && Array.isArray(result.info?.files)) {
+          const uploadedUrls = result.info.files.map(
+            (file) => file.uploadInfo.secure_url
           );
           setForm((prev) => ({
             ...prev,
