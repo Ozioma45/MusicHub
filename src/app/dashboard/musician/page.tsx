@@ -95,7 +95,7 @@ export default async function MusicianDashboardPage() {
               View Profile
             </Button>
           </Link>
-          <Link href="/musician/edit">
+          <Link href="./musician/edit">
             <Button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
               Edit Profile
             </Button>

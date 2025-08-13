@@ -151,12 +151,14 @@ export default function MusicianProfilePage() {
             <h2 className="text-xl font-semibold mb-4">My Music</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {musician.mediaUrls.map((url, i) => (
-                <video
-                  key={i}
-                  src={url}
-                  controls
-                  className="rounded-lg w-full border shadow-sm"
-                />
+                <div className="relative" key={i}>
+                  <video
+                    key={i}
+                    src={url}
+                    controls
+                    className="rounded-lg w-full border shadow-sm aspect-video object-cover"
+                  />
+                </div>
               ))}
             </div>
           </section>
@@ -218,7 +220,7 @@ export default function MusicianProfilePage() {
 
         {/* CTA */}
         <div className="text-center">
-          <Link href="/musician/edit">
+          <Link href="./edit">
             <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
               Edit Your Profile
             </Button>

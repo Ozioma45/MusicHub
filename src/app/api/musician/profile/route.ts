@@ -1,12 +1,15 @@
+// /app/api/musician/edit/route.ts
+
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 
-// GET current profile
+// GET: Fetch current musician profile
 export async function GET() {
   const user = await currentUser();
-  if (!user)
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const dbUser = await prisma.user.findUnique({
     where: { clerkUserId: user.id },
@@ -16,7 +19,7 @@ export async function GET() {
           bookings: true,
           reviews: {
             include: {
-              user: true, // Booker info
+              user: true, // Reviewer info
             },
           },
         },
@@ -48,11 +51,12 @@ export async function GET() {
   });
 }
 
-// PUT update profile
+// PUT: Update musician profile
 export async function PUT(req: Request) {
   const user = await currentUser();
-  if (!user)
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const dbUser = await prisma.user.findUnique({
     where: { clerkUserId: user.id },
@@ -63,7 +67,7 @@ export async function PUT(req: Request) {
   }
 
   const body = await req.json();
-  const {
+  let {
     name,
     genres,
     instruments,
@@ -73,6 +77,16 @@ export async function PUT(req: Request) {
     coverImage,
     mediaUrls,
   } = body;
+
+  // Ensure arrays for multi-input fields
+  genres = Array.isArray(genres) ? genres : genres ? [genres] : [];
+  instruments = Array.isArray(instruments)
+    ? instruments
+    : instruments
+    ? [instruments]
+    : [];
+  services = Array.isArray(services) ? services : services ? [services] : [];
+  mediaUrls = Array.isArray(mediaUrls) ? mediaUrls : [];
 
   const updated = await prisma.musician.update({
     where: { userId: dbUser.id },
