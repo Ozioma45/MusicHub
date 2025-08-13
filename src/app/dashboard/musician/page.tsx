@@ -90,7 +90,7 @@ export default async function MusicianDashboardPage() {
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-4 mb-8">
-          <Link href="/musician/profile">
+          <Link href="./musician/profile">
             <Button variant="outline" className="px-6 py-3 rounded-lg">
               View Profile
             </Button>

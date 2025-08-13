@@ -1,4 +1,3 @@
-// /app/api/musician/profile/route.ts
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
@@ -17,7 +16,7 @@ export async function GET() {
           bookings: true,
           reviews: {
             include: {
-              user: true, // This is the booker
+              user: true, // Booker info
             },
           },
         },
@@ -25,13 +24,12 @@ export async function GET() {
     },
   });
 
-  if (!dbUser || dbUser.role !== "MUSICIAN" || !dbUser.musician) {
+  if (!dbUser || !dbUser.roles.includes("MUSICIAN") || !dbUser.musician) {
     return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
 
   const musician = dbUser.musician;
 
-  // Transform reviews to shape expected by frontend
   const reviews = musician.reviews.map((review) => ({
     id: review.id,
     rating: review.rating,
@@ -60,18 +58,29 @@ export async function PUT(req: Request) {
     where: { clerkUserId: user.id },
   });
 
-  if (!dbUser || dbUser.role !== "MUSICIAN") {
+  if (!dbUser || !dbUser.roles.includes("MUSICIAN")) {
     return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
 
   const body = await req.json();
-  const { name, genre, location, bio, coverImage, mediaUrls } = body;
+  const {
+    name,
+    genres,
+    instruments,
+    services,
+    location,
+    bio,
+    coverImage,
+    mediaUrls,
+  } = body;
 
   const updated = await prisma.musician.update({
     where: { userId: dbUser.id },
     data: {
       name,
-      genre,
+      genres,
+      instruments,
+      services,
       location,
       bio,
       coverImage,
