@@ -27,11 +27,12 @@ export default async function MusicianDashboardPage() {
     },
   });
 
-  if (!dbUser || dbUser.role !== "MUSICIAN") {
+  if (!dbUser || !dbUser.roles.includes("MUSICIAN")) {
     redirect("/dashboard");
   }
 
-  const bookings = dbUser.musician?.bookings || [];
+  const musician = dbUser.musician;
+  const bookings = musician?.bookings || [];
   const today = new Date();
 
   const upcoming = bookings.filter(
@@ -64,9 +65,9 @@ export default async function MusicianDashboardPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto py-10 px-4">
+      <div className="max-w-6xl mx-auto py-10 px-4 space-y-8">
         {/* Greeting */}
-        <div className="bg-blue-100 rounded-xl p-6 mb-6 flex justify-between items-center">
+        <div className="bg-blue-100 rounded-xl p-6 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold mb-2">
               Welcome back,{" "}
@@ -97,6 +98,11 @@ export default async function MusicianDashboardPage() {
           <Link href="/musician/edit">
             <Button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
               Edit Profile
+            </Button>
+          </Link>
+          <Link href="/switch-to-booker">
+            <Button variant="secondary" className="px-6 py-3 rounded-lg">
+              Switch to Booker
             </Button>
           </Link>
         </div>
@@ -142,7 +148,6 @@ export default async function MusicianDashboardPage() {
                     </div>
                   </div>
 
-                  {/* Action Buttons for Pending */}
                   <div className="flex items-end gap-2">
                     {booking.status === "PENDING" ? (
                       <>
@@ -157,7 +162,6 @@ export default async function MusicianDashboardPage() {
                             Accept
                           </Button>
                         </form>
-
                         <form action={handleBookingAction}>
                           <input
                             type="hidden"
@@ -237,13 +241,6 @@ export default async function MusicianDashboardPage() {
                     >
                       {booking.status}
                     </span>
-
-                    {/*   <Link
-                      href={`/booker/${booking.client?.id || "#"}`}
-                      className="text-blue-600 mt-2 text-sm hover:underline"
-                    >
-                      View Profile
-                    </Link> */}
                   </div>
                 </div>
               ))
