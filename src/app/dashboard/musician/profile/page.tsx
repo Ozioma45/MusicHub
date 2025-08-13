@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
+import { MapPin } from "lucide-react";
 import Link from "next/link";
 
 type Booking = {
@@ -75,12 +76,15 @@ export default function MusicianProfilePage() {
             />
             <div className="text-white">
               <h1 className="text-3xl font-bold">{musician.name}</h1>
-              <p className="text-lg opacity-90">{musician.location}</p>
-              {musician.genres?.length > 0 && (
+              <p className="text-lg opacity-90 flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                {musician.location}
+              </p>
+              {/* {musician.genres?.length > 0 && (
                 <p className="text-sm mt-1 italic">
                   {musician.genres.join(" • ")}
                 </p>
-              )}
+              )} */}
             </div>
           </div>
         </div>

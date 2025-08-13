@@ -12,10 +12,28 @@ export async function GET(
     const musician = await prisma.musician.findUnique({
       where: { id: musicianId },
       include: {
-        user: true,
+        user: {
+          select: {
+            imageUrl: true,
+            name: true,
+          },
+        },
         reviews: {
           include: {
-            user: true,
+            user: {
+              select: {
+                name: true,
+                imageUrl: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        bookings: {
+          orderBy: {
+            date: "desc",
           },
         },
       },

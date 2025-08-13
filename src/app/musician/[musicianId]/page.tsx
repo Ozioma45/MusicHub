@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, Calendar, MapPin } from "lucide-react";
 import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
@@ -34,8 +34,9 @@ type Musician = {
   name: string;
   location: string;
   bio: string;
-  genre?: string;
-  tags?: string[];
+  genres: string[];
+  instruments: string[];
+  services: string[];
   imageUrl?: string;
   coverImage?: string;
   mediaUrls?: string[];
@@ -43,6 +44,7 @@ type Musician = {
   bookings?: Booking[];
   user?: {
     imageUrl?: string;
+    name?: string;
   };
 };
 
@@ -59,7 +61,6 @@ export default function MusicianProfilePage() {
     if (musicianId) fetchMusician();
   }, [musicianId]);
 
-  // Helper: render stars
   function StarRating({ rating }: { rating: number }) {
     return (
       <div className="flex items-center gap-0.5">
@@ -83,7 +84,7 @@ export default function MusicianProfilePage() {
   return (
     <MainLayout>
       {/* Cover */}
-      <div className="relative h-30 md:h-40 lg:h-56 w-full">
+      <div className="relative h-40 md:h-50 lg:h-60 w-full">
         <Image
           src={musician.coverImage || "/default-cover.jpg"}
           alt="Cover"
@@ -91,26 +92,31 @@ export default function MusicianProfilePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/80 flex items-end p-6">
-          <div className="max-w-5xl w-full mx-auto">
-            <div className="flex items-center gap-4">
-              <Image
-                src={
-                  musician.imageUrl ||
-                  musician.user?.imageUrl ||
-                  "/default-avatar.png"
-                }
-                alt="Profile"
-                width={80}
-                height={80}
-                className="rounded-full border-4 border-white"
-              />
-              <div className="text-white">
-                <h1 className="text-2xl font-bold">{musician.name}</h1>
-                <p>
-                  {musician.genre ? `${musician.genre} • ` : ""}
-                  {musician.location}
+          <div className="max-w-5xl w-full mx-auto flex items-center gap-4">
+            <Image
+              src={
+                musician.imageUrl ||
+                musician.user?.imageUrl ||
+                "/default-avatar.png"
+              }
+              alt="Profile"
+              width={96}
+              height={96}
+              className="rounded-full border-4 border-white"
+            />
+            <div className="text-white">
+              <h1 className="text-2xl md:text-3xl font-bold">
+                {musician.name}
+              </h1>
+              <p className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                {musician.location}
+              </p>
+              {/* {musician.genres?.length > 0 && (
+                <p className="text-sm mt-1 italic">
+                  {musician.genres.join(" • ")}
                 </p>
-              </div>
+              )} */}
             </div>
           </div>
         </div>
@@ -118,59 +124,105 @@ export default function MusicianProfilePage() {
 
       {/* Content */}
       <div className="max-w-5xl mx-auto p-6 space-y-8">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Profile Overview</h2>
-          <Link href={`/booking/request?musicianId=${musician.id}`}>
-            <Button className="cursor-pointer bg-blue-600 text-white">
-              Request Booking
-            </Button>
-          </Link>
-        </div>
-
-        {/* Bio */}
-        <section>
-          <h3 className="text-lg font-medium mb-1">Bio</h3>
-          <p>{musician.bio || "No bio available."}</p>
-        </section>
-
-        {/* Genre */}
-        {musician.genre && (
-          <section>
-            <h3 className="text-lg font-medium mb-1">Genre</h3>
-            <p>{musician.genre}</p>
-          </section>
-        )}
-
-        {/* Tags */}
-        {musician.tags && musician.tags.length > 0 && (
-          <section>
-            <h3 className="text-lg font-medium mb-1">Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {musician.tags.map((tag, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 bg-gray-100 text-sm rounded-full"
-                >
-                  {tag}
-                </span>
-              ))}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            {/* Overview + Booking CTA */}
+            <div className="flex justify-between items-center flex-wrap gap-4">
+              <h2 className="text-xl font-semibold">Profile Overview</h2>
+              <Link href={`/booking/request?musicianId=${musician.id}`}>
+                <Button className="bg-blue-600 text-white">
+                  Request Booking
+                </Button>
+              </Link>
             </div>
-          </section>
-        )}
+
+            {/* Bio */}
+            <section>
+              <h3 className="text-lg font-medium mb-1">Bio</h3>
+              <p>{musician.bio || "No bio available."}</p>
+            </section>
+          </div>
+
+          <div className="bg-gray-50 rounded-xl p-5 shadow-sm space-y-5">
+            {/* Genres */}
+            {musician.genres?.length > 0 && (
+              <section>
+                <h3 className="text-lg font-medium mb-1">Genres</h3>
+                <div className="flex flex-wrap gap-2">
+                  {musician.genres.map((genre, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 bg-gray-100 dark:bg-neutral-800 text-sm rounded-full"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Instruments */}
+            {musician.instruments?.length > 0 && (
+              <section>
+                <h3 className="text-lg font-medium mb-1">Instruments</h3>
+                <div className="flex flex-wrap gap-2">
+                  {musician.instruments.map((instrument, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 bg-gray-100 dark:bg-neutral-800 text-sm rounded-full"
+                    >
+                      {instrument}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Services */}
+            {musician.services?.length > 0 && (
+              <section>
+                <h3 className="text-lg font-medium mb-1">Services</h3>
+                <div className="flex flex-wrap gap-2">
+                  {musician.services.map((service, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 bg-gray-100 dark:bg-neutral-800 text-sm rounded-full"
+                    >
+                      {service}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        </div>
 
         {/* Media */}
         {musician.mediaUrls && musician.mediaUrls.length > 0 && (
           <section>
             <h3 className="text-lg font-medium mb-1">Media</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {musician.mediaUrls.map((url, i) => (
-                <video
-                  key={i}
-                  src={url}
-                  controls
-                  className="rounded-lg w-full border"
-                />
-              ))}
+              {musician.mediaUrls.map((url, i) =>
+                url.match(/\.(mp4|webm|ogg)$/i) ? (
+                  <div className="relative" key={i}>
+                    <video
+                      key={i}
+                      src={url}
+                      controls
+                      className="rounded-lg w-full border shadow-sm aspect-video object-cover"
+                    />
+                  </div>
+                ) : (
+                  <Image
+                    key={i}
+                    src={url}
+                    alt={`Media ${i + 1}`}
+                    width={600}
+                    height={400}
+                    className="rounded-lg border object-cover"
+                  />
+                )
+              )}
             </div>
           </section>
         )}
@@ -182,11 +234,17 @@ export default function MusicianProfilePage() {
             {musician.bookings.length === 0 ? (
               <p>No bookings yet.</p>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-3 border-l pl-4">
                 {musician.bookings.map((b) => (
-                  <li key={b.id} className="text-sm text-gray-700">
-                    {b.eventType} - {b.location} (
-                    {new Date(b.date).toDateString()})
+                  <li key={b.id} className="relative">
+                    <span className="absolute -left-2 top-2 w-3 h-3 bg-blue-500 rounded-full"></span>
+                    <div className="text-sm">
+                      <p className="font-semibold">{b.eventType}</p>
+                      <p className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(b.date).toDateString()} • {b.location}
+                      </p>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -197,7 +255,6 @@ export default function MusicianProfilePage() {
         {/* Reviews */}
         <section>
           <h3 className="text-lg font-medium mb-2">Reviews</h3>
-
           {musician.reviews.length === 0 ? (
             <p>No reviews yet.</p>
           ) : (
@@ -250,6 +307,7 @@ export default function MusicianProfilePage() {
             </Link>
           </Button>
         </div>
+
         <SubscribeSection />
       </div>
     </MainLayout>
