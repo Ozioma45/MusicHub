@@ -12,33 +12,39 @@ export default function SelectRolePage() {
   const [selectedRole, setSelectedRole] = useState<
     "MUSICIAN" | "BOOKER" | null
   >(null);
+  const [loading, setLoading] = useState(false);
 
   const handleContinue = async () => {
     if (!user || !selectedRole) return;
+    setLoading(true);
 
-    await axios.post("/api/user/set-role", {
-      role: selectedRole,
-      clerkUserId: user.id,
-    });
+    try {
+      await axios.post("/api/user/set-role", {
+        role: selectedRole,
+        clerkUserId: user.id,
+      });
 
-    if (selectedRole === "MUSICIAN") {
-      router.push("/musician/setup");
-    } else {
-      router.push("/dashboard");
+      if (selectedRole === "MUSICIAN") {
+        router.push("/musician/setup");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      console.error("Failed to set role:", err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      {/* Card */}
       <div className="bg-white rounded-2xl shadow-lg max-w-4xl w-full p-8 text-center">
-        {/* Logo */}
         <div className="flex justify-center items-center mb-6">
           <Music className="h-7 w-7 text-blue-600 mr-2" />
           <span className="font-bold text-lg text-gray-900">MusiConnect</span>
         </div>
 
-        {/* Title */}
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">
           How do you want to start?
         </h2>
@@ -46,9 +52,7 @@ export default function SelectRolePage() {
           Choose a starting role — you can switch anytime later.
         </p>
 
-        {/* Options */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          {/* Musician */}
           <div
             onClick={() => setSelectedRole("MUSICIAN")}
             className={`border rounded-xl p-5 text-left cursor-pointer transition-all ${
@@ -65,7 +69,6 @@ export default function SelectRolePage() {
             </p>
           </div>
 
-          {/* Booker */}
           <div
             onClick={() => setSelectedRole("BOOKER")}
             className={`border rounded-xl p-5 text-left cursor-pointer transition-all ${
@@ -81,17 +84,16 @@ export default function SelectRolePage() {
           </div>
         </div>
 
-        {/* Continue Button */}
         <button
           onClick={handleContinue}
-          disabled={!selectedRole}
+          disabled={!selectedRole || loading}
           className={`w-full py-3 rounded-lg font-medium text-white transition ${
-            selectedRole
+            selectedRole && !loading
               ? "bg-blue-600 hover:bg-blue-800"
               : "bg-gray-400 cursor-not-allowed"
           }`}
         >
-          Continue
+          {loading ? "Saving..." : "Continue"}
         </button>
       </div>
     </div>
