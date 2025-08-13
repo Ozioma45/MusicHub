@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 type Musician = {
   id: string;
   name: string;
-  genre: string;
+  genres: string[];
   location: string;
   coverImage?: string | null;
 };
@@ -14,6 +14,13 @@ export default async function FeaturedMusicians() {
   const musicians: Musician[] = await prisma.musician.findMany({
     take: 5,
     orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      genres: true,
+      location: true,
+      coverImage: true,
+    },
   });
 
   return (
@@ -37,7 +44,7 @@ export default async function FeaturedMusicians() {
               <div className="p-4 text-left">
                 <h3 className="text-lg font-semibold">{musician.name}</h3>
                 <p className="text-sm text-gray-600">
-                  {musician.genre} • {musician.location}
+                  {musician.genres.join(", ")} • {musician.location}
                 </p>
                 <Link
                   href={`/musician/${musician.id}`}

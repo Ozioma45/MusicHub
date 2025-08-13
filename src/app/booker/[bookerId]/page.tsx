@@ -118,7 +118,7 @@ export default function BookerProfilePage() {
                 <div key={review.id} className="border-b pb-4">
                   <div className="flex items-center gap-3 mb-1">
                     <Image
-                      src={review.musician.imageUrl || "/placeholder.png"}
+                      src={review.musician.imageUrl || "/default-avatar.png"}
                       alt={review.musician.name}
                       width={32}
                       height={32}
