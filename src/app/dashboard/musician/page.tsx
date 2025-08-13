@@ -67,9 +67,9 @@ export default async function MusicianDashboardPage() {
     <MainLayout>
       <div className="max-w-6xl mx-auto py-10 px-4 space-y-8">
         {/* Greeting */}
-        <div className="bg-blue-100 rounded-xl p-6 flex justify-between items-center">
+        <div className="bg-gradient-to-r from-blue-200 to-indigo-300 rounded-xl p-6 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold mb-2">
+            <h1 className="text-3xl font-bold mb-2">
               Welcome back,{" "}
               <span className="text-blue-600">{dbUser.name || "Musician"}</span>
               !
