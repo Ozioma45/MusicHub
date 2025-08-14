@@ -22,7 +22,8 @@ export default async function Dashboard() {
         name: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
         email: user.emailAddresses[0]?.emailAddress ?? "",
         imageUrl: user.imageUrl ?? "",
-        roles: [], // default no role yet
+        roles: [],
+        activeRole: null,
       },
     });
     redirect("/select-role");
@@ -34,7 +35,17 @@ export default async function Dashboard() {
   }
 
   // Get the user's first role
-  const userRole = loggedUser.roles[0];
+  //const userRole = loggedUser.roles[0];
+
+  // 4️⃣ If currentRole not set, default to first role & update DB
+  if (!loggedUser.activeRole) {
+    const defaultRole = loggedUser.roles[0];
+    await prisma.user.update({
+      where: { id: loggedUser.id },
+      data: { activeRole: defaultRole },
+    });
+    loggedUser.activeRole = defaultRole;
+  }
 
   // Route based on role
   switch (userRole) {

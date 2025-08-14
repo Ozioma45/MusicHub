@@ -27,7 +27,7 @@ export default function SelectRolePage() {
       if (selectedRole === "MUSICIAN") {
         router.push("/musician/setup");
       } else {
-        router.push("/dashboard");
+        router.push("/booker/setup");
       }
     } catch (err) {
       console.error("Failed to set role:", err);

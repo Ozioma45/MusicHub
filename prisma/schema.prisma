@@ -15,76 +15,89 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(cuid())
-  clerkUserId String       @unique
-  email       String       @unique
+  id          String   @id @default(cuid())
+  clerkUserId String   @unique
+  email       String   @unique
   name        String?
   imageUrl    String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  roles       Role[]       
-  musician    Musician?
-  booker      Booker[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Roles a user has (can be both)
+  roles Role[] @default([])
+
+  // Which role they are currently using (for dashboard routing / UX)
+  activeRole Role?
+
+  // 1:1 profiles
+  musician Musician?
+  booker   Booker?
+
+  // Activity
   reviews     Review[]
   bookings    Booking[]    @relation("BookerBookings")
   suggestions Suggestion[] @relation("UserSuggestions")
 }
 
 model Musician {
-  id          String    @id @default(cuid())
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String    @unique
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
   name        String
-  genres      String[]
-  instruments String[]
-  services    String[]
-  location    String?
-  bio         String?
-  coverImage  String?
-  mediaUrls   String[]
-  reviews     Review[]
-  bookings    Booking[] @relation("MusicianBookings")
+  genres      String[] @default([])
+  instruments String[] @default([])
+  services    String[] @default([])
+
+  location   String?
+  bio        String?
+  coverImage String?
+  mediaUrls  String[] @default([])
+
+  reviews  Review[]
+  bookings Booking[] @relation("MusicianBookings")
 
   @@index([userId])
 }
 
 model Booker {
-  id        String  @id @default(cuid())
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String  @unique
-  name      String
-  location  String?
-  bio       String?
-  imageUrl  String?
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  name     String
+  location String?
+  bio      String?
+  imageUrl String?
 
   @@index([userId])
 }
 
 model Booking {
-  id          String         @id @default(cuid())
-  client      User           @relation("BookerBookings", fields: [clientId], references: [id], onDelete: Cascade)
-  clientId    String
-  musician    Musician       @relation("MusicianBookings", fields: [musicianId], references: [id], onDelete: Cascade)
-  musicianId  String
-  date        DateTime
-  eventType   String
-  location    String
-  message     String
-  status      BookingStatus  @default(PENDING)
+  id         String        @id @default(cuid())
+  client     User          @relation("BookerBookings", fields: [clientId], references: [id], onDelete: Cascade)
+  clientId   String
+  musician   Musician      @relation("MusicianBookings", fields: [musicianId], references: [id], onDelete: Cascade)
+  musicianId String
+  date       DateTime
+  eventType  String
+  location   String
+  message    String
+  status     BookingStatus @default(PENDING)
 
   @@index([clientId])
   @@index([musicianId])
 }
 
 model Review {
-  id         String    @id @default(cuid())
-  musician   Musician  @relation(fields: [musicianId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  musician   Musician @relation(fields: [musicianId], references: [id], onDelete: Cascade)
   musicianId String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   rating     Int
   comment    String
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime @default(now())
 
   @@index([musicianId])
   @@index([userId])
@@ -103,7 +116,7 @@ model Suggestion {
   message   String
   createdAt DateTime @default(now())
 
-  user      User     @relation("UserSuggestions", fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserSuggestions", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
