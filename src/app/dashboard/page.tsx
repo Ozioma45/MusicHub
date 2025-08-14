@@ -36,15 +36,14 @@ export default async function Dashboard() {
 
   // Get the user's first role
   //const userRole = loggedUser.roles[0];
+  const userRole = loggedUser.activeRole || loggedUser.roles[0];
 
   // 4️⃣ If currentRole not set, default to first role & update DB
   if (!loggedUser.activeRole) {
-    const defaultRole = loggedUser.roles[0];
     await prisma.user.update({
       where: { id: loggedUser.id },
-      data: { activeRole: defaultRole },
+      data: { activeRole: userRole },
     });
-    loggedUser.activeRole = defaultRole;
   }
 
   // Route based on role
