@@ -74,11 +74,9 @@ export default async function BookerProfilePage() {
               </div>
             </div>
 
-            <Link href="./booker/edit">
-              <Button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-                Edit Profile
-              </Button>
-            </Link>
+            <p className="bg-white text-black px-6 py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
+              BOOKER
+            </p>
           </div>
         </div>
       </div>
