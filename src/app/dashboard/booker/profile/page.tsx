@@ -9,7 +9,6 @@ import Image from "next/image";
 import { CalendarDays } from "lucide-react";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import MainLayout from "@/components/MainLayout";
-import EditProfileButton from "./EditProfileModal";
 import EditProfileModal from "./EditProfileModal";
 
 export default async function BookerProfilePage() {
@@ -19,6 +18,7 @@ export default async function BookerProfilePage() {
   const user = await prisma.user.findUnique({
     where: { clerkUserId: clerkUser.id },
     include: {
+      booker: true,
       bookings: {
         include: {
           musician: {
@@ -40,47 +40,55 @@ export default async function BookerProfilePage() {
     redirect("/");
   }
 
+  const bookerProfile = user.booker;
+  const profileImage =
+    bookerProfile?.imageUrl || user.imageUrl || "/default-avatar.png";
+
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
+      <div className="relative w-full h-40 md:h-50 lg:h-60">
         {/* Hero Section */}
-        <div className="relative bg-gradient-to-r from-blue-500 to-indigo-500 p-6 rounded-2xl shadow-lg text-white">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            <Image
-              src={user.imageUrl || "/default-avatar.png"}
-              alt={user.name || "Booker"}
-              width={120}
-              height={120}
-              className="rounded-full border-4 border-white shadow-lg object-cover"
-            />
-            <div className="text-center sm:text-left space-y-2">
-              <h2 className="text-3xl font-bold">
-                {user.name || "Unnamed Booker"}
-              </h2>
-              <p className="opacity-90">{user.email}</p>
-              <Badge className="bg-white text-blue-700 font-medium">
-                Booker
-              </Badge>
-              <p className="text-sm opacity-80 flex items-center gap-1">
-                <CalendarDays size={16} /> Joined on{" "}
-                {format(new Date(user.createdAt), "dd MMM, yyyy")}
-              </p>
+
+        {/* Hero Section */}
+        <div className="relative w-full h-40 md:h-50 lg:h-60">
+          <Image
+            src="/default-cover.jpg"
+            alt="Cover"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-black/100 flex items-end">
+            <div className="max-w-5xl mx-auto flex justify-between flex-col sm:flex-row w-full items-center">
+              <div className="flex items-center gap-6 p-6 text-white">
+                <Image
+                  src={profileImage}
+                  alt={user.name || "BOOKER"}
+                  width={110}
+                  height={110}
+                  className="rounded-full border-4 border-white shadow-lg"
+                />
+                <div className="text-center sm:text-left space-y-2">
+                  <h2 className="text-3xl font-bold">
+                    {user.name || "Unnamed Booker"}
+                  </h2>
+                  <p className="opacity-90">{user.email}</p>
+                  {/* <Badge className="bg-white text-blue-700 font-medium">
+                  Booker
+                </Badge> */}
+                  <p className="text-sm opacity-80 flex items-center gap-1">
+                    <CalendarDays size={16} /> Joined on{" "}
+                    {format(new Date(user.createdAt), "dd MMM, yyyy")}
+                  </p>
+                </div>
+              </div>
+
+              <Link href="./booker/edit">
+                <Button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                  Edit Profile
+                </Button>
+              </Link>
             </div>
           </div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard label="Total Bookings" value={user.bookings.length} />
-          <StatCard
-            label="Completed"
-            value={user.bookings.filter((b) => b.status === "COMPLETED").length}
-          />
-          <StatCard label="Reviews Written" value={user.reviews.length} />
-          <StatCard
-            label="Pending"
-            value={user.bookings.filter((b) => b.status === "PENDING").length}
-          />
         </div>
 
         {/* Actions */}
@@ -102,15 +110,6 @@ export default async function BookerProfilePage() {
         <SubscribeSection />
       </div>
     </MainLayout>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="bg-white rounded-xl shadow p-4 text-center">
-      <p className="text-2xl font-bold">{value}</p>
-      <p className="text-muted-foreground text-sm">{label}</p>
-    </div>
   );
 }
 

@@ -1,3 +1,4 @@
+// app/dashboard/booker/page.tsx
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
@@ -7,14 +8,18 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, MapPin, Search, User } from "lucide-react";
 import Image from "next/image";
 import SubscribeSection from "@/components/landing/SubscribeSection";
+import RoleSwitcher from "@/components/Bookswitch";
 
 export default async function BookerDashboardPage() {
-  const user = await currentUser();
-  if (!user) redirect("/sign-in");
+  const clerkUser = await currentUser();
+  if (!clerkUser) redirect("/sign-in");
 
+  // Pull the user and their linked booker profile
   const dbUser = await prisma.user.findUnique({
-    where: { clerkUserId: user.id },
+    where: { clerkUserId: clerkUser.id },
     include: {
+      booker: true,
+      reviews: true,
       bookings: {
         include: { musician: { include: { user: true } } },
         orderBy: { date: "desc" },
@@ -25,6 +30,10 @@ export default async function BookerDashboardPage() {
   if (!dbUser || !dbUser.roles.includes("BOOKER")) {
     redirect("/dashboard");
   }
+
+  const bookerProfile = dbUser.booker; // booker-specific info
+  const profileImage =
+    bookerProfile?.imageUrl || dbUser.imageUrl || "/default-avatar.png";
 
   const today = new Date();
   const upcoming = dbUser.bookings.filter(
@@ -54,6 +63,15 @@ export default async function BookerDashboardPage() {
     }
   };
 
+  const totalBookings = dbUser.bookings.length;
+  const completedCount = dbUser.bookings.filter(
+    (b) => b.status === "COMPLETED"
+  ).length;
+  const pendingCount = dbUser.bookings.filter(
+    (b) => b.status === "PENDING"
+  ).length;
+  const reviewCount = dbUser.reviews.length;
+
   return (
     <MainLayout>
       <div className="max-w-6xl mx-auto py-10 px-4">
@@ -62,16 +80,22 @@ export default async function BookerDashboardPage() {
           <div>
             <h1 className="text-3xl font-bold">
               Welcome back,{" "}
-              <span className="text-blue-700">{dbUser.name || "Musician"}</span>
+              <span className="text-blue-700">
+                {bookerProfile?.name || dbUser.name || "Booker"}
+              </span>
               !
             </h1>
-            <p className="mt-1 opacity-90">
-              Here’s a quick overview of your bookings. Let’s make more
-              unforgettable events!
-            </p>
+            {bookerProfile?.location && (
+              <p className="mt-1 flex items-center gap-1 opacity-90">
+                <MapPin className="w-4 h-4" /> {bookerProfile.location}
+              </p>
+            )}
+            {bookerProfile?.bio && (
+              <p className="mt-1 opacity-90">{bookerProfile.bio}</p>
+            )}
           </div>
           <Image
-            src={dbUser.imageUrl || "/default-avatar.png"}
+            src={profileImage}
             alt="Profile Picture"
             width={90}
             height={90}
@@ -79,10 +103,18 @@ export default async function BookerDashboardPage() {
           />
         </div>
 
+        {/* Stats Section */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatCard label="Total Bookings" value={totalBookings} />
+          <StatCard label="Completed" value={completedCount} />
+          <StatCard label="Reviews Written" value={reviewCount} />
+          <StatCard label="Pending" value={pendingCount} />
+        </div>
+
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-4 mb-10">
+        <div className="flex flex-wrap gap-4 my-10 justify-between">
           <Link href="/explore">
-            <Button className="bg-blue-600 text-white flex items-center gap-2 px-6 py-3 rounded-lg hover:bg-blue-700">
+            <Button className="bg-blue-600 text-white flex items-center gap-2 px-6 py-3 rounded-lg hover:bg-blue-700 cursor-pointer">
               <Search className="w-4 h-4" /> Discover Musicians
             </Button>
           </Link>
@@ -90,17 +122,13 @@ export default async function BookerDashboardPage() {
           <Link href="./booker/profile">
             <Button
               variant="outline"
-              className="flex items-center gap-2 px-6 py-3 rounded-lg"
+              className="flex items-center gap-2 px-6 py-3 rounded-lg cursor-pointer"
             >
               <User className="w-4 h-4" /> View Profile
             </Button>
           </Link>
 
-          <Link href="/switch-to-musician">
-            <Button variant="secondary" className="px-6 py-3 rounded-lg">
-              Switch to Musician
-            </Button>
-          </Link>
+          <RoleSwitcher />
         </div>
 
         {/* Upcoming Bookings */}
@@ -156,7 +184,7 @@ export default async function BookerDashboardPage() {
           </div>
         </section>
 
-        {/* Booking History - Timeline */}
+        {/* Booking History */}
         <section>
           <h2 className="text-2xl font-semibold mb-4">Booking History</h2>
           {history.length === 0 ? (
@@ -165,7 +193,7 @@ export default async function BookerDashboardPage() {
             <div className="relative border-l border-gray-200 pl-6 space-y-8">
               {history.map((booking) => (
                 <div key={booking.id} className="relative">
-                  <span className="absolute -left-3 w-6 h-6 bg-blue-500 rounded-full border-4 border-white"></span>
+                  <span className="absolute -left-3 w-6 h-6 bg-green-500 rounded-full border-4 border-white"></span>
                   <div className="bg-white border rounded-lg shadow-sm p-4 hover:shadow-md transition">
                     <div className="flex justify-between items-center mb-2">
                       <Link
@@ -202,5 +230,14 @@ export default async function BookerDashboardPage() {
         </div>
       </div>
     </MainLayout>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-white rounded-xl shadow p-4 text-center">
+      <p className="text-2xl font-bold">{value}</p>
+      <p className="text-muted-foreground text-sm">{label}</p>
+    </div>
   );
 }

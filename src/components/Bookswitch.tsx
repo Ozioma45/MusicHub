@@ -42,17 +42,17 @@ export default function RoleSwitcher() {
       <button
         onClick={() => handleRoleSwitch("MUSICIAN")}
         disabled={loading}
-        className="px-4 py-2 bg-blue-500 text-white rounded"
+        className="bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-700 rounded-lg cursor-pointer"
       >
         Switch to Musician
       </button>
-      <button
+      {/* <button
         onClick={() => handleRoleSwitch("BOOKER")}
         disabled={loading}
         className="px-4 py-2 bg-green-500 text-white rounded"
       >
         Switch to Booker
-      </button>
+      </button> */}
     </div>
   );
 }
