@@ -9,67 +9,103 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id              String @id @default(cuid())
-  clerkUserId     String @unique
-  email           String @unique
-  name            String?
-  imageUrl        String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  roles           Role[] @default([]) 
-  musician        Musician?
-  reviews         Review[]
-  bookings        Booking[] @relation("BookerBookings")
-  suggestions     Suggestion[] @relation("UserSuggestions")
+  id          String       @id @default(cuid())
+  clerkUserId String       @unique
+  email       String       @unique
+  name        String?
+  imageUrl    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  roles       Role[]       
+  musician    Musician?
+  booker      Booker[]
+  reviews     Review[]
+  bookings    Booking[]    @relation("BookerBookings")
+  suggestions Suggestion[] @relation("UserSuggestions")
 }
 
 model Musician {
-  id          String    @id @default(uuid())
-  user        User      @relation(fields: [userId], references: [id])
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String    @unique
   name        String
-  genres      String[]   
-  instruments String[]   
-  services    String[]   
-  location    String
-  bio         String
+  genres      String[]
+  instruments String[]
+  services    String[]
+  location    String?
+  bio         String?
   coverImage  String?
   mediaUrls   String[]
   reviews     Review[]
   bookings    Booking[] @relation("MusicianBookings")
+
+  @@index([userId])
 }
 
+model Booker {
+  id        String  @id @default(cuid())
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String  @unique
+  name      String
+  location  String?
+  bio       String?
+  imageUrl  String?
+
+  @@index([userId])
+}
 
 model Booking {
-  id          String   @id @default(uuid())
-  client      User     @relation("BookerBookings", fields: [clientId], references: [id])
+  id          String         @id @default(cuid())
+  client      User           @relation("BookerBookings", fields: [clientId], references: [id], onDelete: Cascade)
   clientId    String
-  musician    Musician @relation("MusicianBookings", fields: [musicianId], references: [id])
+  musician    Musician       @relation("MusicianBookings", fields: [musicianId], references: [id], onDelete: Cascade)
   musicianId  String
   date        DateTime
   eventType   String
   location    String
   message     String
-  status BookingStatus  
+  status      BookingStatus  @default(PENDING)
+
+  @@index([clientId])
+  @@index([musicianId])
 }
 
 model Review {
-  id          String   @id @default(uuid())
-  musician    Musician @relation(fields: [musicianId], references: [id])
-  musicianId  String
+  id         String    @id @default(cuid())
+  musician   Musician  @relation(fields: [musicianId], references: [id], onDelete: Cascade)
+  musicianId String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  rating     Int
+  comment    String
+  createdAt  DateTime  @default(now())
 
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
+  @@index([musicianId])
+  @@index([userId])
+}
 
-  rating      Int
-  comment     String
-  createdAt   DateTime @default(now())
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Suggestion {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation("UserSuggestions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum Role {
@@ -83,21 +119,4 @@ enum BookingStatus {
   DECLINED
   CANCELLED
   COMPLETED
-}
-
-model Subscriber {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-}
-
-model Suggestion {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String
-  message   String
-  createdAt DateTime @default(now())
-
-  // Relation to User
-  user      User     @relation("UserSuggestions", fields: [userId], references: [id])
 }
