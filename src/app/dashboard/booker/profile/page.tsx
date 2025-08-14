@@ -1,15 +1,13 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
 import { CalendarDays } from "lucide-react";
-import SubscribeSection from "@/components/landing/SubscribeSection";
 import MainLayout from "@/components/MainLayout";
-import EditProfileModal from "./EditProfileModal";
+import SubscribeSection from "@/components/landing/SubscribeSection";
 
 export default async function BookerProfilePage() {
   const clerkUser = await currentUser();
@@ -46,74 +44,87 @@ export default async function BookerProfilePage() {
 
   return (
     <MainLayout>
+      {/* Hero Section */}
       <div className="relative w-full h-40 md:h-50 lg:h-60">
-        {/* Hero Section */}
-
-        {/* Hero Section */}
-        <div className="relative w-full h-40 md:h-50 lg:h-60">
-          <Image
-            src="/default-cover.jpg"
-            alt="Cover"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-black/100 flex items-end">
-            <div className="max-w-5xl mx-auto flex justify-between flex-col sm:flex-row w-full items-center">
-              <div className="flex items-center gap-6 p-6 text-white">
-                <Image
-                  src={profileImage}
-                  alt={user.name || "BOOKER"}
-                  width={110}
-                  height={110}
-                  className="rounded-full border-4 border-white shadow-lg"
-                />
-                <div className="text-center sm:text-left space-y-2">
-                  <h2 className="text-3xl font-bold">
-                    {user.name || "Unnamed Booker"}
-                  </h2>
-                  <p className="opacity-90">{user.email}</p>
-                  {/* <Badge className="bg-white text-blue-700 font-medium">
-                  Booker
-                </Badge> */}
-                  <p className="text-sm opacity-80 flex items-center gap-1">
-                    <CalendarDays size={16} /> Joined on{" "}
-                    {format(new Date(user.createdAt), "dd MMM, yyyy")}
-                  </p>
-                </div>
+        <Image
+          src="/default-cover.jpg"
+          alt="Cover"
+          fill
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-black/100 flex items-end">
+          <div className="max-w-5xl mx-auto flex justify-between flex-col sm:flex-row w-full items-center">
+            <div className="flex items-center gap-6 p-6 text-white">
+              <Image
+                src={profileImage}
+                alt={user.name || "BOOKER"}
+                width={110}
+                height={110}
+                className="rounded-full border-4 border-white shadow-lg"
+              />
+              <div className="text-center sm:text-left space-y-2">
+                <h2 className="text-3xl font-bold">
+                  {user.name || "Unnamed Booker"}
+                </h2>
+                <p className="opacity-90">{user.email}</p>
+                <p className="text-sm opacity-80 flex items-center gap-1">
+                  <CalendarDays size={16} /> Joined on{" "}
+                  {format(new Date(user.createdAt), "dd MMM, yyyy")}
+                </p>
               </div>
-
-              <Link href="./booker/edit">
-                <Button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-                  Edit Profile
-                </Button>
-              </Link>
             </div>
+
+            <Link href="./booker/edit">
+              <Button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                Edit Profile
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-5xl mx-auto p-6 space-y-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Bio */}
+          <div className="lg:col-span-2 space-y-4">
+            <h2 className="text-xl font-semibold">About {user.name}</h2>
+            <p className="text-gray-700 leading-relaxed">
+              {bookerProfile?.bio || "No bio provided."}
+            </p>
+          </div>
+          <div>
+            <BookingSection bookings={user.bookings} />
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-wrap gap-4">
-          <EditProfileModal />
-          <Link href="/explore">
-            <Button variant="outline" className="px-6">
-              Discover Musicians
+        <ReviewSection reviews={user.reviews} />
+
+        {/* CTA */}
+        <div className="text-center">
+          <Link href="./edit">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              Edit Your Profile
             </Button>
           </Link>
         </div>
-
-        {/* Main Content */}
-        <div className="max-w-5xl mx-auto p-6 space-y-10">
-          <BookingSection bookings={user.bookings} />
-          <ReviewSection reviews={user.reviews} />
-        </div>
-
-        <SubscribeSection />
       </div>
+      <SubscribeSection />
     </MainLayout>
   );
 }
 
-function BookingSection({ bookings }: { bookings: any[] }) {
+function BookingSection({
+  bookings,
+}: {
+  bookings: {
+    id: string;
+    eventType: string;
+    date: Date;
+    location: string;
+    musician: { name: string; user: { imageUrl: string | null } };
+  }[];
+}) {
   return (
     <section>
       <h2 className="text-lg font-semibold mb-4">Past Bookings</h2>
@@ -151,7 +162,17 @@ function BookingSection({ bookings }: { bookings: any[] }) {
   );
 }
 
-function ReviewSection({ reviews }: { reviews: any[] }) {
+function ReviewSection({
+  reviews,
+}: {
+  reviews: {
+    id: string;
+    rating: number;
+    comment: string;
+    createdAt: Date;
+    musician: { name: string; user: { imageUrl: string | null } };
+  }[];
+}) {
   return (
     <section>
       <h2 className="text-lg font-semibold mb-4">Reviews Given</h2>
