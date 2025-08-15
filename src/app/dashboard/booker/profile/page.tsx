@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, MapPin } from "lucide-react";
 import MainLayout from "@/components/MainLayout";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 
@@ -41,6 +41,7 @@ export default async function BookerProfilePage() {
   const bookerProfile = user.booker;
   const profileImage =
     bookerProfile?.imageUrl || user.imageUrl || "/default-avatar.png";
+  const bookerLocation = bookerProfile?.location || " No location Provided";
 
   return (
     <MainLayout>
@@ -64,9 +65,13 @@ export default async function BookerProfilePage() {
               />
               <div className="text-center sm:text-left space-y-2">
                 <h2 className="text-3xl font-bold">
-                  {user.name || "Unnamed Booker"}
+                  {bookerProfile?.name || "Unnamed Booker"}
                 </h2>
                 <p className="opacity-90">{user.email}</p>
+                <p className="text-lg opacity-90 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {bookerLocation}
+                </p>
                 <p className="text-sm opacity-80 flex items-center gap-1">
                   <CalendarDays size={16} /> Joined on{" "}
                   {format(new Date(user.createdAt), "dd MMM, yyyy")}
