@@ -79,6 +79,7 @@ export async function PUT(req: Request) {
     location,
     bio,
     coverImage,
+    imageUrl,
     mediaUrls,
   } = body;
 
@@ -91,6 +92,12 @@ export async function PUT(req: Request) {
     : [];
   services = Array.isArray(services) ? services : services ? [services] : [];
   mediaUrls = Array.isArray(mediaUrls) ? mediaUrls : [];
+
+  // ✅ Update user image
+  await prisma.user.update({
+    where: { id: dbUser.id },
+    data: { imageUrl },
+  });
 
   const updated = await prisma.musician.update({
     where: { userId: dbUser.id },

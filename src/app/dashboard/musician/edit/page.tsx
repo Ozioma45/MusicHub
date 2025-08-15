@@ -15,6 +15,13 @@ interface CloudinaryFile {
 interface CloudinaryResult {
   info?: { files?: CloudinaryFile[] };
 }
+interface CloudinaryUploadResult {
+  event: string;
+  info?: {
+    secure_url?: string;
+    files?: { uploadInfo: { secure_url: string } }[];
+  };
+}
 
 export default function EditMusicianProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -27,6 +34,7 @@ export default function EditMusicianProfilePage() {
     location: "",
     bio: "",
     coverImage: "",
+    imageUrl: "",
     mediaUrls: [] as string[],
   });
 
@@ -48,6 +56,7 @@ export default function EditMusicianProfilePage() {
           location: data.location || "",
           bio: data.bio || "",
           coverImage: data.coverImage || "",
+          imageUrl: data.imageUrl || "",
           mediaUrls: data.mediaUrls || [],
         });
       } catch {
@@ -143,6 +152,26 @@ export default function EditMusicianProfilePage() {
             mediaUrls: [...prev.mediaUrls, ...uploadedUrls],
           }));
           toast.success(`${uploadedUrls.length} video(s) uploaded!`);
+        }
+      }
+    );
+  };
+
+  const handleProfileUpload = () => {
+    // @ts-expect-error cloudinary global
+    window.cloudinary.openUploadWidget(
+      {
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: "musiconnect",
+        sources: ["local", "url", "camera"],
+        cropping: true,
+        multiple: false,
+        folder: "musicians/profile",
+      },
+      (error: unknown, result: CloudinaryUploadResult) => {
+        if (!error && result.event === "success" && result.info?.secure_url) {
+          setForm({ ...form, imageUrl: result.info.secure_url });
+          toast.success("Profile image uploaded!");
         }
       }
     );
@@ -316,6 +345,28 @@ export default function EditMusicianProfilePage() {
               value={form.bio}
               onChange={handleChange}
             />
+          </div>
+
+          {/* Profile Picture */}
+          <div>
+            <label className="block font-semibold mb-2">Profile Picture</label>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleProfileUpload}
+              className="w-full"
+            >
+              Upload Profile Picture
+            </Button>
+            {form.imageUrl && (
+              <Image
+                src={form.imageUrl}
+                alt="Profile Picture"
+                width={200}
+                height={200}
+                className="mt-3 rounded-full object-cover"
+              />
+            )}
           </div>
 
           {/* Cover Image */}
