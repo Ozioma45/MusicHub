@@ -46,7 +46,7 @@ export default async function BookerProfilePage() {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <div className="relative w-full h-40 md:h-50 lg:h-60">
+      <div className="relative w-full h-60 md:h-60 lg:h-70">
         <Image
           src="/default-cover.jpg"
           alt="Cover"
@@ -63,8 +63,8 @@ export default async function BookerProfilePage() {
                 height={110}
                 className="rounded-full border-4 border-white shadow-lg"
               />
-              <div className="text-center sm:text-left space-y-2">
-                <h2 className="text-3xl font-bold">
+              <div className="text-left space-y-2">
+                <h2 className="text-2xl font-bold">
                   {bookerProfile?.name || "Unnamed Booker"}
                 </h2>
                 <p className="opacity-90">{user.email}</p>
@@ -79,7 +79,7 @@ export default async function BookerProfilePage() {
               </div>
             </div>
 
-            <p className="bg-white text-black px-6 py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
+            <p className="bg-white text-black px-3 py-1 md:px-6 md:py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
               BOOKER
             </p>
           </div>

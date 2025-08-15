@@ -1,46 +1,79 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/db";
-import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import Link from "next/link";
-import Image from "next/image";
-import { CalendarDays, MapPin } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
+import Image from "next/image";
+import { MapPin, CalendarDays } from "lucide-react";
+import Link from "next/link";
 import SubscribeSection from "@/components/landing/SubscribeSection";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
 
-export default async function BookerProfilePage() {
-  const clerkUser = await currentUser();
-  if (!clerkUser) redirect("/");
+type Booking = {
+  id: string;
+  eventType: string;
+  date: string;
+  location: string;
+  musician: {
+    id: string;
+    name: string;
+    user: { imageUrl: string | null };
+  };
+};
 
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: clerkUser.id },
-    include: {
-      booker: true,
-      bookings: {
-        include: {
-          musician: { include: { user: true } },
-        },
-      },
-      reviews: {
-        include: {
-          musician: { include: { user: true } },
-        },
-      },
-    },
-  });
+type Review = {
+  id: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  musician: {
+    id: string;
+    name: string;
+    user: { imageUrl: string | null };
+  };
+};
 
-  if (!user || !user.roles.includes("BOOKER")) redirect("/");
+type Booker = {
+  id: string;
+  name: string;
+  email?: string;
+  bio?: string;
+  location?: string;
+  createdAt?: string;
+  imageUrl?: string;
+  bookings: Booking[];
+  reviews: Review[];
+  stats?: {
+    totalBookings: number;
+    completedBookings: number;
+    pendingBookings: number;
+    reviewsWritten: number;
+  };
+};
 
-  const bookerProfile = user.booker;
-  const profileImage =
-    bookerProfile?.imageUrl || user.imageUrl || "/default-avatar.png";
-  const bookerLocation = bookerProfile?.location || "No location provided";
+export default function BookerProfilePage() {
+  const { bookerId } = useParams();
+  const [booker, setBooker] = useState<Booker | null>(null);
+
+  useEffect(() => {
+    const fetchBooker = async () => {
+      const res = await fetch(`/api/booker/${bookerId}`);
+      const data = await res.json();
+      setBooker(data);
+    };
+
+    if (bookerId) fetchBooker();
+  }, [bookerId]);
+
+  if (!booker) return <div>Loading...</div>;
+
+  const profileImage = booker.imageUrl || "/default-avatar.png";
 
   return (
     <MainLayout>
       {/* Hero Section */}
-      <div className="relative w-full h-40 md:h-50 lg:h-60">
+      <div className="relative w-full h-60 md:h-60 lg:h-70">
         <Image
           src="/default-cover.jpg"
           alt="Cover"
@@ -52,26 +85,31 @@ export default async function BookerProfilePage() {
             <div className="flex items-center gap-6 p-6 text-white">
               <Image
                 src={profileImage}
-                alt={bookerProfile?.name || "BOOKER"}
+                alt={booker.name || "BOOKER"}
                 width={110}
                 height={110}
                 className="rounded-full border-4 border-white shadow-lg"
               />
-              <div className="text-center sm:text-left space-y-2">
-                <h2 className="text-3xl font-bold">
-                  {bookerProfile?.name || "Unnamed Booker"}
+              <div className="text-left space-y-2">
+                <h2 className="text-2xl font-bold">
+                  {booker.name || "Unnamed Booker"}
                 </h2>
-                <p className="opacity-90">{user.email}</p>
-                <p className="text-lg opacity-90 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  {bookerLocation}
-                </p>
-                <p className="text-sm opacity-80 flex items-center gap-1">
-                  <CalendarDays size={16} /> Joined on{" "}
-                  {format(new Date(user.createdAt), "dd MMM, yyyy")}
-                </p>
+                <p className="opacity-90">{booker.email}</p>
+                {booker.location && (
+                  <p className="text-lg opacity-90 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    {booker.location}
+                  </p>
+                )}
+                {booker.createdAt && (
+                  <p className="text-sm opacity-80 flex items-center gap-1">
+                    <CalendarDays size={16} /> Joined on{" "}
+                    {format(new Date(booker.createdAt), "dd MMM, yyyy")}
+                  </p>
+                )}
               </div>
             </div>
+
             <p className="bg-white text-black px-6 py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
               BOOKER
             </p>
@@ -85,18 +123,18 @@ export default async function BookerProfilePage() {
           {/* Bio */}
           <div className="lg:col-span-2 space-y-4">
             <h2 className="text-xl font-semibold">
-              About {bookerProfile?.name}
+              About <span className="font-bold">{booker.name}</span>
             </h2>
             <p className="text-gray-700 leading-relaxed">
-              {bookerProfile?.bio || "No bio provided."}
+              {booker.bio || "No bio provided."}
             </p>
           </div>
           <div>
-            <BookingSection bookings={user.bookings} />
+            <BookingSection bookings={booker.bookings} />
           </div>
         </div>
 
-        <ReviewSection reviews={user.reviews} />
+        <ReviewSection reviews={booker.reviews} />
 
         {/* CTA */}
         {/* <div className="text-center">
@@ -112,17 +150,7 @@ export default async function BookerProfilePage() {
   );
 }
 
-function BookingSection({
-  bookings,
-}: {
-  bookings: {
-    id: string;
-    eventType: string;
-    date: Date;
-    location: string;
-    musician: { name: string; user: { imageUrl: string | null } };
-  }[];
-}) {
+function BookingSection({ bookings }: { bookings: Booking[] }) {
   return (
     <section>
       <h2 className="text-lg font-semibold mb-4">Past Bookings</h2>
@@ -160,17 +188,7 @@ function BookingSection({
   );
 }
 
-function ReviewSection({
-  reviews,
-}: {
-  reviews: {
-    id: string;
-    rating: number;
-    comment: string;
-    createdAt: Date;
-    musician: { name: string; user: { imageUrl: string | null } };
-  }[];
-}) {
+function ReviewSection({ reviews }: { reviews: Review[] }) {
   return (
     <section>
       <h2 className="text-lg font-semibold mb-4">Reviews Given</h2>
