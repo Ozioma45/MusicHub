@@ -46,6 +46,10 @@ export async function GET() {
 
   return NextResponse.json({
     ...musician,
+    user: {
+      email: dbUser.email,
+      createdAt: dbUser.createdAt,
+    },
     imageUrl: dbUser.imageUrl,
     reviews,
   });

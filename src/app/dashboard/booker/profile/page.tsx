@@ -63,7 +63,7 @@ export default async function BookerProfilePage() {
                 height={110}
                 className="rounded-full border-4 border-white shadow-lg"
               />
-              <div className="text-left space-y-2">
+              <div className="text-left">
                 <h2 className="text-2xl font-bold">
                   {bookerProfile?.name || "Unnamed Booker"}
                 </h2>

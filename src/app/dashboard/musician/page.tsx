@@ -113,7 +113,7 @@ export default async function MusicianDashboardPage() {
             </Button>
           </Link>
 
-          <Link href="./booker/profile">
+          <Link href="./musician/profile">
             <Button
               variant="outline"
               className="flex items-center gap-2 px-6 py-3 rounded-lg cursor-pointer"

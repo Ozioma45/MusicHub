@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
-import { MapPin } from "lucide-react";
+import { MapPin, CalendarDays } from "lucide-react";
 import Link from "next/link";
+import { format } from "date-fns";
 
 type Booking = {
   id: string;
@@ -26,6 +27,10 @@ type Review = {
 };
 
 type Musician = {
+  user: {
+    email: string;
+    createdAt: string;
+  };
   id: string;
   name: string;
   location: string;
@@ -58,7 +63,7 @@ export default function MusicianProfilePage() {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <div className="relative w-full h-40 md:h-50 lg:h-60">
+      <div className="relative w-full h-60 md:h-60 lg:h-70">
         <Image
           src={musician.coverImage || "/default-cover.jpg"}
           alt="Cover"
@@ -66,26 +71,36 @@ export default function MusicianProfilePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/80 flex items-end">
-          <div className="max-w-6xl mx-auto w-full flex items-center gap-6 p-6">
-            <Image
-              src={musician.imageUrl || "/default-avatar.png"}
-              alt={musician.name}
-              width={110}
-              height={110}
-              className="rounded-full border-4 border-white shadow-lg"
-            />
-            <div className="text-white">
-              <h1 className="text-3xl font-bold">{musician.name}</h1>
-              <p className="text-lg opacity-90 flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                {musician.location}
-              </p>
-              {/* {musician.genres?.length > 0 && (
+          <div className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center gap-6 p-6 justify-between">
+            <div className="flex items-center gap-6 p-6 text-white">
+              <Image
+                src={musician.imageUrl || "/default-avatar.png"}
+                alt={musician.name}
+                width={110}
+                height={110}
+                className="rounded-full border-4 border-white shadow-lg"
+              />
+              <div className="text-white">
+                <h1 className="text-2xl font-bold">{musician.name}</h1>
+                <p className="opacity-90">{musician.user.email}</p>
+                <p className="text-lg opacity-90 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {musician.location}
+                </p>
+                <p className="text-sm opacity-80 flex items-center gap-1">
+                  <CalendarDays size={16} /> Joined on{" "}
+                  {format(new Date(musician.user.createdAt), "dd MMM, yyyy")}
+                </p>
+                {/* {musician.genres?.length > 0 && (
                 <p className="text-sm mt-1 italic">
                   {musician.genres.join(" • ")}
                 </p>
               )} */}
+              </div>
             </div>
+            <p className="bg-white text-black px-3 py-1 md:px-6 md:py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
+              Musician
+            </p>
           </div>
         </div>
       </div>
