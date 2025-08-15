@@ -4,10 +4,11 @@ import { redirect } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, MapPin, Search, User } from "lucide-react";
 import Image from "next/image";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import { handleBookingAction } from "@/app/actions/bookingActions";
+import RoleSwitcher from "@/components/MusicSwitch";
 
 export default async function MusicianDashboardPage() {
   const user = await currentUser();
@@ -24,10 +25,11 @@ export default async function MusicianDashboardPage() {
           },
         },
       },
+      reviews: true,
     },
   });
 
-  if (!dbUser || !dbUser.roles.includes("MUSICIAN")) {
+  if (!dbUser || !dbUser.roles.includes("MUSICIAN") || !dbUser.musician) {
     redirect("/dashboard");
   }
 
@@ -45,6 +47,13 @@ export default async function MusicianDashboardPage() {
       ["DECLINED", "CANCELLED", "COMPLETED"].includes(b.status) ||
       (new Date(b.date) < today && b.status !== "ACCEPTED")
   );
+
+  const totalBookings = bookings.length;
+  const completedCount = bookings.filter(
+    (b) => b.status === "COMPLETED"
+  ).length;
+  const pendingCount = bookings.filter((b) => b.status === "PENDING").length;
+  const reviewCount = dbUser.reviews.length;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -88,23 +97,32 @@ export default async function MusicianDashboardPage() {
           />
         </div>
 
+        {/* Stats Section */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatCard label="Total Bookings" value={totalBookings} />
+          <StatCard label="Completed" value={completedCount} />
+          <StatCard label="Reviews Written" value={reviewCount} />
+          <StatCard label="Pending" value={pendingCount} />
+        </div>
+
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-4 mb-8">
-          <Link href="./musician/profile">
-            <Button variant="outline" className="px-6 py-3 rounded-lg">
-              View Profile
+        <div className="flex flex-wrap gap-4 my-10 justify-between">
+          <Link href="/explore">
+            <Button className="bg-blue-600 text-white flex items-center gap-2 px-6 py-3 rounded-lg hover:bg-blue-700 cursor-pointer">
+              <Search className="w-4 h-4" /> Discover Musicians
             </Button>
           </Link>
-          <Link href="./musician/edit">
-            <Button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-              Edit Profile
+
+          <Link href="./booker/profile">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 px-6 py-3 rounded-lg cursor-pointer"
+            >
+              <User className="w-4 h-4" /> View Profile
             </Button>
           </Link>
-          <Link href="/switch-to-booker">
-            <Button variant="secondary" className="px-6 py-3 rounded-lg">
-              Switch to Booker
-            </Button>
-          </Link>
+
+          <RoleSwitcher />
         </div>
 
         {/* Upcoming Bookings */}
@@ -251,5 +269,14 @@ export default async function MusicianDashboardPage() {
         <SubscribeSection />
       </div>
     </MainLayout>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-white rounded-xl shadow p-4 text-center">
+      <p className="text-2xl font-bold">{value}</p>
+      <p className="text-muted-foreground text-sm">{label}</p>
+    </div>
   );
 }
