@@ -9,18 +9,35 @@ export default async function Dashboard() {
     redirect("/sign-in");
   }
 
-  // Find user in DB
+  const email = user.emailAddresses[0]?.emailAddress ?? "";
+
+  // 1️⃣ First check if user exists by Clerk ID
   let loggedUser = await prisma.user.findUnique({
     where: { clerkUserId: user.id },
   });
 
-  // Create user if they don't exist
+  // 2️⃣ If not found, check by email
+  if (!loggedUser && email) {
+    loggedUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    // If email exists but clerkUserId is not set, update it
+    if (loggedUser && !loggedUser.clerkUserId) {
+      await prisma.user.update({
+        where: { id: loggedUser.id },
+        data: { clerkUserId: user.id },
+      });
+    }
+  }
+
+  // 3️⃣ If still not found, create a new user
   if (!loggedUser) {
     loggedUser = await prisma.user.create({
       data: {
         clerkUserId: user.id,
         name: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
-        email: user.emailAddresses[0]?.emailAddress ?? "",
+        email,
         imageUrl: user.imageUrl ?? "",
         roles: [],
         activeRole: null,
@@ -29,16 +46,13 @@ export default async function Dashboard() {
     redirect("/select-role");
   }
 
-  // If no role is assigned yet
+  // 4️⃣ If no role is assigned yet
   if (!loggedUser.roles || loggedUser.roles.length === 0) {
     redirect("/select-role");
   }
 
-  // Get the user's first role
-  //const userRole = loggedUser.roles[0];
+  // 5️⃣ Determine active role
   const userRole = loggedUser.activeRole || loggedUser.roles[0];
-
-  // 4️⃣ If currentRole not set, default to first role & update DB
   if (!loggedUser.activeRole) {
     await prisma.user.update({
       where: { id: loggedUser.id },
@@ -46,7 +60,7 @@ export default async function Dashboard() {
     });
   }
 
-  // Route based on role
+  // 6️⃣ Route based on role
   switch (userRole) {
     case "MUSICIAN":
       redirect("/dashboard/musician");
@@ -55,7 +69,7 @@ export default async function Dashboard() {
       redirect("/dashboard/booker");
       break;
     default:
-      redirect("/select-role"); // safety fallback
+      redirect("/select-role");
   }
 
   return null;
