@@ -1,152 +1,204 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import MainLayout from "@/components/MainLayout";
+import { currentUser } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/db";
+import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import Link from "next/link";
 import Image from "next/image";
+import { CalendarDays, MapPin } from "lucide-react";
+import MainLayout from "@/components/MainLayout";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 
-type Booking = {
-  id: string;
-  eventType: string;
-  date: string;
-  location: string;
-  musician: {
-    id: string;
-    name: string;
-    imageUrl: string;
-  };
-};
+export default async function BookerProfilePage() {
+  const clerkUser = await currentUser();
+  if (!clerkUser) redirect("/");
 
-type Review = {
-  id: string;
-  rating: number;
-  comment: string;
-  createdAt: string;
-  musician: {
-    id: string;
-    name: string;
-    imageUrl: string;
-  };
-};
+  const user = await prisma.user.findUnique({
+    where: { clerkUserId: clerkUser.id },
+    include: {
+      booker: true,
+      bookings: {
+        include: {
+          musician: { include: { user: true } },
+        },
+      },
+      reviews: {
+        include: {
+          musician: { include: { user: true } },
+        },
+      },
+    },
+  });
 
-type Booker = {
-  id: string;
-  name: string;
-  imageUrl?: string;
-  bookings?: Booking[];
-  reviews?: Review[];
-};
+  if (!user || !user.roles.includes("BOOKER")) redirect("/");
 
-export default function BookerProfilePage() {
-  const { bookerId } = useParams();
-  const [booker, setBooker] = useState<Booker | null>(null);
-
-  useEffect(() => {
-    const fetchBooker = async () => {
-      const res = await fetch(`/api/booker/${bookerId}`);
-      const data = await res.json();
-      setBooker(data);
-    };
-
-    if (bookerId) fetchBooker();
-  }, [bookerId]);
-
-  if (!booker) return <div>Loading...</div>;
+  const bookerProfile = user.booker;
+  const profileImage =
+    bookerProfile?.imageUrl || user.imageUrl || "/default-avatar.png";
+  const bookerLocation = bookerProfile?.location || "No location provided";
 
   return (
     <MainLayout>
-      {/* Profile Section */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-700 py-10">
-        <div className="max-w-5xl mx-auto px-6 md:px-10 flex items-center gap-6">
-          <Image
-            src={booker.imageUrl || "/default-avatar.png"}
-            alt="Profile"
-            width={100}
-            height={100}
-            className="rounded-full border-4 border-white shadow-lg"
-          />
-          <div>
-            <h1 className="text-3xl font-bold text-white">{booker.name}</h1>
+      {/* Hero Section */}
+      <div className="relative w-full h-40 md:h-50 lg:h-60">
+        <Image
+          src="/default-cover.jpg"
+          alt="Cover"
+          fill
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-black/100 flex items-end">
+          <div className="max-w-5xl mx-auto flex justify-between flex-col sm:flex-row w-full items-center">
+            <div className="flex items-center gap-6 p-6 text-white">
+              <Image
+                src={profileImage}
+                alt={bookerProfile?.name || "BOOKER"}
+                width={110}
+                height={110}
+                className="rounded-full border-4 border-white shadow-lg"
+              />
+              <div className="text-center sm:text-left space-y-2">
+                <h2 className="text-3xl font-bold">
+                  {bookerProfile?.name || "Unnamed Booker"}
+                </h2>
+                <p className="opacity-90">{user.email}</p>
+                <p className="text-lg opacity-90 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {bookerLocation}
+                </p>
+                <p className="text-sm opacity-80 flex items-center gap-1">
+                  <CalendarDays size={16} /> Joined on{" "}
+                  {format(new Date(user.createdAt), "dd MMM, yyyy")}
+                </p>
+              </div>
+            </div>
+            <p className="bg-white text-black px-6 py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
+              BOOKER
+            </p>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto p-6 space-y-10">
-        {/* Past Bookings */}
-        <section>
-          <h2 className="text-lg font-semibold mb-4">Past Bookings</h2>
-          {booker.bookings && booker.bookings.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {booker.bookings.map((booking) => (
-                <div
-                  key={booking.id}
-                  className="bg-white rounded-lg shadow hover:shadow-lg p-4"
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <Image
-                      src={booking.musician.imageUrl || "/default-avatar.png"}
-                      alt={booking.musician.name}
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                    <div>
-                      <p className="font-semibold">{booking.musician.name}</p>
-                      <p className="text-xs text-gray-500">
-                        {booking.eventType} •{" "}
-                        {new Date(booking.date).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600">{booking.location}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">No bookings yet.</p>
-          )}
-        </section>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Bio */}
+          <div className="lg:col-span-2 space-y-4">
+            <h2 className="text-xl font-semibold">
+              About {bookerProfile?.name}
+            </h2>
+            <p className="text-gray-700 leading-relaxed">
+              {bookerProfile?.bio || "No bio provided."}
+            </p>
+          </div>
+          <div>
+            <BookingSection bookings={user.bookings} />
+          </div>
+        </div>
 
-        {/* Reviews Given */}
-        <section>
-          <h2 className="text-lg font-semibold mb-4">Reviews Given</h2>
-          {booker.reviews && booker.reviews.length > 0 ? (
-            <div className="space-y-4">
-              {booker.reviews.map((review) => (
-                <div key={review.id} className="border-b pb-4">
-                  <div className="flex items-center gap-3 mb-1">
-                    <Image
-                      src={review.musician.imageUrl || "/default-avatar.png"}
-                      alt={review.musician.name}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                    <span className="font-medium">{review.musician.name}</span>
-                  </div>
-                  <div className="text-yellow-500">⭐ {review.rating}/5</div>
-                  <p className="text-gray-700 mt-1">{review.comment}</p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {new Date(review.createdAt).toLocaleDateString()}
+        <ReviewSection reviews={user.reviews} />
+
+        {/* CTA */}
+        {/* <div className="text-center">
+          <Link href="./edit">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              Edit Your Profile
+            </Button>
+          </Link>
+        </div> */}
+      </div>
+      <SubscribeSection />
+    </MainLayout>
+  );
+}
+
+function BookingSection({
+  bookings,
+}: {
+  bookings: {
+    id: string;
+    eventType: string;
+    date: Date;
+    location: string;
+    musician: { name: string; user: { imageUrl: string | null } };
+  }[];
+}) {
+  return (
+    <section>
+      <h2 className="text-lg font-semibold mb-4">Past Bookings</h2>
+      {bookings.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {bookings.map((booking) => (
+            <div
+              key={booking.id}
+              className="bg-white rounded-lg shadow hover:shadow-lg p-4"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <Image
+                  src={booking.musician.user.imageUrl || "/default-avatar.png"}
+                  alt={booking.musician.name}
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="font-semibold">{booking.musician.name}</p>
+                  <p className="text-xs text-gray-500">
+                    {booking.eventType} •{" "}
+                    {new Date(booking.date).toLocaleDateString()}
                   </p>
                 </div>
-              ))}
+              </div>
+              <p className="text-sm text-gray-600">{booking.location}</p>
             </div>
-          ) : (
-            <p className="text-gray-500">No reviews yet.</p>
-          )}
-        </section>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500">No bookings yet.</p>
+      )}
+    </section>
+  );
+}
 
-        {/* Contact Button */}
-        {/*  <div className="mt-6">
-          <Button className="w-full md:w-auto bg-blue-700 hover:bg-blue-800 text-white">
-            Contact {booker.name}
-          </Button>
-        </div> */}
-        <SubscribeSection />
-      </div>
-    </MainLayout>
+function ReviewSection({
+  reviews,
+}: {
+  reviews: {
+    id: string;
+    rating: number;
+    comment: string;
+    createdAt: Date;
+    musician: { name: string; user: { imageUrl: string | null } };
+  }[];
+}) {
+  return (
+    <section>
+      <h2 className="text-lg font-semibold mb-4">Reviews Given</h2>
+      {reviews.length > 0 ? (
+        <div className="space-y-4">
+          {reviews.map((review) => (
+            <div key={review.id} className="border-b pb-4">
+              <div className="flex items-center gap-3 mb-1">
+                <Image
+                  src={review.musician.user.imageUrl || "/default-avatar.png"}
+                  alt={review.musician.name}
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+                <span className="font-medium">{review.musician.name}</span>
+              </div>
+              <div className="text-yellow-500">⭐ {review.rating}/5</div>
+              <p className="text-gray-700 mt-1">{review.comment}</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {new Date(review.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500">No reviews yet.</p>
+      )}
+    </section>
   );
 }

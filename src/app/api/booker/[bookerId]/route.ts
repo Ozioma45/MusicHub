@@ -14,7 +14,7 @@ export async function GET(
       id: true,
       name: true,
       imageUrl: true,
-      role: true,
+      activeRole: true,
       bookings: {
         orderBy: { date: "desc" },
         select: {
@@ -50,7 +50,7 @@ export async function GET(
     },
   });
 
-  if (!booker || booker.role !== "BOOKER") {
+  if (!booker || booker.activeRole !== "BOOKER") {
     return NextResponse.json({ error: "Booker not found" }, { status: 404 });
   }
 

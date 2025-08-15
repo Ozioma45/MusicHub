@@ -85,14 +85,10 @@ export default async function BookerDashboardPage() {
               </span>
               !
             </h1>
-            {bookerProfile?.location && (
-              <p className="mt-1 flex items-center gap-1 opacity-90">
-                <MapPin className="w-4 h-4" /> {bookerProfile.location}
-              </p>
-            )}
-            {bookerProfile?.bio && (
-              <p className="mt-1 opacity-90">{bookerProfile.bio}</p>
-            )}
+            <p className="text-muted-foreground">
+              Here&apos;s a quick overview of your bookings and favorite
+              artists. Let&apos;s make more unforgettable events!
+            </p>
           </div>
           <Image
             src={profileImage}

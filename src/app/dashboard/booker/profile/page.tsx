@@ -91,7 +91,9 @@ export default async function BookerProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Bio */}
           <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-xl font-semibold">About {user.name}</h2>
+            <h2 className="text-xl font-semibold">
+              About {bookerProfile?.name}
+            </h2>
             <p className="text-gray-700 leading-relaxed">
               {bookerProfile?.bio || "No bio provided."}
             </p>
