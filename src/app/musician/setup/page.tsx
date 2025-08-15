@@ -86,10 +86,10 @@ export default function SetupMusicianPage() {
     e.preventDefault();
     if (!user) return;
 
-    if (form.bio.trim().length < 20) {
+    /*  if (form.bio.trim().length < 20) {
       alert("Your bio must be at least 20 characters long.");
       return;
-    }
+    } */
 
     await axios.post("/api/musician/setup", {
       clerkUserId: user.id,
@@ -122,7 +122,7 @@ export default function SetupMusicianPage() {
           <input
             type="text"
             name="name"
-            placeholder="Your stage name"
+            placeholder="Your  name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
@@ -249,7 +249,7 @@ export default function SetupMusicianPage() {
 
           <textarea
             name="bio"
-            placeholder="Tell us about yourself (min 20 characters)"
+            placeholder="Tell us about yourself"
             value={form.bio}
             onChange={(e) => setForm({ ...form, bio: e.target.value })}
             required
@@ -280,7 +280,7 @@ export default function SetupMusicianPage() {
 
           <button
             type="submit"
-            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
           >
             Save & Continue
           </button>
