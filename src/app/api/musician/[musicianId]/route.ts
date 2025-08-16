@@ -16,6 +16,8 @@ export async function GET(
           select: {
             imageUrl: true,
             name: true,
+            email: true,
+            createdAt: true,
           },
         },
         reviews: {

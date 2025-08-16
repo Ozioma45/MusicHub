@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Star, Calendar, MapPin } from "lucide-react";
+import { Star, Calendar, MapPin, CalendarDays } from "lucide-react";
 import clsx from "clsx";
+import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
@@ -42,9 +43,11 @@ type Musician = {
   mediaUrls?: string[];
   reviews: Review[];
   bookings?: Booking[];
-  user?: {
-    imageUrl?: string;
-    name?: string;
+  user: {
+    imageUrl: string;
+    name: string;
+    email: string;
+    createdAt: string;
   };
 };
 
@@ -91,33 +94,37 @@ export default function MusicianProfilePage() {
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/80 flex items-end p-6">
-          <div className="max-w-5xl w-full mx-auto flex items-center gap-4">
-            <Image
-              src={
-                musician.imageUrl ||
-                musician.user?.imageUrl ||
-                "/default-avatar.png"
-              }
-              alt="Profile"
-              width={96}
-              height={96}
-              className="rounded-full border-4 border-white"
-            />
-            <div className="text-white">
-              <h1 className="text-2xl md:text-3xl font-bold">
-                {musician.name}
-              </h1>
-              <p className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                {musician.location}
-              </p>
-              {/* {musician.genres?.length > 0 && (
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/80 flex items-end">
+          <div className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center gap-6 p-6 justify-between">
+            <div className="flex items-center gap-6 p-6 text-white">
+              <Image
+                src={musician.user.imageUrl || "/default-avatar.png"}
+                alt={musician.name}
+                width={110}
+                height={110}
+                className="rounded-full border-4 border-white shadow-lg"
+              />
+              <div className="text-white">
+                <h1 className="text-2xl font-bold">{musician.name}</h1>
+                <p className="opacity-90">{musician.user.email}</p>
+                <p className="text-lg opacity-90 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {musician.location}
+                </p>
+                <p className="text-sm opacity-80 flex items-center gap-1">
+                  <CalendarDays size={16} /> Joined on{" "}
+                  {format(new Date(musician.user.createdAt), "dd MMM, yyyy")}
+                </p>
+                {/* {musician.genres?.length > 0 && (
                 <p className="text-sm mt-1 italic">
                   {musician.genres.join(" • ")}
                 </p>
               )} */}
+              </div>
             </div>
+            <p className="bg-white text-black px-3 py-1 md:px-6 md:py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
+              Musician
+            </p>
           </div>
         </div>
       </div>
@@ -129,11 +136,18 @@ export default function MusicianProfilePage() {
             {/* Overview + Booking CTA */}
             <div className="flex justify-between items-center flex-wrap gap-4">
               <h2 className="text-xl font-semibold">Profile Overview</h2>
-              <Link href={`/booking/request?musicianId=${musician.id}`}>
-                <Button className="bg-blue-600 text-white">
-                  Request Booking
-                </Button>
-              </Link>
+
+              <div className="flex gap-4">
+                <Link href={`/review/submit?musicianId=${musician.id}`}>
+                  <Button>Submit Review</Button>
+                </Link>
+
+                <Link href={`/booking/request?musicianId=${musician.id}`}>
+                  <Button className="bg-blue-600 text-white">
+                    Request Booking
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* Bio */}
