@@ -9,6 +9,15 @@ import Image from "next/image";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import { handleBookingAction } from "@/app/actions/bookingActions";
 import RoleSwitcher from "@/components/MusicSwitch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default async function MusicianDashboardPage() {
   const user = await currentUser();
@@ -125,7 +134,7 @@ export default async function MusicianDashboardPage() {
           <RoleSwitcher />
         </div>
 
-        {/* Upcoming Bookings */}
+        {/* Upcoming & Past Gigs */}
         <section className="mb-10">
           <h2 className="text-xl font-semibold mb-4">Upcoming Gigs</h2>
           <div className="space-y-4">
@@ -135,67 +144,42 @@ export default async function MusicianDashboardPage() {
               upcoming.map((booking) => (
                 <div
                   key={booking.id}
-                  className="border p-4 rounded-lg shadow-sm flex justify-between items-center gap-4"
+                  className="border p-4 rounded-lg shadow-sm flex justify-between items-start"
                 >
-                  <div className="flex items-center gap-4">
+                  {/* Booker Info */}
+                  <div className="flex items-start gap-3">
                     {booking.client?.imageUrl ? (
                       <Image
                         src={booking.client.imageUrl}
                         alt={booking.client.name || "Booker"}
-                        width={50}
-                        height={50}
+                        width={40}
+                        height={40}
                         className="rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-[50px] h-[50px] rounded-full bg-gray-300" />
+                      <div className="w-10 h-10 rounded-full bg-gray-300" />
                     )}
                     <div>
-                      <h3 className="font-semibold text-lg">
-                        <Link href={`/booker/${booking.client?.id || "#"}`}>
-                          {booking.client.name || "Unknown Booker"}
-                        </Link>
-                      </h3>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <CalendarDays className="w-4 h-4" />
-                        {new Date(booking.date).toLocaleDateString()}
+                      <p className="font-semibold">
+                        {booking.client?.name || "Unknown Booker"}
                       </p>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {booking.location} • {booking.eventType}
+                      <p className="text-sm text-muted-foreground">
+                        {booking.client?.email || "No email"}
                       </p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-end gap-2">
-                    {booking.status === "PENDING" ? (
-                      <>
-                        <form action={handleBookingAction}>
-                          <input
-                            type="hidden"
-                            name="bookingId"
-                            value={booking.id}
-                          />
-                          <input type="hidden" name="action" value="ACCEPTED" />
-                          <Button className="bg-green-600 hover:bg-green-700 text-white text-sm cursor-pointer">
-                            Accept
-                          </Button>
-                        </form>
-                        <form action={handleBookingAction}>
-                          <input
-                            type="hidden"
-                            name="bookingId"
-                            value={booking.id}
-                          />
-                          <input type="hidden" name="action" value="DECLINED" />
-                          <Button
-                            variant="destructive"
-                            className="text-sm cursor-pointer"
-                          >
-                            Decline
-                          </Button>
-                        </form>
-                      </>
-                    ) : (
+                      {/* Status Badge under info */}
+                      {/*  <Badge
+                        variant={
+                          booking.status === "ACCEPTED"
+                            ? "default"
+                            : booking.status === "DECLINED"
+                            ? "destructive"
+                            : "secondary"
+                        }
+                        className="mt-1"
+                      >
+                        {booking.status}
+                      </Badge> */}
                       <span
                         className={`px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(
                           booking.status
@@ -203,8 +187,78 @@ export default async function MusicianDashboardPage() {
                       >
                         {booking.status}
                       </span>
-                    )}
+                    </div>
                   </div>
+
+                  {/* 3-Dot Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-2 hover:bg-gray-100 rounded-full">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/booker/${booking.client?.id}`}>
+                          View Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/bookings/${booking.id}`}>
+                          Booking Details
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/messages/${booking.client?.id}`}>
+                          Message Booker
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuSeparator />
+
+                      {booking.status === "PENDING" && (
+                        <div className="flex gap-2 px-2 py-1">
+                          <form action={handleBookingAction} className="flex-1">
+                            <input
+                              type="hidden"
+                              name="bookingId"
+                              value={booking.id}
+                            />
+                            <input
+                              type="hidden"
+                              name="action"
+                              value="ACCEPTED"
+                            />
+                            <Button
+                              className="w-full bg-green-600 hover:bg-green-700 text-white text-sm"
+                              size="sm"
+                            >
+                              Accept
+                            </Button>
+                          </form>
+                          <form action={handleBookingAction} className="flex-1">
+                            <input
+                              type="hidden"
+                              name="bookingId"
+                              value={booking.id}
+                            />
+                            <input
+                              type="hidden"
+                              name="action"
+                              value="DECLINED"
+                            />
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="w-full text-sm"
+                            >
+                              Decline
+                            </Button>
+                          </form>
+                        </div>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ))
             )}
@@ -212,54 +266,84 @@ export default async function MusicianDashboardPage() {
         </section>
 
         {/* Past Gigs */}
-        <section>
+        <section className="mb-10">
           <h2 className="text-xl font-semibold mb-4">Past Gigs</h2>
           <div className="space-y-4">
             {history.length === 0 ? (
-              <p className="text-muted-foreground">No past gigs.</p>
+              <p className="text-muted-foreground">No past gigs yet.</p>
             ) : (
               history.map((booking) => (
                 <div
                   key={booking.id}
-                  className="border p-4 rounded-lg shadow-sm flex justify-between items-center gap-4"
+                  className="border p-4 rounded-lg shadow-sm flex justify-between items-start"
                 >
-                  <div className="flex items-center gap-4">
+                  {/* Booker Info */}
+                  <div className="flex items-start gap-3">
                     {booking.client?.imageUrl ? (
                       <Image
                         src={booking.client.imageUrl}
                         alt={booking.client.name || "Booker"}
-                        width={50}
-                        height={50}
+                        width={40}
+                        height={40}
                         className="rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-[50px] h-[50px] rounded-full bg-gray-300" />
+                      <div className="w-10 h-10 rounded-full bg-gray-300" />
                     )}
                     <div>
-                      <h3 className="font-semibold text-lg">
-                        <Link href={`/booker/${booking.client?.id || "#"}`}>
-                          {booking.client.name || "Unknown Booker"}
-                        </Link>
-                      </h3>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <CalendarDays className="w-4 h-4" />
-                        {new Date(booking.date).toLocaleDateString()}
+                      <p className="font-semibold">
+                        {booking.client?.name || "Unknown Booker"}
                       </p>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {booking.location} • {booking.eventType}
+                      <p className="text-sm text-muted-foreground">
+                        {booking.client?.email || "No email"}
                       </p>
+
+                      {/* Status Badge */}
+                      {/* <Badge
+                        variant={
+                          booking.status === "COMPLETED"
+                            ? "default"
+                            : "secondary"
+                        }
+                        className="mt-1"
+                      >
+                        {booking.status}
+                      </Badge> */}
+                      <span
+                        className={`px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(
+                          booking.status
+                        )}`}
+                      >
+                        {booking.status}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end">
-                    <span
-                      className={`px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(
-                        booking.status
-                      )}`}
-                    >
-                      {booking.status}
-                    </span>
-                  </div>
+
+                  {/* 3-Dot Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-2 hover:bg-gray-100 rounded-full">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/booker/${booking.client?.id}`}>
+                          View Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/bookings/${booking.id}`}>
+                          Booking Details
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/messages/${booking.client?.id}`}>
+                          Message Booker
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ))
             )}
