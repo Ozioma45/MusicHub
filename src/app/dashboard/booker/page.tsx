@@ -9,6 +9,14 @@ import { CalendarDays, MapPin, Search, User } from "lucide-react";
 import Image from "next/image";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import RoleSwitcher from "@/components/Bookswitch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 export default async function BookerDashboardPage() {
   const clerkUser = await currentUser();
@@ -128,76 +136,52 @@ export default async function BookerDashboardPage() {
         </div>
 
         {/* Upcoming Bookings */}
-        <section className="mb-12">
+
+        <section className="mb-10">
           <h2 className="text-xl font-semibold mb-4">Upcoming Bookings</h2>
           <div className="space-y-4">
             {upcoming.length === 0 ? (
-              <p className="text-muted-foreground">No upcoming bookings.</p>
+              <p className="text-muted-foreground">No upcoming Bookings.</p>
             ) : (
               upcoming.map((booking) => (
                 <div
                   key={booking.id}
-                  className="border p-5 rounded-lg shadow-sm flex justify-between items-center gap-4 hover:shadow-md transition"
+                  className="border p-4 rounded-lg shadow-sm flex justify-between items-start"
                 >
-                  <div className="flex items-center gap-4">
-                    <Image
-                      src={
-                        booking.musician?.user?.imageUrl ||
-                        "/default-avatar.png"
-                      }
-                      alt={booking.musician?.name || "Musician"}
-                      width={60}
-                      height={60}
-                      className="rounded-full object-cover"
-                    />
+                  {/* Booker Info */}
+                  <div className="flex items-start gap-3">
+                    {booking.musician?.user?.imageUrl ? (
+                      <Image
+                        src={booking.musician?.user?.imageUrl}
+                        alt={booking.musician?.name || "Booker"}
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gray-300" />
+                    )}
                     <div>
-                      <Link
-                        href={`/musician/${booking.musician?.id}`}
-                        className="text-lg font-semibold hover:underline"
-                      >
-                        {booking.musician?.name || "Unknown Musician"}
-                      </Link>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <CalendarDays className="w-4 h-4" />
-                        {new Date(booking.date).toLocaleDateString()}
+                      <p className="font-semibold">
+                        {booking.musician?.name || "Unknown Booker"}
                       </p>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {booking.location} • {booking.eventType}
+                      <p className="text-sm text-muted-foreground">
+                        {booking.musician?.user?.email || "No email"}
                       </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(
-                      booking.status
-                    )}`}
-                  >
-                    {booking.status}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
 
-        {/* Booking History */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Booking History</h2>
-          {history.length === 0 ? (
-            <p className="text-muted-foreground">No past bookings.</p>
-          ) : (
-            <div className="relative border-l border-gray-200 pl-6 space-y-8">
-              {history.map((booking) => (
-                <div key={booking.id} className="relative">
-                  <span className="absolute -left-3 w-6 h-6 bg-green-500 rounded-full border-4 border-white"></span>
-                  <div className="bg-white border rounded-lg shadow-sm p-4 hover:shadow-md transition">
-                    <div className="flex justify-between items-center mb-2">
-                      <Link
-                        href={`/musician/${booking.musician?.id}`}
-                        className="text-lg font-semibold hover:underline"
+                      {/* Status Badge under info */}
+                      {/*  <Badge
+                        variant={
+                          booking.status === "ACCEPTED"
+                            ? "default"
+                            : booking.status === "DECLINED"
+                            ? "destructive"
+                            : "secondary"
+                        }
+                        className="mt-1"
                       >
-                        {booking.musician?.name || "Unknown Musician"}
-                      </Link>
+                        {booking.status}
+                      </Badge> */}
                       <span
                         className={`px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(
                           booking.status
@@ -206,19 +190,122 @@ export default async function BookerDashboardPage() {
                         {booking.status}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1">
-                      <CalendarDays className="w-4 h-4" />
-                      {new Date(booking.date).toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      {booking.location} • {booking.eventType}
-                    </p>
                   </div>
+
+                  {/* 3-Dot Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-2 hover:bg-gray-100 rounded-full">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/musician/${booking.musician?.id}`}>
+                          View Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/bookings/${booking.id}`}>
+                          Booking Details
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/messages/${booking.musician?.id}`}>
+                          Message Booker
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
+        </section>
+
+        {/* Past Gigs */}
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-4">Booking History</h2>
+          <div className="space-y-4">
+            {history.length === 0 ? (
+              <p className="text-muted-foreground">No past Bookings.</p>
+            ) : (
+              history.map((booking) => (
+                <div
+                  key={booking.id}
+                  className="border p-4 rounded-lg shadow-sm flex justify-between items-start"
+                >
+                  {/* Booker Info */}
+                  <div className="flex items-start gap-3">
+                    {booking.musician?.user?.imageUrl ? (
+                      <Image
+                        src={booking.musician?.user?.imageUrl}
+                        alt={booking.musician?.name || "Booker"}
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gray-300" />
+                    )}
+                    <div>
+                      <p className="font-semibold">
+                        {booking.musician?.name || "Unknown Booker"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {booking.musician?.user?.email || "No email"}
+                      </p>
+
+                      {/* Status Badge */}
+                      {/* <Badge
+                                variant={
+                                  booking.status === "COMPLETED"
+                                    ? "default"
+                                    : "secondary"
+                                }
+                                className="mt-1"
+                              >
+                                {booking.status}
+                              </Badge> */}
+                      <span
+                        className={`px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(
+                          booking.status
+                        )}`}
+                      >
+                        {booking.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 3-Dot Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-2 hover:bg-gray-100 rounded-full">
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/musician/${booking.musician?.id}`}>
+                          View Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/bookings/${booking.id}`}>
+                          Booking Details
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/messages/${booking.musician?.id}`}>
+                          Message Booker
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ))
+            )}
+          </div>
         </section>
 
         <div className="mt-12">

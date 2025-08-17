@@ -17,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 export default async function MusicianDashboardPage() {
   const user = await currentUser();
