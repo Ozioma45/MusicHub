@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   }
 }
 
-// Get all conversations for a user
+// Get all conversations for a user (with last message in messages[])
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -59,7 +59,7 @@ export async function GET(req: Request) {
       include: {
         messages: {
           orderBy: { createdAt: "desc" },
-          take: 1,
+          take: 1, // latest message only
         },
       },
       orderBy: { updatedAt: "desc" },

@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import MessageMusicianButton from "@/components/MessageMusicianButton";
 
 export default async function BookerDashboardPage() {
   const clerkUser = await currentUser();
@@ -210,11 +211,9 @@ export default async function BookerDashboardPage() {
                           Booking Details
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/messages/${booking.musician?.id}`}>
-                          Message Booker
-                        </Link>
-                      </DropdownMenuItem>
+                      <MessageMusicianButton
+                        musicianUserId={booking.musician?.user?.id!}
+                      />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
