@@ -10,8 +10,8 @@ import { useState } from "react";
 interface Message {
   id: string;
   conversationId: string;
-  senderId: string;
-  content: string;
+  userId: string;
+  desc: string;
   createdAt: string;
 }
 
@@ -78,14 +78,14 @@ const MessagePage = () => {
               <div
                 key={m.id}
                 className={`flex gap-3 max-w-lg ${
-                  m.senderId === currentUserId
+                  m.userId === currentUserId
                     ? "flex-row-reverse self-end"
                     : "flex-row self-start"
                 }`}
               >
                 <img
                   src={
-                    m.senderId === currentUserId
+                    m.userId === currentUserId
                       ? user?.imageUrl || "/default-avatar.png"
                       : "/default-avatar.png"
                   }
@@ -94,12 +94,12 @@ const MessagePage = () => {
                 />
                 <p
                   className={`px-4 py-2 text-sm rounded-2xl ${
-                    m.senderId === currentUserId
+                    m.userId === currentUserId
                       ? "bg-blue-600 text-white rounded-br-none"
                       : "bg-gray-200 text-gray-800 rounded-bl-none"
                   }`}
                 >
-                  {m.content}
+                  {m.desc}
                 </p>
               </div>
             ))
