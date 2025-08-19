@@ -1,0 +1,116 @@
+"use client";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@clerk/nextjs"; // Clerk for auth (we set up earlier)
+import Link from "next/link";
+import axios from "axios";
+import moment from "moment";
+
+interface Conversation {
+  id: string;
+  bookerId: string;
+  musicianId: string;
+  lastMessage: string | null;
+  readByBooker: boolean;
+  readByMusician: boolean;
+  updatedAt: string;
+}
+
+export default function MessagesPage() {
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+
+  // Identify role from Clerk metadata (you already set roles in DB)
+  const role = user?.publicMetadata?.role as "BOOKER" | "MUSICIAN";
+  const userId = user?.id;
+
+  const { isLoading, error, data } = useQuery<Conversation[]>({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const res = await axios.get("/api/conversations");
+      return res.data;
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (id: string) => {
+      await axios.put(`/api/conversations/${id}/read`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    },
+  });
+
+  const handleRead = (id: string) => {
+    mutation.mutate(id);
+  };
+
+  return (
+    <div className="flex justify-center">
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p className="text-red-500">Error loading conversations</p>
+      ) : (
+        <div className="w-full max-w-5xl p-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Messages</h1>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full border border-gray-200 rounded-lg">
+              <thead>
+                <tr className="bg-gray-100 text-left">
+                  <th className="p-4">
+                    {role === "MUSICIAN" ? "Booker" : "Musician"}
+                  </th>
+                  <th className="p-4">Last Message</th>
+                  <th className="p-4">Date</th>
+                  <th className="p-4">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tbody>
+                  {data?.map((c) => {
+                    const isUnread =
+                      (role === "MUSICIAN" && !c.readByMusician) ||
+                      (role === "BOOKER" && !c.readByBooker);
+
+                    return (
+                      <tr
+                        key={c.id}
+                        className={`border-t hover:bg-gray-50 transition ${
+                          isUnread ? "bg-green-50" : "bg-white"
+                        }`}
+                      >
+                        <td className="p-4 font-medium">
+                          {role === "MUSICIAN" ? c.bookerId : c.musicianId}
+                        </td>
+                        <td className="p-4 text-gray-600">
+                          {c?.lastMessage
+                            ? c.lastMessage.substring(0, 100) + "..."
+                            : "No messages yet"}
+                        </td>
+                        <td className="p-4 text-gray-500">
+                          {moment(c.updatedAt).fromNow()}
+                        </td>
+                        <td className="p-4">
+                          <Link
+                            href={`/messages/${c.id}`}
+                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                          >
+                            Open
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

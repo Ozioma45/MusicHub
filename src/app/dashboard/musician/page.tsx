@@ -4,11 +4,14 @@ import { redirect } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, MapPin, Search, User } from "lucide-react";
+import { Search, User } from "lucide-react";
 import Image from "next/image";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import { handleBookingAction } from "@/app/actions/bookingActions";
 import RoleSwitcher from "@/components/MusicSwitch";
+import MessageBookerButton from "@/components/MessgaeBookerButton";
+import axios from "axios";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,7 +47,6 @@ export default async function MusicianDashboardPage() {
   const musician = dbUser.musician;
   const bookings = musician?.bookings || [];
   const today = new Date();
-
   const upcoming = bookings.filter(
     (b) =>
       ["PENDING", "ACCEPTED"].includes(b.status) && new Date(b.date) >= today
@@ -207,11 +209,7 @@ export default async function MusicianDashboardPage() {
                           Booking Details
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/messages/${booking.client?.id}`}>
-                          Message Booker
-                        </Link>
-                      </DropdownMenuItem>
+                      <MessageBookerButton bookerId={booking.client?.id!} />
 
                       <DropdownMenuSeparator />
 

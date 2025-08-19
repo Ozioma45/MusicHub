@@ -23,10 +23,8 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Roles a user has (can be both)
+  // Roles
   roles Role[] @default([])
-
-  // Which role they are currently using (for dashboard routing / UX)
   activeRole Role?
 
   // 1:1 profiles
@@ -37,6 +35,8 @@ model User {
   reviews     Review[]
   bookings    Booking[]    @relation("BookerBookings")
   suggestions Suggestion[] @relation("UserSuggestions")
+
+  Message Message[]
 }
 
 model Musician {
@@ -58,6 +58,7 @@ model Musician {
   bookings Booking[] @relation("MusicianBookings")
 
   @@index([userId])
+  Conversation Conversation[]
 }
 
 model Booker {
@@ -71,6 +72,7 @@ model Booker {
   imageUrl String?
 
   @@index([userId])
+  Conversation Conversation[]
 }
 
 model Booking {
@@ -133,3 +135,34 @@ enum BookingStatus {
   CANCELLED
   COMPLETED
 }
+
+model Conversation {
+  id             String     @id @default(cuid()) // auto-generate IDs
+  musician       Musician   @relation(fields: [musicianId], references: [id], onDelete: Cascade)
+  musicianId     String
+  booker         Booker     @relation(fields: [bookerId], references: [id], onDelete: Cascade)
+  bookerId       String
+  readByBooker   Boolean    @default(false)
+  readByMusician Boolean    @default(false)
+  lastMessage    String?
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  messages       Message[]
+}
+
+
+model Message {
+  id             String        @id @default(cuid())
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+
+  desc           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+

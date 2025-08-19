@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
 import "./globals.css";
+import ReactQueryProvider from "@/components/Providers";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const metadata: Metadata = {
   title: "Music Hub",
@@ -23,7 +25,10 @@ export default function RootLayout({
           />
         </head>
         <body>
-          <div className="w-full max-w-[1400px] mx-auto">{children}</div>
+          <ReactQueryProvider>
+            <div className="w-full max-w-[1400px] mx-auto">{children}</div>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </ReactQueryProvider>
         </body>
       </html>
     </ClerkProvider>
