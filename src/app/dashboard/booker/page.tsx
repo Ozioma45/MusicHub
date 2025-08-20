@@ -294,11 +294,9 @@ export default async function BookerDashboardPage() {
                           Booking Details
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/messages/${booking.musician?.id}`}>
-                          Message Booker
-                        </Link>
-                      </DropdownMenuItem>
+                      <MessageMusicianButton
+                        musicianUserId={booking.musician?.user?.id!}
+                      />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
