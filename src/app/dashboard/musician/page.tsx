@@ -10,7 +10,6 @@ import SubscribeSection from "@/components/landing/SubscribeSection";
 import { handleBookingAction } from "@/app/actions/bookingActions";
 import RoleSwitcher from "@/components/MusicSwitch";
 import MessageBookerButton from "@/components/MessgaeBookerButton";
-import axios from "axios";
 
 import {
   DropdownMenu,
@@ -40,7 +39,7 @@ export default async function MusicianDashboardPage() {
     },
   });
 
-  if (!dbUser || !dbUser.roles.includes("MUSICIAN") || !dbUser.musician) {
+  if (!dbUser || dbUser.activeRole !== "MUSICIAN" || !dbUser.musician) {
     redirect("/dashboard");
   }
 

@@ -13,15 +13,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // Update user role as an array, since `roles` is Role[]
+    // ✅ Only update activeRole, not roles[]
     const user = await prisma.user.update({
       where: { clerkUserId },
-      data: { roles: [role] },
+      data: { activeRole: role },
     });
 
     return NextResponse.json({ success: true, user });
   } catch (error) {
-    console.error("Error updating role:", error);
+    console.error("Error updating active role:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

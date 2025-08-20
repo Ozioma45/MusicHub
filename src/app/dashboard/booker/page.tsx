@@ -36,7 +36,7 @@ export default async function BookerDashboardPage() {
     },
   });
 
-  if (!dbUser || !dbUser.roles.includes("BOOKER")) {
+  if (!dbUser || dbUser.activeRole !== "BOOKER") {
     redirect("/dashboard");
   }
 
@@ -85,7 +85,7 @@ export default async function BookerDashboardPage() {
     <MainLayout>
       <div className="max-w-6xl mx-auto py-10 px-4">
         {/* Greeting Section */}
-        <div className="bg-gradient-to-r from-blue-200 to-indigo-300 rounded-xl p-6 mb-8 shadow-lg flex justify-between items-center">
+        <div className="bg-gradient-to-r from-purple-200 to-indigo-300 rounded-xl p-6 mb-8 shadow-lg flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">
               Welcome back,{" "}

@@ -39,7 +39,7 @@ export default async function Dashboard() {
         name: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
         email,
         imageUrl: user.imageUrl ?? "",
-        roles: [],
+        roles: ["MUSICIAN", "BOOKER"],
         activeRole: null,
       },
     });
