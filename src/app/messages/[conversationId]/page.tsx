@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
@@ -19,9 +18,12 @@ interface Message {
 const MessagePage = () => {
   const { conversationId } = useParams() as { conversationId: string };
   const { user } = useUser();
+  const queryClient = useQueryClient();
+  const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch current DB user
-  const { data: dbUser, isLoading: isUserLoading } = useQuery({
+  const { data: dbUser } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
       const res = await axios.get("/api/me");
@@ -29,16 +31,14 @@ const MessagePage = () => {
     },
   });
 
-  const currentUserId = dbUser?.id; // internal DB id
+  const currentUserId = dbUser?.id;
 
-  //const currentUserId = user?.id;
-
-  const queryClient = useQueryClient();
-  const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Fetch messages
-  const { data, isLoading, error } = useQuery<Message[]>({
+  // Fetch messages with polling
+  const {
+    data: messages,
+    isLoading,
+    error,
+  } = useQuery<Message[]>({
     queryKey: ["messages", conversationId],
     queryFn: async () => {
       const res = await axios.get(
@@ -47,9 +47,10 @@ const MessagePage = () => {
       return res.data;
     },
     enabled: !!conversationId,
+    refetchInterval: 3000, // 🔁 poll every 3s
   });
 
-  // Send message
+  // Send message with optimistic update
   const mutation = useMutation({
     mutationFn: async (message: { desc: string; userId: string }) => {
       return axios.post(
@@ -57,36 +58,63 @@ const MessagePage = () => {
         message
       );
     },
-    onSuccess: () => {
+    onMutate: async (newMsg) => {
+      // cancel ongoing fetches
+      await queryClient.cancelQueries({
+        queryKey: ["messages", conversationId],
+      });
+
+      const prevMessages = queryClient.getQueryData<Message[]>([
+        "messages",
+        conversationId,
+      ]);
+
+      // optimistic fake message
+      const optimisticMsg: Message = {
+        id: "temp-" + Date.now(),
+        conversationId,
+        userId: newMsg.userId,
+        desc: newMsg.desc,
+        createdAt: new Date().toISOString(),
+      };
+
+      queryClient.setQueryData<Message[]>(
+        ["messages", conversationId],
+        (old = []) => [...old, optimisticMsg]
+      );
+
+      setNewMessage("");
+
+      return { prevMessages };
+    },
+    onError: (_err, _msg, context) => {
+      if (context?.prevMessages) {
+        queryClient.setQueryData(
+          ["messages", conversationId],
+          context.prevMessages
+        );
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
     },
   });
 
-  // Auto scroll to bottom when new messages come
+  // Auto scroll when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [data]);
+  }, [messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !currentUserId) return;
-
     mutation.mutate({ desc: newMessage, userId: currentUserId });
-    setNewMessage("");
   };
 
   return (
     <MainLayout>
       <div className="flex justify-center">
         <div className="w-full max-w-md h-[85vh] flex flex-col bg-white shadow-lg rounded-2xl overflow-hidden">
-          {/* Header */}
-          {/*<div className="px-4 py-3 border-b flex items-center gap-2 bg-gray-50">
-            <Link href="/messages" className="text-blue-600 text-sm">
-              ← Back
-            </Link>
-            <h2 className="font-semibold text-gray-800">Conversation</h2>
-          </div>*/}
-
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
             {isLoading ? (
@@ -94,7 +122,7 @@ const MessagePage = () => {
             ) : error ? (
               <p className="text-red-500">Error loading messages</p>
             ) : (
-              data?.map((m) => (
+              messages?.map((m) => (
                 <div
                   key={m.id}
                   className={`flex mb-4 ${
