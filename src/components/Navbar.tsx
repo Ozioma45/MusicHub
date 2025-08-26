@@ -22,7 +22,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-4">
-          <Link href="/suggestions" className="font-semibold">
+          <Link href="/suggestions" className="font-semibold cursor-pointer">
             Suggestion Box
           </Link>
 
@@ -33,10 +33,12 @@ const Navbar = () => {
           <SignedOut>
             <div className="flex gap-2">
               <Link href="/sign-in">
-                <Button variant="outline">Log in</Button>
+                <Button variant="outline" className="cursor-pointer">
+                  Log in
+                </Button>
               </Link>
               <Link href="/sign-up">
-                <Button className="bg-blue-700 hover:bg-blue-800 text-white font-semibold">
+                <Button className="bg-blue-700 hover:bg-blue-800 text-white font-semibold cursor-pointer">
                   Sign up
                 </Button>
               </Link>

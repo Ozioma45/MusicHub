@@ -64,7 +64,7 @@ export default function TestimonialsCarousel() {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute -left-2 top-1/2 transform -translate-y-1/2"
+            className="absolute -left-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
             onClick={prevTestimonial}
           >
             <ChevronLeft className="w-6 h-6" />
@@ -74,7 +74,7 @@ export default function TestimonialsCarousel() {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute -right-2 top-1/2 transform -translate-y-1/2"
+            className="absolute -right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
             onClick={nextTestimonial}
           >
             <ChevronRight className="w-6 h-6" />
