@@ -98,7 +98,7 @@ export default function MusicianProfilePage() {
               )} */}
               </div>
             </div>
-            <p className="bg-white text-black px-3 py-1 md:px-6 md:py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
+            <p className="bg-white text-black px-3 py-1 md:px-6 md:py-3 rounded-lg   font-bold">
               Musician
             </p>
           </div>
@@ -240,7 +240,10 @@ export default function MusicianProfilePage() {
         {/* CTA */}
         <div className="text-center">
           <Link href="./edit">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
+            >
               Edit Your Profile
             </Button>
           </Link>

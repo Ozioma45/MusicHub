@@ -181,10 +181,10 @@ export default function EditMusicianProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (form.bio.trim().length < 20) {
+    /* if (form.bio.trim().length < 20) {
       toast.error("Your bio must be at least 20 characters long.");
       return;
-    }
+    } */
 
     setSaving(true);
     try {
@@ -251,6 +251,7 @@ export default function EditMusicianProfilePage() {
                   type="button"
                   variant="destructive"
                   onClick={() => removeArrayField("genres", idx)}
+                  className="cursor-pointer"
                 >
                   ✕
                 </Button>
@@ -259,7 +260,7 @@ export default function EditMusicianProfilePage() {
             <Button
               type="button"
               onClick={() => addArrayField("genres")}
-              className="bg-blue-600 hover:bg-blue-800 text-white"
+              className="bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
             >
               + Add Genre
             </Button>
@@ -281,6 +282,7 @@ export default function EditMusicianProfilePage() {
                   type="button"
                   variant="destructive"
                   onClick={() => removeArrayField("instruments", idx)}
+                  className="cursor-pointer"
                 >
                   ✕
                 </Button>
@@ -289,7 +291,7 @@ export default function EditMusicianProfilePage() {
             <Button
               type="button"
               onClick={() => addArrayField("instruments")}
-              className="bg-blue-600 hover:bg-blue-800 text-white"
+              className="bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
             >
               + Add Instrument
             </Button>
@@ -311,6 +313,7 @@ export default function EditMusicianProfilePage() {
                   type="button"
                   variant="destructive"
                   onClick={() => removeArrayField("services", idx)}
+                  className="cursor-pointer"
                 >
                   ✕
                 </Button>
@@ -319,7 +322,7 @@ export default function EditMusicianProfilePage() {
             <Button
               type="button"
               onClick={() => addArrayField("services")}
-              className="bg-blue-600 hover:bg-blue-800 text-white"
+              className="bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
             >
               + Add Service
             </Button>
@@ -354,7 +357,7 @@ export default function EditMusicianProfilePage() {
               type="button"
               variant="outline"
               onClick={handleProfileUpload}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               Upload Profile Picture
             </Button>
@@ -376,7 +379,7 @@ export default function EditMusicianProfilePage() {
               type="button"
               variant="outline"
               onClick={handleImageUpload}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               Upload Cover Image
             </Button>
@@ -400,7 +403,7 @@ export default function EditMusicianProfilePage() {
               type="button"
               variant="outline"
               onClick={handleVideoUpload}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               Upload Videos
             </Button>
@@ -420,7 +423,7 @@ export default function EditMusicianProfilePage() {
                         mediaUrls: prev.mediaUrls.filter((_, idx) => idx !== i),
                       }))
                     }
-                    className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded"
+                    className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded cursor-pointer"
                   >
                     ✕
                   </button>
@@ -433,7 +436,7 @@ export default function EditMusicianProfilePage() {
           <Button
             type="submit"
             disabled={saving}
-            className="w-full bg-blue-600 hover:bg-blue-800 text-white"
+            className="w-full bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
           >
             {saving ? "Saving..." : "Save Changes"}
           </Button>
