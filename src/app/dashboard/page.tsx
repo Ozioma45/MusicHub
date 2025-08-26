@@ -47,7 +47,7 @@ export default async function Dashboard() {
   }
 
   // 4️⃣ If no role is assigned yet
-  if (!loggedUser.roles || loggedUser.roles.length === 0) {
+  if (!loggedUser.roles) {
     redirect("/select-role");
   }
 

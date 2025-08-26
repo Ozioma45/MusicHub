@@ -48,7 +48,7 @@ export default async function BookerProfilePage() {
       {/* Hero Section */}
       <div className="relative w-full h-60 md:h-60 lg:h-70">
         <Image
-          src="/default-cover.jpg"
+          src={bookerProfile?.coverImage || "/default-cover.jpg"}
           alt="Cover"
           fill
           className="object-cover"
@@ -108,7 +108,10 @@ export default async function BookerProfilePage() {
         {/* CTA */}
         <div className="text-center">
           <Link href="./edit">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
+            >
               Edit Your Profile
             </Button>
           </Link>

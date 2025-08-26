@@ -70,6 +70,7 @@ model Booker {
   location String?
   bio      String?
   imageUrl String?
+  coverImage String?
 
   @@index([userId])
   Conversation Conversation[]

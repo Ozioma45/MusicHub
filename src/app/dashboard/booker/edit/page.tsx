@@ -17,6 +17,7 @@ export default function EditBookerProfilePage() {
     location: "",
     bio: "",
     imageUrl: "",
+    coverImage: "",
   });
 
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function EditBookerProfilePage() {
           location: data.location || "",
           bio: data.bio || "",
           imageUrl: data.imageUrl || "",
+          coverImage: data.coverImage || "",
         });
       } catch {
         toast.error("Failed to load profile.");
@@ -76,6 +78,37 @@ export default function EditBookerProfilePage() {
           if (url) {
             setForm({ ...form, imageUrl: url });
             toast.success("Profile image uploaded!");
+          }
+        }
+      }
+    );
+  };
+
+  // Image Cover upload
+  const handleCoverUpload = () => {
+    // @ts-expect-error cloudinary global
+    window.cloudinary.openUploadWidget(
+      {
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: "musiconnect",
+        sources: ["local", "url", "camera"],
+        cropping: true,
+        multiple: false,
+        folder: "musicians",
+      },
+      (error: unknown, result: unknown) => {
+        if (
+          !error &&
+          typeof result === "object" &&
+          result &&
+          "event" in result &&
+          (result as { event: string }).event === "success"
+        ) {
+          const url = (result as { info?: { secure_url?: string } }).info
+            ?.secure_url;
+          if (url) {
+            setForm({ ...form, coverImage: url });
+            toast.success("Cover image uploaded!");
           }
         }
       }
@@ -169,7 +202,7 @@ export default function EditBookerProfilePage() {
               type="button"
               variant="outline"
               onClick={handleImageUpload}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               Upload Profile Image
             </Button>
@@ -184,11 +217,33 @@ export default function EditBookerProfilePage() {
             )}
           </div>
 
+          {/* Cover Image */}
+          <div>
+            <label className="block font-semibold mb-2">Cover Image</label>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCoverUpload}
+              className="w-full cursor-pointer"
+            >
+              Upload Cover Image
+            </Button>
+            {form.coverImage && (
+              <Image
+                src={form.coverImage}
+                alt="Cover"
+                width={800}
+                height={400}
+                className="mt-3 w-full rounded-lg object-cover"
+              />
+            )}
+          </div>
+
           {/* Submit */}
           <Button
             type="submit"
             disabled={saving}
-            className="w-full bg-blue-600 hover:bg-blue-800 text-white"
+            className="w-full bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
           >
             {saving ? "Saving..." : "Save Changes"}
           </Button>

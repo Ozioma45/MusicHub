@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import { Briefcase } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 type CloudinaryResult = {
   event: string;
@@ -21,6 +23,7 @@ export default function SetupBookerPage() {
     location: "",
     bio: "",
     imageUrl: "",
+    coverImage: "",
   });
 
   const handleImageUpload = () => {
@@ -46,6 +49,37 @@ export default function SetupBookerPage() {
             ...prev,
             imageUrl: result.info.secure_url,
           }));
+        }
+      }
+    );
+  };
+
+  // Image Cover upload
+  const handleCoverUpload = () => {
+    // @ts-expect-error cloudinary global
+    window.cloudinary.openUploadWidget(
+      {
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        uploadPreset: "musiconnect",
+        sources: ["local", "url", "camera"],
+        cropping: true,
+        multiple: false,
+        folder: "musicians",
+      },
+      (error: unknown, result: unknown) => {
+        if (
+          !error &&
+          typeof result === "object" &&
+          result &&
+          "event" in result &&
+          (result as { event: string }).event === "success"
+        ) {
+          const url = (result as { info?: { secure_url?: string } }).info
+            ?.secure_url;
+          if (url) {
+            setForm({ ...form, coverImage: url });
+            toast.success("Cover image uploaded!");
+          }
         }
       }
     );
@@ -134,6 +168,28 @@ export default function SetupBookerPage() {
                   sizes="100vw"
                 />
               </div>
+            )}
+          </div>
+
+          {/* Cover Image */}
+          <div>
+            <label className="block font-semibold mb-2">Cover Image</label>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCoverUpload}
+              className="w-full cursor-pointer"
+            >
+              Upload Cover Image
+            </Button>
+            {form.coverImage && (
+              <Image
+                src={form.coverImage}
+                alt="Cover"
+                width={800}
+                height={400}
+                className="mt-3 w-full rounded-lg object-cover"
+              />
             )}
           </div>
 

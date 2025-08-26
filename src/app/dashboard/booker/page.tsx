@@ -40,6 +40,11 @@ export default async function BookerDashboardPage() {
     redirect("/dashboard");
   }
 
+  // Check if the booker profile exists
+  if (!dbUser.booker) {
+    redirect("/booker/setup");
+  }
+
   const bookerProfile = dbUser.booker; // booker-specific info
   const profileImage =
     bookerProfile?.imageUrl || dbUser.imageUrl || "/default-avatar.png";

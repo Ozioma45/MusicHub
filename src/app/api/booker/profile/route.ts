@@ -36,6 +36,7 @@ export async function GET() {
       name: user.booker.name,
       email: user.email,
       imageUrl: user.booker.imageUrl,
+      coverImage: user.booker.coverImage,
       location: user.booker.location,
       bio: user.booker.bio,
       createdAt: user.createdAt,
@@ -68,7 +69,7 @@ export async function PUT(req: Request) {
     }
 
     const data = await req.json();
-    const { name, location, bio, imageUrl } = data;
+    const { name, location, bio, imageUrl, coverImage } = data;
 
     const user = await prisma.user.findUnique({
       where: { clerkUserId: userId },
@@ -82,7 +83,7 @@ export async function PUT(req: Request) {
     // Update Booker profile
     await prisma.booker.update({
       where: { id: user.booker.id },
-      data: { name, location, bio, imageUrl },
+      data: { name, location, bio, imageUrl, coverImage },
     });
 
     return NextResponse.json({ success: true });

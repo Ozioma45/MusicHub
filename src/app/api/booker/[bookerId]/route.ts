@@ -37,6 +37,7 @@ export async function GET(
       name: user.booker.name,
       email: user.email,
       imageUrl: user.booker.imageUrl,
+      coverImage: user.booker.coverImage,
       location: user.booker.location,
       bio: user.booker.bio,
       createdAt: user.createdAt,
