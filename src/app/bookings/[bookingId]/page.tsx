@@ -29,8 +29,8 @@ export default async function BookingDetailsPage({
   });
   if (!booking) redirect("/dashboard");
 
-  const isMusician = dbUser.roles.includes("MUSICIAN");
-  const isBooker = dbUser.roles.includes("BOOKER");
+  const isMusician = dbUser.activeRole === "MUSICIAN";
+  const isBooker = dbUser.activeRole === "BOOKER";
 
   const getStatusColor = (status: string) => {
     switch (status) {
