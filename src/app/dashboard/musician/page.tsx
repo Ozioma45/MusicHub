@@ -39,8 +39,13 @@ export default async function MusicianDashboardPage() {
     },
   });
 
-  if (!dbUser || dbUser.activeRole !== "MUSICIAN" || !dbUser.musician) {
+  if (!dbUser || dbUser.activeRole !== "MUSICIAN") {
     redirect("/dashboard");
+  }
+
+  // Check if the booker profile exists
+  if (!dbUser.musician) {
+    redirect("/musician/setup");
   }
 
   const musician = dbUser.musician;

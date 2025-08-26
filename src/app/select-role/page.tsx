@@ -87,7 +87,7 @@ export default function SelectRolePage() {
         <button
           onClick={handleContinue}
           disabled={!selectedRole || loading}
-          className={`w-full py-3 rounded-lg font-medium text-white transition ${
+          className={`w-full py-3 rounded-lg font-medium text-white cursor-pointer transition ${
             selectedRole && !loading
               ? "bg-blue-600 hover:bg-blue-800"
               : "bg-gray-400 cursor-not-allowed"
