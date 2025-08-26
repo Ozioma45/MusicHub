@@ -1,5 +1,3 @@
-"use server";
-
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
@@ -22,56 +20,26 @@ export async function POST(req: Request) {
     // Find the current user in DB
     const dbUser = await prisma.user.findUnique({
       where: { clerkUserId: user.id },
-      include: { musician: true, booker: true },
     });
 
     if (!dbUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Find target user in DB
-    const targetUser = await prisma.user.findUnique({
-      where: { id: targetUserId },
-      include: { musician: true, booker: true },
-    });
-
-    if (!targetUser) {
-      return NextResponse.json(
-        { error: "Target user not found" },
-        { status: 404 }
-      );
-    }
-
-    let bookerId: string;
-    let musicianId: string;
-
-    // Case 1: current user is musician, target is booker
-    if (dbUser.musician && targetUser.booker) {
-      musicianId = dbUser.musician.id;
-      bookerId = targetUser.booker.id;
-    }
-    // Case 2: current user is booker, target is musician
-    else if (dbUser.booker && targetUser.musician) {
-      bookerId = dbUser.booker.id;
-      musicianId = targetUser.musician.id;
-    } else {
-      return NextResponse.json(
-        {
-          error:
-            "Invalid conversation pair. Must be between a MUSICIAN and a BOOKER.",
-        },
-        { status: 400 }
-      );
-    }
+    // Sort user IDs so order is always consistent
+    const [userAId, userBId] =
+      dbUser.id < targetUserId
+        ? [dbUser.id, targetUserId]
+        : [targetUserId, dbUser.id];
 
     // Check if conversation already exists
-    let conversation = await prisma.conversation.findFirst({
-      where: { bookerId, musicianId },
+    let conversation = await prisma.conversation.findUnique({
+      where: { userAId_userBId: { userAId, userBId } },
     });
 
     if (!conversation) {
       conversation = await prisma.conversation.create({
-        data: { bookerId, musicianId },
+        data: { userAId, userBId },
       });
     }
 

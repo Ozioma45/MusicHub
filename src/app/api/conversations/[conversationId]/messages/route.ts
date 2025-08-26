@@ -34,15 +34,14 @@ export async function POST(
     }
 
     // 📝 Step 2: Create the message with internal User.id
+    // Send message
     const message = await prisma.message.create({
       data: {
-        conversationId: await params.conversationId,
-        userId: dbUser.id, // internal UUID
+        conversationId: params.conversationId,
+        userId: dbUser.id,
         desc,
       },
-      include: {
-        user: true,
-      },
+      include: { user: true },
     });
 
     return NextResponse.json(message, { status: 201 });

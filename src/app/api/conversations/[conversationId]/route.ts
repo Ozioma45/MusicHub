@@ -47,8 +47,7 @@ export async function PUT(
   try {
     const updated = await prisma.conversation.update({
       where: { id: conversationId },
-      data:
-        role === "MUSICIAN" ? { readByMusician: true } : { readByBooker: true },
+      data: role === "MUSICIAN" ? { readByA: true } : { readByB: true },
     });
 
     return NextResponse.json(updated);

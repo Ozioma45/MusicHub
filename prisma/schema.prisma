@@ -37,7 +37,12 @@ model User {
   suggestions Suggestion[] @relation("UserSuggestions")
 
   Message Message[]
+
+  // New relations
+  conversationsA Conversation[] @relation("ConversationUserA")
+  conversationsB Conversation[] @relation("ConversationUserB")
 }
+
 
 model Musician {
   id     String @id @default(cuid())
@@ -58,7 +63,6 @@ model Musician {
   bookings Booking[] @relation("MusicianBookings")
 
   @@index([userId])
-  Conversation Conversation[]
 }
 
 model Booker {
@@ -73,7 +77,6 @@ model Booker {
   coverImage String?
 
   @@index([userId])
-  Conversation Conversation[]
 }
 
 model Booking {
@@ -138,20 +141,28 @@ enum BookingStatus {
 }
 
 model Conversation {
-  id             String     @id @default(cuid()) // auto-generate IDs
-  musician       Musician   @relation(fields: [musicianId], references: [id], onDelete: Cascade)
-  musicianId     String
-  booker         Booker     @relation(fields: [bookerId], references: [id], onDelete: Cascade)
-  bookerId       String
-  readByBooker   Boolean    @default(false)
-  readByMusician Boolean    @default(false)
-  lastMessage    String?
+  id        String   @id @default(cuid()) // auto-generate IDs
 
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  // Always two users in a conversation
+  userAId   String
+  userBId   String
+  userA     User     @relation("ConversationUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB     User     @relation("ConversationUserB", fields: [userBId], references: [id], onDelete: Cascade)
 
-  messages       Message[]
+  // Optional fields for UX
+  readByA   Boolean  @default(false)
+  readByB   Boolean  @default(false)
+  lastMessage String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages  Message[]
+
+  // Prevent duplicates
+  @@unique([userAId, userBId])
 }
+
 
 
 model Message {
