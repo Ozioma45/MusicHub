@@ -1,12 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/db";
+import { MapPin } from "lucide-react";
 
 type Musician = {
   id: string;
   name: string;
   genres: string[];
-  location: string;
+  location: string | null;
+  instruments: string[];
   coverImage?: string | null;
 };
 
@@ -18,6 +20,7 @@ export default async function FeaturedMusicians() {
       id: true,
       name: true,
       genres: true,
+      instruments: true,
       location: true,
       coverImage: true,
     },
@@ -44,7 +47,8 @@ export default async function FeaturedMusicians() {
               <div className="p-4 text-left">
                 <h3 className="text-lg font-semibold">{musician.name}</h3>
                 <p className="text-sm text-gray-600">
-                  {musician.genres.join(", ")} • {musician.location}
+                  {musician.instruments.join(", ")}
+                  {/* {musician.genres.join(", ")} */} • {musician.location}
                 </p>
                 <Link
                   href={`/musician/${musician.id}`}
@@ -60,7 +64,7 @@ export default async function FeaturedMusicians() {
         <div className="mt-8 sm:mt-10 md:mt-12">
           <Link
             href="/explore"
-            className="font-semibold text-muted-foreground hover:text-foreground"
+            className="font-semibold text-muted-foreground hover:text-foreground border-1 px-6 py-3 rounded-lg cursor-pointer"
           >
             View All Musicians
           </Link>

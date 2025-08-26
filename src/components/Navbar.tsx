@@ -76,7 +76,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden px-4 pb-4 mt-2 space-y-3">
+        <div className="md:hidden px-4 pb-4 mt-2 space-y-3 flex items-center justify-center flex-col">
           <Link href="/explore" className="block font-semibold text-center">
             Find Musician
           </Link>
@@ -97,7 +97,7 @@ const Navbar = () => {
           </SignedOut>
 
           <SignedIn>
-            <div className="space-y-2">
+            <div className="space-y-2 flex items-center justify-center gap-3">
               <UserButton />
               <Link
                 href="/dashboard"
