@@ -2,10 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-type GenreCount = {
-  genre: string;
-  _count: { genre: number };
-};
+type GenreCount = { genre: string; count: number };
 
 export default function PopularGenres() {
   const [genres, setGenres] = useState<GenreCount[]>([]);
@@ -30,7 +27,7 @@ export default function PopularGenres() {
             href={`/explore?genre=${encodeURIComponent(g.genre)}`}
             className="px-5 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-full"
           >
-            {g.genre} ({g._count.genre})
+            {g.genre} ({g.count})
           </Link>
         ))}
       </div>

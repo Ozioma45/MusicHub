@@ -1,11 +1,23 @@
+// /api/genres/popular
 import { prisma } from "@/lib/db";
 
 export async function GET() {
-  const genres = await prisma.musician.groupBy({
-    by: ["genres"],
-    _count: { genres: true },
-    orderBy: { _count: { genres: "desc" } },
+  const musicians = await prisma.musician.findMany({
+    select: { genres: true },
   });
 
-  return Response.json(genres);
+  // Flatten all genre arrays
+  const genreCounts: Record<string, number> = {};
+  musicians.forEach((m) => {
+    m.genres.forEach((g) => {
+      genreCounts[g] = (genreCounts[g] || 0) + 1;
+    });
+  });
+
+  // Convert to array + sort by count
+  const sorted = Object.entries(genreCounts)
+    .map(([genre, count]) => ({ genre, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return Response.json(sorted);
 }
