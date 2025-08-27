@@ -6,8 +6,11 @@ import ReactQueryProvider from "@/components/Providers";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const metadata: Metadata = {
-  title: "Music Hub",
+  title: "MusiConnect",
   description: "Book musicians for your events",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
