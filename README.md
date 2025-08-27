@@ -1,166 +1,147 @@
-# 🎵 MusiConnect – Musician Booking Platform
+# 🎶 MusiConnect – Musician Booking Platform
 
-MusiConnect is a full-stack platform that allows **musicians and bands** to showcase their profiles, while **bookers (event organizers)** can discover, book, and review them.  
-Built with **Next.js 14 (App Router), Clerk Authentication, Prisma, and PostgreSQL**, it provides role-based dashboards and a smooth booking flow.
+MusiConnect is a **full-stack booking platform** that allows **musicians** to showcase their profiles and **bookers** (event organizers, individuals, businesses) to hire them for events.  
+It is built with **Next.js 14 (App Router)**, **Prisma**, **PostgreSQL**, and **Clerk Authentication**.
 
 ---
+
+live preview [Click Here](https://music-hub-lyart.vercel.app/)
 
 ## 🚀 Features
 
-- **Authentication**
-  - Secure login/register with [Clerk](https://clerk.com/)
-  - Social sign-in support
-- **Role Management**
-  - Users can be both `MUSICIAN` and `BOOKER`
-  - Role switcher with persistent `activeRole`
-- **Dashboards**
-  - 🎤 **Musician Dashboard**: manage profile, showcase music, view booking requests, manage reviews
-  - 📅 **Booker Dashboard**: search musicians, send booking requests, leave reviews
-- **Bookings System**
-  - Create, accept, or decline booking requests
-  - Booking status tracking
-- **Profiles**
-  - Musician profile pages with bio, genre, images, and social links
-  - Booker profile for account management
-- **Messaging (WIP)**
-  - Direct conversation between musicians and bookers
-- **Responsive UI**
-  - Built with **TailwindCSS + ShadCN UI**
+- 🔐 **Authentication with Clerk**
+
+  - Sign up, login, and logout
+  - Social logins supported
+  - User data synced with PostgreSQL
+
+- 👥 **Role Management**
+
+  - Every user can have both roles: `MUSICIAN` and `BOOKER`
+  - Role switching system with active role stored in DB
+  - Role-based dashboards
+
+- 🎤 **Musician Features**
+
+  - Create and update musician profile (bio, genre, skills, portfolio, etc.)
+  - Receive booking requests
+  - Accept / reject bookings
+  - View reviews from past clients
+
+- 📅 **Booker Features**
+
+  - Browse and search musicians
+  - Send booking requests
+  - Leave reviews for musicians
+  - Manage upcoming and past bookings
+
+- 🗂 **Dashboard Pages**
+
+  - `/dashboard/musician`
+  - `/dashboard/booker`
+  - Internal profile management pages
+
+- 📡 **API Routes**
+  - `POST /api/roles/switch` – switch active role
+  - `POST /api/bookings` – create booking
+  - `GET /api/bookings/:id` – get booking details
+  - `POST /api/reviews` – add review
+  - `PUT /api/users/update` – update user profile
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
-- **Frontend:** [Next.js 14 (App Router)](https://nextjs.org/), [React](https://reactjs.org/), [TailwindCSS](https://tailwindcss.com/), [ShadCN UI](https://ui.shadcn.com/)
-- **Backend:** API Routes with Next.js App Router
-- **Auth:** [Clerk](https://clerk.com/) (JWT-based authentication)
-- **Database:** [PostgreSQL](https://www.postgresql.org/) with [Prisma ORM](https://www.prisma.io/)
-- **Hosting:** [Vercel](https://vercel.com/)
+- **Frontend:** [Next.js 14](https://nextjs.org/) (App Router, Server Actions), [React](https://react.dev/), [TailwindCSS](https://tailwindcss.com/)
+- **Backend:** [Prisma ORM](https://www.prisma.io/), [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/router-handlers)
+- **Database:** [PostgreSQL](https://www.postgresql.org/)
+- **Authentication:** [Clerk](https://clerk.com/)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
 - **Notifications:** ShadCN Toaster
-
----
-
-## ⚙️ Installation & Setup
-
-### 1. Clone the repo
-
-```bash
-git clone https://github.com/yourusername/musiconnect.git
-cd musiconnect
-```
-
-````
-
-### 2. Install dependencies
-
-```bash
-npm install
-```
-
-### 3. Environment variables
-
-Create a `.env.local` file in the root directory:
-
-```env
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key
-CLERK_SECRET_KEY=your_secret_key
-
-# Database (Postgres via Prisma)
-DATABASE_URL=postgresql://user:password@localhost:5432/musiconnect
-
-# Next.js
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-### 4. Set up the database
-
-```bash
-npx prisma migrate dev --name init
-npx prisma generate
-```
-
-### 5. Run the dev server
-
-```bash
-npm run dev
-```
-
-Visit 👉 [http://localhost:3000](http://localhost:3000)
 
 ---
 
 ## 📂 Project Structure
 
 ```
-src/
- ├── app/
- │   ├── api/              # API Routes (messages, bookings, profiles, etc.)
- │   ├── dashboard/        # Musician & Booker dashboards
- │   ├── select-role/      # Role selection page
- │   ├── layout.tsx        # Root layout
- │   └── page.tsx          # Landing page
- ├── components/           # Reusable UI components
- ├── lib/                  # Prisma & utility functions
- └── prisma/               # Prisma schema
+
+musiconnect/
+│── app/
+│ ├── api/ # API routes
+│ ├── dashboard/ # Role-based dashboards
+│ ├── select-role/ # Role selection page
+│ ├── layout.tsx # Global layout
+│ └── page.tsx # Landing page
+│
+│── prisma/
+│ └── schema.prisma # Database schema
+│
+│── lib/
+│ ├── db.ts # Prisma client
+│ └── utils.ts # Helper functions
+│
+│── components/ # Reusable UI components
+│── middleware.ts # Clerk middleware
+│── package.json
+│── README.md
+
 ```
 
 ---
 
-## 🔑 Key Flows
-
-### User Signup
-
-1. User signs in via Clerk
-2. System checks if Clerk user exists in DB
-3. If new → creates user with roles `["MUSICIAN", "BOOKER"]` and redirects to `/select-role`
-4. Active role determines dashboard (`/dashboard/musician` or `/dashboard/booker`)
-
-### Role Switching
-
-- Stored in `user.activeRole`
-- `POST /api/role-switch` updates active role without mutating `roles[]`
-
-### Bookings
-
-- Bookers send booking requests → stored in `Booking` table
-- Musicians can accept/reject
-- Status updated accordingly
-
----
-
-## 📜 Prisma Schema (Core Models)
+## 🗄 Database Schema (Prisma)
 
 ```prisma
 model User {
   id          String   @id @default(cuid())
   clerkUserId String   @unique
+  email       String   @unique
   name        String?
-  email       String?  @unique
   imageUrl    String?
   roles       Role[]
   activeRole  Role?
-  bookings    Booking[] @relation("UserBookings")
-  messages    Message[] @relation("UserMessages")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  // Relations
+  MusicianProfile MusicianProfile?
+  BookingsMade    Booking[] @relation("BookerBookings")
+  BookingsRecvd   Booking[] @relation("MusicianBookings")
+  ReviewsGiven    Review[]  @relation("ReviewerReviews")
+  ReviewsRecvd    Review[]  @relation("MusicianReviews")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MusicianProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  bio         String?
+  genre       String?
+  skills      String[]
+  portfolio   String?
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Booking {
-  id             String   @id @default(cuid())
-  musicianId     String
-  bookerId       String
-  status         String   @default("PENDING")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id          String   @id @default(cuid())
+  bookerId    String
+  musicianId  String
+  date        DateTime
+  status      String   @default("PENDING")
+
+  booker   User @relation("BookerBookings", fields: [bookerId], references: [id])
+  musician User @relation("MusicianBookings", fields: [musicianId], references: [id])
 }
 
-model Message {
-  id             String   @id @default(cuid())
-  conversationId String
-  senderId       String
-  content        String
-  createdAt      DateTime @default(now())
+model Review {
+  id          String   @id @default(cuid())
+  rating      Int
+  comment     String?
+  reviewerId  String
+  musicianId  String
+
+  reviewer User @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  musician User @relation("MusicianReviews", fields: [musicianId], references: [id])
 }
 
 enum Role {
@@ -171,42 +152,90 @@ enum Role {
 
 ---
 
-## 🧪 Development Notes
+## ⚙️ Setup & Installation
 
-- Role switcher updates `activeRole`, not `roles[]`.
-- New users are seeded with **both roles** to simplify role switching.
-- Server components are used wherever possible (App Router best practice).
-- Mutations are handled via Next.js API routes.
+### 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/yourusername/musiconnect.git
+cd musiconnect
+```
+
+### 2️⃣ Install Dependencies
+
+```bash
+npm install
+```
+
+### 3️⃣ Setup Environment Variables
+
+Create `.env` file in root directory:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/musiconnect"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+```
+
+### 4️⃣ Run Prisma Migrations
+
+```bash
+npx prisma migrate dev
+```
+
+### 5️⃣ Start Development Server
+
+```bash
+npm run dev
+```
 
 ---
 
-## 📌 Roadmap
+## 🔐 Authentication & Roles
 
-- [x] Authentication with Clerk
-- [x] Role-based dashboards
-- [x] Booking system (CRUD)
-- [x] Role switcher (`activeRole`)
-- [x] Search & filter for musicians
-- [x] Messaging system (real-time chat)
-- [ ] Payment integration
+- Uses **Clerk** for login/signup
+- Each user is automatically assigned both roles: `MUSICIAN` & `BOOKER`
+- Active role is stored in `user.activeRole` and can be switched
+- Middleware ensures users without a role are redirected to `/select-role`
+
+---
+
+## 📡 API Routes
+
+| Endpoint            | Method | Description                 |
+| ------------------- | ------ | --------------------------- |
+| `/api/roles/switch` | POST   | Switch user active role     |
+| `/api/bookings`     | POST   | Create a new booking        |
+| `/api/bookings/:id` | GET    | Fetch booking details       |
+| `/api/reviews`      | POST   | Add a review for a musician |
+| `/api/users/update` | PUT    | Update user profile         |
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork this repo
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Contributions are welcome!
+To contribute:
+
+1. Fork repo
+2. Create feature branch (`git checkout -b feature/new-feature`)
+3. Commit changes (`git commit -m "Added new feature"`)
+4. Push branch (`git push origin feature/new-feature`)
+5. Create Pull Request 🎉
 
 ---
 
 ## 📜 License
 
-MIT License © 2025 [Your Name](https://github.com/yourusername)
+This project is licensed under the **MIT License** – feel free to use and adapt.
+
+---
+
+## 👨🏽‍💻 Author
+
+Built with ❤️ by **[Ozioma John Egole](https://github.com/Ozioma45)**
+Mission: Helping musicians connect with opportunities and event organizers 🎶
 
 ```
 
 ```
-````
