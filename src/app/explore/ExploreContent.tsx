@@ -19,13 +19,12 @@ interface Musician {
   genre: string;
   location: string;
   coverImage?: string;
+  instruments: string[];
 }
 
 interface GenreStat {
   genre: string;
-  _count: {
-    genre: number;
-  };
+  count: number;
 }
 
 type MusicianFilter = {
@@ -116,9 +115,9 @@ export default function ExploreContent() {
             <SelectTrigger className="w-full md:w-[200px]">Genre</SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
-              {genres.map((g, i) => (
-                <SelectItem key={i} value={g.genre}>
-                  {g.genre} ({g._count.genre})
+              {genres.map((g) => (
+                <SelectItem key={g.genre} value={g.genre}>
+                  {g.genre} ({g.count})
                 </SelectItem>
               ))}
             </SelectContent>
@@ -133,9 +132,9 @@ export default function ExploreContent() {
 
         {/* Genre Tags */}
         <div className="flex flex-wrap gap-3">
-          {genres.map((g, idx) => (
+          {genres.map((g) => (
             <button
-              key={idx}
+              key={g.genre}
               onClick={() =>
                 setFilters((prev) => ({ ...prev, genre: g.genre }))
               }
@@ -145,7 +144,7 @@ export default function ExploreContent() {
                   : "bg-gray-200 hover:bg-gray-300"
               }`}
             >
-              {g.genre} ({g._count.genre})
+              {g.genre} ({g.count})
             </button>
           ))}
         </div>
@@ -169,7 +168,7 @@ export default function ExploreContent() {
               <div className="p-4 text-left">
                 <h3 className="text-lg font-semibold">{musician.name}</h3>
                 <p className="text-sm text-gray-600">
-                  {musician.genre} • {musician.location}
+                  {musician.instruments.join(", ")} • {musician.location}
                 </p>
                 <Link
                   href={`/musician/${musician.id}`}

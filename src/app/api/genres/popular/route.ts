@@ -9,9 +9,11 @@ export async function GET() {
   // Flatten all genre arrays
   const genreCounts: Record<string, number> = {};
   musicians.forEach((m) => {
-    m.genres.forEach((g) => {
-      genreCounts[g] = (genreCounts[g] || 0) + 1;
-    });
+    m.genres
+      .filter((g) => g && g.trim() !== "") // <-- skip empty
+      .forEach((g) => {
+        genreCounts[g] = (genreCounts[g] || 0) + 1;
+      });
   });
 
   // Convert to array + sort by count
