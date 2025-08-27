@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import LoadingButton from "../LoadingButton";
 
 export default function HeroSection() {
   return (
@@ -26,12 +27,13 @@ export default function HeroSection() {
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/sign-in">
-            <Button
+            <LoadingButton
               size="lg"
               className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+              loading={false}
             >
               Get Started
-            </Button>
+            </LoadingButton>
           </Link>
           <Link href="/explore">
             <Button
