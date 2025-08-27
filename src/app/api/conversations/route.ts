@@ -5,9 +5,9 @@ import { prisma } from "@/lib/db";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { musicianId, bookerId } = body;
+    const { userA, userB } = body;
 
-    if (!musicianId || !bookerId) {
+    if (!userA || !userB) {
       return NextResponse.json(
         { error: "musicianId and bookerId are required" },
         { status: 400 }
@@ -15,16 +15,19 @@ export async function POST(req: Request) {
     }
 
     let conversation = await prisma.conversation.findFirst({
-      where: { musicianId, bookerId },
+      where: {
+        userAId: userA,
+        userBId: userB,
+      },
     });
 
     if (!conversation) {
       conversation = await prisma.conversation.create({
         data: {
-          musicianId,
-          bookerId,
-          readByMusician: true,
-          readByBooker: false,
+          userAId: userA,
+          userBId: userB,
+          readByA: true,
+          readByB: false,
         },
       });
     }
@@ -54,8 +57,7 @@ export async function GET(req: Request) {
     }
 
     const conversations = await prisma.conversation.findMany({
-      where:
-        role === "MUSICIAN" ? { musicianId: userId } : { bookerId: userId },
+      where: role === "MUSICIAN" ? { userAId: userId } : { userBId: userId },
       include: {
         messages: {
           orderBy: { createdAt: "desc" },

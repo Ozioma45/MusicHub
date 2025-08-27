@@ -10,7 +10,7 @@ export async function GET(req: Request) {
 
   const musicians = await prisma.musician.findMany({
     where: {
-      genre: genre || undefined,
+      genres: genre ? { has: genre } : undefined, // ✅ `has` for arrays
       location: location || undefined,
       name: name
         ? {

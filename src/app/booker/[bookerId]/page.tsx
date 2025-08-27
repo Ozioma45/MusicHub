@@ -5,10 +5,8 @@ import { useParams } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
 import Image from "next/image";
 import { MapPin, CalendarDays } from "lucide-react";
-import Link from "next/link";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 
 type Booking = {
   id: string;

@@ -213,7 +213,9 @@ export default async function MusicianDashboardPage() {
                           Booking Details
                         </Link>
                       </DropdownMenuItem>
-                      <MessageBookerButton bookerId={booking.client?.id!} />
+                      {booking.client?.id && (
+                        <MessageBookerButton bookerId={booking.client.id} />
+                      )}
 
                       <DropdownMenuSeparator />
 
@@ -338,11 +340,9 @@ export default async function MusicianDashboardPage() {
                           Booking Details
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/messages/${booking.client?.id}`}>
-                          Message Booker
-                        </Link>
-                      </DropdownMenuItem>
+                      {booking.client?.id && (
+                        <MessageBookerButton bookerId={booking.client.id} />
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

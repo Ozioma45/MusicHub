@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/db";
-import { MapPin } from "lucide-react";
 
 type Musician = {
   id: string;

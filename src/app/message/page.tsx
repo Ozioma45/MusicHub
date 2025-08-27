@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { useState } from "react";
+import Image from "next/image";
 
 interface Message {
   id: string;
@@ -91,15 +92,18 @@ const MessagePage = () => {
                     : "flex-row self-start"
                 }`}
               >
-                <img
+                <Image
                   src={
                     m.senderId === currentUserId
                       ? user?.imageUrl || "/default-avatar.png"
                       : "/default-avatar.png"
                   }
                   alt="avatar"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full object-cover"
                 />
+
                 <p
                   className={`px-4 py-2 text-sm rounded-2xl ${
                     m.senderId === currentUserId

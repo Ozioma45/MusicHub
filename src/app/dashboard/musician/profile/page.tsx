@@ -227,7 +227,9 @@ export default function MusicianProfilePage() {
                       <p className="text-yellow-500 text-sm">⭐ {r.rating}/5</p>
                     </div>
                   </div>
-                  <p className="mt-2 italic text-gray-700">"{r.comment}"</p>
+                  <p className="mt-2 italic text-gray-700">
+                    &quot;{r.comment}&quot;
+                  </p>
                   <p className="text-xs text-gray-400 mt-1">
                     {new Date(r.createdAt).toDateString()}
                   </p>

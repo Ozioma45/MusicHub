@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "prisma/seed.js"
-, "src/app/messages/Messages.jsx"  ],
-  "exclude": ["node_modules"]
+    "prisma/seed.js",
+    "src/app/messages/Messages.jsx"
+  ],
+  "exclude": ["node_modules", ".next"]
 }

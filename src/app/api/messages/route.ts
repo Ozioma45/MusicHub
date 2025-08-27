@@ -29,8 +29,8 @@ export async function POST(req: Request) {
         lastMessage: desc,
         updatedAt: new Date(),
         // reset read flags depending on sender
-        readByMusician: false,
-        readByBooker: false,
+        readByA: false,
+        readByB: false,
       },
     });
 

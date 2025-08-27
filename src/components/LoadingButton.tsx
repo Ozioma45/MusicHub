@@ -1,12 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ReactNode } from "react";
+import { ReactNode, ComponentProps } from "react";
 
-interface LoadingButtonProps {
+interface LoadingButtonProps extends ComponentProps<typeof Button> {
   loading?: boolean;
   children: ReactNode;
-  [key: string]: any; // pass through any other props (like size, className, onClick)
 }
 
 export default function LoadingButton({

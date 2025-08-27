@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, MapPin, Search, User } from "lucide-react";
+import { Search, User } from "lucide-react";
 import Image from "next/image";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import RoleSwitcher from "@/components/Bookswitch";
@@ -13,7 +13,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
@@ -216,9 +215,11 @@ export default async function BookerDashboardPage() {
                           Booking Details
                         </Link>
                       </DropdownMenuItem>
-                      <MessageMusicianButton
-                        musicianUserId={booking.musician?.user?.id!}
-                      />
+                      {booking.musician?.user?.id && (
+                        <MessageMusicianButton
+                          musicianUserId={booking.musician.user.id}
+                        />
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -299,9 +300,11 @@ export default async function BookerDashboardPage() {
                           Booking Details
                         </Link>
                       </DropdownMenuItem>
-                      <MessageMusicianButton
-                        musicianUserId={booking.musician?.user?.id!}
-                      />
+                      {booking.musician?.user?.id && (
+                        <MessageMusicianButton
+                          musicianUserId={booking.musician.user.id}
+                        />
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

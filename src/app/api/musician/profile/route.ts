@@ -71,27 +71,34 @@ export async function PUT(req: Request) {
   }
 
   const body = await req.json();
-  let {
+  const {
     name,
-    genres,
-    instruments,
-    services,
     location,
     bio,
     coverImage,
     imageUrl,
-    mediaUrls,
+    genres: rawGenres,
+    instruments: rawInstruments,
+    services: rawServices,
+    mediaUrls: rawMediaUrls,
   } = body;
 
-  // Ensure arrays for multi-input fields
-  genres = Array.isArray(genres) ? genres : genres ? [genres] : [];
-  instruments = Array.isArray(instruments)
-    ? instruments
-    : instruments
-    ? [instruments]
+  const genres = Array.isArray(rawGenres)
+    ? rawGenres
+    : rawGenres
+    ? [rawGenres]
     : [];
-  services = Array.isArray(services) ? services : services ? [services] : [];
-  mediaUrls = Array.isArray(mediaUrls) ? mediaUrls : [];
+  const instruments = Array.isArray(rawInstruments)
+    ? rawInstruments
+    : rawInstruments
+    ? [rawInstruments]
+    : [];
+  const services = Array.isArray(rawServices)
+    ? rawServices
+    : rawServices
+    ? [rawServices]
+    : [];
+  const mediaUrls = Array.isArray(rawMediaUrls) ? rawMediaUrls : [];
 
   // ✅ Update user image
   await prisma.user.update({

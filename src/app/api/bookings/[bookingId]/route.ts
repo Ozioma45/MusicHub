@@ -2,31 +2,26 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 
+interface RouteContext {
+  params: { bookingId: string };
+}
+
 // GET /api/bookings/[bookingId]
-export async function GET(
-  req: Request,
-  { params }: { params: { bookingId: string } }
-) {
+export async function GET(req: Request, context: RouteContext) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // lookup booking
     const booking = await prisma.booking.findUnique({
-      where: { id: params.bookingId },
+      where: { id: context.params.bookingId },
       include: {
         musician: {
-          include: {
-            user: true, // pulls the User record for the musician
-          },
+          include: { user: true },
         },
         client: {
-          // client = User
-          include: {
-            booker: true, // this pulls the Booker profile (1:1 with User)
-          },
+          include: { booker: true },
         },
       },
     });

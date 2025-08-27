@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import MainLayout from "@/components/MainLayout";
@@ -17,7 +16,7 @@ interface Message {
 
 const MessagePage = () => {
   const { conversationId } = useParams() as { conversationId: string };
-  const { user } = useUser();
+
   const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
