@@ -97,7 +97,7 @@ export default function SubmitReviewPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full py-3 text-lg font-medium"
+            className="w-full  text-lg font-medium bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 cursor-pointer"
           >
             {loading ? "Submitting..." : "Submit Review"}
           </Button>
