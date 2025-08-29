@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
 import { toast } from "sonner";
 import Image from "next/image";
+import CategorySelector from "@/components/CategorySelector";
+import {
+  genreCategories,
+  instrumentCategories,
+  serviceCategories,
+} from "@/lib/categories";
 
 interface MusicianForm {
   name: string;
@@ -216,82 +222,34 @@ export default function EditMusicianProfilePage() {
           </div>
 
           {/* Genres */}
-          <div>
-            <label className="block font-semibold mb-1">Genres</label>
-            {form.genres.map((genre, idx) => (
-              <div key={idx} className="flex gap-2 mb-2">
-                <Input
-                  value={genre}
-                  onChange={(e) =>
-                    handleArrayChange("genres", idx, e.target.value)
-                  }
-                  placeholder="e.g., Jazz"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => removeArrayField("genres", idx)}
-                >
-                  ✕
-                </Button>
-              </div>
-            ))}
-            <Button type="button" onClick={() => addArrayField("genres")}>
-              + Add Genre
-            </Button>
-          </div>
+          <CategorySelector
+            label="Genres"
+            categories={genreCategories}
+            values={form.genres}
+            setValues={(vals) => setForm({ ...form, genres: vals })}
+            allowCustom={true}
+            placeholder="or Add custom genre"
+          />
 
           {/* Instruments */}
-          <div>
-            <label className="block font-semibold mb-1">Instruments</label>
-            {form.instruments.map((instrument, idx) => (
-              <div key={idx} className="flex gap-2 mb-2">
-                <Input
-                  value={instrument}
-                  onChange={(e) =>
-                    handleArrayChange("instruments", idx, e.target.value)
-                  }
-                  placeholder="e.g., Guitar"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => removeArrayField("instruments", idx)}
-                >
-                  ✕
-                </Button>
-              </div>
-            ))}
-            <Button type="button" onClick={() => addArrayField("instruments")}>
-              + Add Instrument
-            </Button>
-          </div>
+          <CategorySelector
+            label="Instruments"
+            categories={instrumentCategories}
+            values={form.instruments}
+            setValues={(vals) => setForm({ ...form, instruments: vals })}
+            allowCustom={true}
+            placeholder="Specify other instrument"
+          />
 
           {/* Services */}
-          <div>
-            <label className="block font-semibold mb-1">Services</label>
-            {form.services.map((service, idx) => (
-              <div key={idx} className="flex gap-2 mb-2">
-                <Input
-                  value={service}
-                  onChange={(e) =>
-                    handleArrayChange("services", idx, e.target.value)
-                  }
-                  placeholder="e.g., Live Performance"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => removeArrayField("services", idx)}
-                >
-                  ✕
-                </Button>
-              </div>
-            ))}
-            <Button type="button" onClick={() => addArrayField("services")}>
-              + Add Service
-            </Button>
-          </div>
+          <CategorySelector
+            label="Services"
+            categories={serviceCategories}
+            values={form.services}
+            setValues={(vals) => setForm({ ...form, services: vals })}
+            allowCustom={true}
+            placeholder="Add custom service"
+          />
 
           {/* Location */}
           <div>
@@ -386,7 +344,11 @@ export default function EditMusicianProfilePage() {
           </div>
 
           {/* Submit */}
-          <Button type="submit" disabled={saving} className="w-full">
+          <Button
+            type="submit"
+            disabled={saving}
+            className="w-full cursor-pointer"
+          >
             {saving ? "Saving..." : "Save Changes"}
           </Button>
         </form>
