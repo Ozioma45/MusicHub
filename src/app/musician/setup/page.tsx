@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import { Music } from "lucide-react";
+import { useState } from "react";
+import {
+  genreCategories,
+  instrumentCategories,
+  serviceCategories,
+} from "@/lib/categories";
+import CategorySelector from "@/components/CategorySelector";
+import { musicianSchema, MusicianFormData } from "@/lib/musicianSchema";
 
 type CloudinaryResult = {
   event: string;
@@ -16,44 +23,25 @@ export default function SetupMusicianPage() {
   const { user } = useUser();
   const router = useRouter();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<MusicianFormData>({
     name: "",
-    genres: [] as string[],
-    instruments: [] as string[],
-    services: [] as string[],
+    genres: [],
+    instruments: [],
+    services: [],
     location: "",
     bio: "",
     coverImage: "",
   });
 
-  const [genreInput, setGenreInput] = useState("");
-  const [instrumentInput, setInstrumentInput] = useState("");
-  const [serviceInput, setServiceInput] = useState("");
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof MusicianFormData, string>>
+  >({});
 
-  const handleAddTag = (
-    field: "genres" | "instruments" | "services",
-    value: string
-  ) => {
-    if (!value.trim()) return;
-    setForm((prev) => ({
-      ...prev,
-      [field]: [...prev[field], value.trim()],
-    }));
-    if (field === "genres") setGenreInput("");
-    if (field === "instruments") setInstrumentInput("");
-    if (field === "services") setServiceInput("");
+  const handleChange = (field: keyof MusicianFormData, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleRemoveTag = (
-    field: "genres" | "instruments" | "services",
-    index: number
-  ) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index),
-    }));
-  };
-
+  /* 🔧 Cloudinary Upload */
   const handleImageUpload = () => {
     // @ts-expect-error: Cloudinary widget global
     if (!window.cloudinary) {
@@ -73,37 +61,41 @@ export default function SetupMusicianPage() {
       },
       (error: Error | null, result: CloudinaryResult) => {
         if (!error && result && result.event === "success") {
-          setForm((prev) => ({
-            ...prev,
-            coverImage: result.info.secure_url,
-          }));
+          handleChange("coverImage", result.info.secure_url);
         }
       }
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  /* 🔧 Form Submission */
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
-    /*  if (form.bio.trim().length < 20) {
-      alert("Your bio must be at least 20 characters long.");
-      return;
-    } */
+    try {
+      const parsed = musicianSchema.parse(form); // ✅ Validate here
+      await axios.post("/api/musician/setup", {
+        clerkUserId: user.id,
+        ...parsed,
+        mediaUrls: [],
+      });
 
-    await axios.post("/api/musician/setup", {
-      clerkUserId: user.id,
-      ...form,
-      mediaUrls: [],
-    });
-
-    router.push("/dashboard");
+      router.push("/dashboard");
+    } catch (err: any) {
+      if (err.errors) {
+        const fieldErrors: Partial<Record<keyof MusicianFormData, string>> = {};
+        err.errors.forEach((zErr: any) => {
+          fieldErrors[zErr.path[0] as keyof MusicianFormData] = zErr.message;
+        });
+        setErrors(fieldErrors);
+      }
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full p-8">
-        {/* Header */}
+        {/* 🔹 Header */}
         <div className="flex justify-center items-center mb-6">
           <Music className="h-7 w-7 text-blue-600 mr-2" />
           <span className="font-bold text-lg text-gray-900">MusiConnect</span>
@@ -117,145 +109,87 @@ export default function SetupMusicianPage() {
           audience.
         </p>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="text"
-            name="name"
-            placeholder="Your  name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-          />
-
+        {/* 🔹 Form */}
+        <form onSubmit={onSubmit} className="space-y-6">
+          {/* Name */}
           <div>
-            <label className="block font-medium mb-1">Genres</label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={genreInput}
-                onChange={(e) => setGenreInput(e.target.value)}
-                placeholder="Add a genre"
-                className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={() => handleAddTag("genres", genreInput)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {form.genres.map((genre, i) => (
-                <span
-                  key={i}
-                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
-                >
-                  {genre}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag("genres", i)}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
+            <input
+              type="text"
+              placeholder="Your name"
+              value={form.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
+          {/* Genres */}
+          <CategorySelector
+            label="Genres"
+            categories={genreCategories}
+            values={form.genres}
+            setValues={(vals) => handleChange("genres", vals)}
+            allowCustom={true}
+            placeholder="or Add custom genre"
+          />
+          {errors.genres && (
+            <p className="text-red-500 text-sm">{errors.genres}</p>
+          )}
+
+          {/* Instruments */}
+          <CategorySelector
+            label="Instruments"
+            categories={instrumentCategories}
+            values={form.instruments}
+            setValues={(vals) => handleChange("instruments", vals)}
+            allowCustom={true}
+            placeholder="Specify other instrument"
+          />
+          {errors.instruments && (
+            <p className="text-red-500 text-sm">{errors.instruments}</p>
+          )}
+
+          {/* Services */}
+          <CategorySelector
+            label="Services"
+            categories={serviceCategories}
+            values={form.services}
+            setValues={(vals) => handleChange("services", vals)}
+            allowCustom={true}
+            placeholder="Add custom service"
+          />
+          {errors.services && (
+            <p className="text-red-500 text-sm">{errors.services}</p>
+          )}
+
+          {/* Location */}
           <div>
-            <label className="block font-medium mb-1">Instruments</label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={instrumentInput}
-                onChange={(e) => setInstrumentInput(e.target.value)}
-                placeholder="Add an instrument"
-                className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={() => handleAddTag("instruments", instrumentInput)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {form.instruments.map((inst, i) => (
-                <span
-                  key={i}
-                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
-                >
-                  {inst}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag("instruments", i)}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
+            <input
+              type="text"
+              placeholder="Your location"
+              value={form.location}
+              onChange={(e) => handleChange("location", e.target.value)}
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.location && (
+              <p className="text-red-500 text-sm">{errors.location}</p>
+            )}
           </div>
 
+          {/* Bio */}
           <div>
-            <label className="block font-medium mb-1">Services</label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={serviceInput}
-                onChange={(e) => setServiceInput(e.target.value)}
-                placeholder="Add a service (e.g. Songwriting)"
-                className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={() => handleAddTag("services", serviceInput)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {form.services.map((srv, i) => (
-                <span
-                  key={i}
-                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
-                >
-                  {srv}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag("services", i)}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
+            <textarea
+              placeholder="Tell us about yourself"
+              value={form.bio}
+              onChange={(e) => handleChange("bio", e.target.value)}
+              className="w-full p-3 border rounded-lg h-32 focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.bio && <p className="text-red-500 text-sm">{errors.bio}</p>}
           </div>
 
-          <input
-            type="text"
-            name="location"
-            placeholder="Your location"
-            value={form.location}
-            onChange={(e) => setForm({ ...form, location: e.target.value })}
-            required
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-          />
-
-          <textarea
-            name="bio"
-            placeholder="Tell us about yourself"
-            value={form.bio}
-            onChange={(e) => setForm({ ...form, bio: e.target.value })}
-            required
-            className="w-full p-3 border rounded-lg h-32 focus:ring-2 focus:ring-blue-500"
-          />
-
+          {/* Cover Image */}
           <div>
             <label className="block font-medium mb-2">Cover Image</label>
             <button
@@ -276,8 +210,12 @@ export default function SetupMusicianPage() {
                 />
               </div>
             )}
+            {errors.coverImage && (
+              <p className="text-red-500 text-sm mt-1">{errors.coverImage}</p>
+            )}
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
