@@ -9,33 +9,31 @@ import MainLayout from "@/components/MainLayout";
 import { toast } from "sonner";
 import Image from "next/image";
 
-interface CloudinaryFile {
-  uploadInfo: { secure_url: string };
-}
-interface CloudinaryResult {
-  info?: { files?: CloudinaryFile[] };
-}
-interface CloudinaryUploadResult {
-  event: string;
-  info?: {
-    secure_url?: string;
-    files?: { uploadInfo: { secure_url: string } }[];
-  };
+interface MusicianForm {
+  name: string;
+  genres: string[];
+  instruments: string[];
+  services: string[];
+  location: string;
+  bio: string;
+  coverImage: string;
+  imageUrl: string;
+  mediaUrls: string[];
 }
 
 export default function EditMusicianProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<MusicianForm>({
     name: "",
-    genres: [] as string[],
-    instruments: [] as string[],
-    services: [] as string[],
+    genres: [],
+    instruments: [],
+    services: [],
     location: "",
     bio: "",
     coverImage: "",
     imageUrl: "",
-    mediaUrls: [] as string[],
+    mediaUrls: [],
   });
 
   const router = useRouter();
@@ -47,7 +45,6 @@ export default function EditMusicianProfilePage() {
         const res = await fetch("/api/musician/profile");
         if (!res.ok) throw new Error();
         const data = await res.json();
-
         setForm({
           name: data.name || "",
           genres: data.genres || [],
@@ -68,14 +65,87 @@ export default function EditMusicianProfilePage() {
     fetchProfile();
   }, []);
 
-  // Handle text input changes
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Cloudinary silent upload helper
+  const uploadToCloudinary = async (
+    file: File,
+    preset: string,
+    resourceType: "image" | "video" = "image"
+  ): Promise<string | null> => {
+    const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", preset);
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      return data.secure_url;
+    } catch (err) {
+      console.error(err);
+      toast.error("Upload failed. Please try again.");
+      return null;
+    }
   };
 
-  // Handle multiple array field changes
+  // Profile picture upload
+  const handleProfileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    toast.loading("Uploading profile picture...");
+    const url = await uploadToCloudinary(file, "musiconnect");
+    toast.dismiss();
+    if (url) {
+      setForm({ ...form, imageUrl: url });
+      toast.success("Profile picture uploaded!");
+    }
+  };
+
+  // Cover image upload
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    toast.loading("Uploading cover image...");
+    const url = await uploadToCloudinary(file, "musiconnect");
+    toast.dismiss();
+    if (url) {
+      setForm({ ...form, coverImage: url });
+      toast.success("Cover image uploaded!");
+    }
+  };
+
+  // Video upload
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    toast.loading("Uploading videos...");
+    const uploadedUrls: string[] = [];
+    for (const file of Array.from(files)) {
+      const url = await uploadToCloudinary(file, "musiconnect_videos", "video");
+      if (url) uploadedUrls.push(url);
+    }
+    toast.dismiss();
+    if (uploadedUrls.length > 0) {
+      setForm((prev) => ({
+        ...prev,
+        mediaUrls: [...prev.mediaUrls, ...uploadedUrls],
+      }));
+      toast.success(`${uploadedUrls.length} video(s) uploaded!`);
+    }
+  };
+
+  // Generic input changes
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  // Array fields
   const handleArrayChange = (
     field: "genres" | "instruments" | "services",
     index: number,
@@ -86,106 +156,17 @@ export default function EditMusicianProfilePage() {
     setForm({ ...form, [field]: updated });
   };
 
-  const addArrayField = (field: "genres" | "instruments" | "services") => {
+  const addArrayField = (field: "genres" | "instruments" | "services") =>
     setForm({ ...form, [field]: [...form[field], ""] });
-  };
 
   const removeArrayField = (
     field: "genres" | "instruments" | "services",
     index: number
-  ) => {
-    setForm({ ...form, [field]: form[field].filter((_, i) => i !== index) });
-  };
-
-  // Image upload
-  const handleImageUpload = () => {
-    // @ts-expect-error cloudinary global
-    window.cloudinary.openUploadWidget(
-      {
-        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: "musiconnect",
-        sources: ["local", "url", "camera"],
-        cropping: true,
-        multiple: false,
-        folder: "musicians",
-      },
-      (error: unknown, result: unknown) => {
-        if (
-          !error &&
-          typeof result === "object" &&
-          result &&
-          "event" in result &&
-          (result as { event: string }).event === "success"
-        ) {
-          const url = (result as { info?: { secure_url?: string } }).info
-            ?.secure_url;
-          if (url) {
-            setForm({ ...form, coverImage: url });
-            toast.success("Cover image uploaded!");
-          }
-        }
-      }
-    );
-  };
-
-  // Video upload
-  const handleVideoUpload = () => {
-    // @ts-expect-error cloudinary global
-    window.cloudinary.openUploadWidget(
-      {
-        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: "musiconnect_videos",
-        sources: ["local", "camera"],
-        resourceType: "video",
-        multiple: true,
-        folder: "musicians/videos",
-        maxFileSize: 30 * 1024 * 1024,
-        maxVideoDuration: 60,
-      },
-      (error: unknown, result: CloudinaryResult) => {
-        if (!error && Array.isArray(result.info?.files)) {
-          const uploadedUrls = result.info.files.map(
-            (file) => file.uploadInfo.secure_url
-          );
-          setForm((prev) => ({
-            ...prev,
-            mediaUrls: [...prev.mediaUrls, ...uploadedUrls],
-          }));
-          toast.success(`${uploadedUrls.length} video(s) uploaded!`);
-        }
-      }
-    );
-  };
-
-  const handleProfileUpload = () => {
-    // @ts-expect-error cloudinary global
-    window.cloudinary.openUploadWidget(
-      {
-        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: "musiconnect",
-        sources: ["local", "url", "camera"],
-        cropping: true,
-        multiple: false,
-        folder: "musicians/profile",
-      },
-      (error: unknown, result: CloudinaryUploadResult) => {
-        if (!error && result.event === "success" && result.info?.secure_url) {
-          setForm({ ...form, imageUrl: result.info.secure_url });
-          toast.success("Profile image uploaded!");
-        }
-      }
-    );
-  };
+  ) => setForm({ ...form, [field]: form[field].filter((_, i) => i !== index) });
 
   // Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    /* if (form.bio.trim().length < 20) {
-      toast.error("Your bio must be at least 20 characters long.");
-      return;
-    } */
-
     setSaving(true);
     try {
       const res = await fetch("/api/musician/profile", {
@@ -193,7 +174,6 @@ export default function EditMusicianProfilePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       if (!res.ok) throw new Error();
       toast.success("Profile updated!");
       router.push("/dashboard/musician/profile");
@@ -251,17 +231,12 @@ export default function EditMusicianProfilePage() {
                   type="button"
                   variant="destructive"
                   onClick={() => removeArrayField("genres", idx)}
-                  className="cursor-pointer"
                 >
                   ✕
                 </Button>
               </div>
             ))}
-            <Button
-              type="button"
-              onClick={() => addArrayField("genres")}
-              className="bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
-            >
+            <Button type="button" onClick={() => addArrayField("genres")}>
               + Add Genre
             </Button>
           </div>
@@ -282,17 +257,12 @@ export default function EditMusicianProfilePage() {
                   type="button"
                   variant="destructive"
                   onClick={() => removeArrayField("instruments", idx)}
-                  className="cursor-pointer"
                 >
                   ✕
                 </Button>
               </div>
             ))}
-            <Button
-              type="button"
-              onClick={() => addArrayField("instruments")}
-              className="bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
-            >
+            <Button type="button" onClick={() => addArrayField("instruments")}>
               + Add Instrument
             </Button>
           </div>
@@ -313,17 +283,12 @@ export default function EditMusicianProfilePage() {
                   type="button"
                   variant="destructive"
                   onClick={() => removeArrayField("services", idx)}
-                  className="cursor-pointer"
                 >
                   ✕
                 </Button>
               </div>
             ))}
-            <Button
-              type="button"
-              onClick={() => addArrayField("services")}
-              className="bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
-            >
+            <Button type="button" onClick={() => addArrayField("services")}>
               + Add Service
             </Button>
           </div>
@@ -353,14 +318,11 @@ export default function EditMusicianProfilePage() {
           {/* Profile Picture */}
           <div>
             <label className="block font-semibold mb-2">Profile Picture</label>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleProfileUpload}
-              className="w-full cursor-pointer"
-            >
-              Upload Profile Picture
-            </Button>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleProfileUpload}
+            />
             {form.imageUrl && (
               <Image
                 src={form.imageUrl}
@@ -375,14 +337,7 @@ export default function EditMusicianProfilePage() {
           {/* Cover Image */}
           <div>
             <label className="block font-semibold mb-2">Cover Image</label>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleImageUpload}
-              className="w-full cursor-pointer"
-            >
-              Upload Cover Image
-            </Button>
+            <Input type="file" accept="image/*" onChange={handleCoverUpload} />
             {form.coverImage && (
               <Image
                 src={form.coverImage}
@@ -399,14 +354,12 @@ export default function EditMusicianProfilePage() {
             <label className="block font-semibold mb-2">
               Performance Videos
             </label>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleVideoUpload}
-              className="w-full cursor-pointer"
-            >
-              Upload Videos
-            </Button>
+            <Input
+              type="file"
+              accept="video/*"
+              multiple
+              onChange={handleVideoUpload}
+            />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
               {form.mediaUrls.map((url, i) => (
                 <div key={i} className="relative">
@@ -423,7 +376,7 @@ export default function EditMusicianProfilePage() {
                         mediaUrls: prev.mediaUrls.filter((_, idx) => idx !== i),
                       }))
                     }
-                    className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded cursor-pointer"
+                    className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded"
                   >
                     ✕
                   </button>
@@ -433,11 +386,7 @@ export default function EditMusicianProfilePage() {
           </div>
 
           {/* Submit */}
-          <Button
-            type="submit"
-            disabled={saving}
-            className="w-full bg-blue-600 hover:bg-blue-800 text-white cursor-pointer"
-          >
+          <Button type="submit" disabled={saving} className="w-full">
             {saving ? "Saving..." : "Save Changes"}
           </Button>
         </form>
