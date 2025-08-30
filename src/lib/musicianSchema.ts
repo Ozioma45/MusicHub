@@ -8,7 +8,11 @@ export const musicianSchema = z.object({
   services: z.array(z.string()).min(1, "Select at least one service"),
   location: z.string().min(2, "Location is required"),
   bio: z.string().min(10, "Bio must be at least 10 characters"),
-  coverImage: z.string().url("A valid cover image is required"),
+
+  // 🟡 Optional fields
+  coverImage: z.string().url().optional().or(z.literal("")),
+  imageUrl: z.string().url().optional().or(z.literal("")),
+  mediaUrls: z.array(z.string().url()).optional(),
 });
 
 export type MusicianFormData = z.infer<typeof musicianSchema>;

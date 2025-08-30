@@ -2,48 +2,76 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { currentUser } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
+  const user = await currentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkUserId: user.id },
+  });
+
+  if (!dbUser) {
+    return NextResponse.json({ error: "Access denied" }, { status: 403 });
+  }
+
   const body = await req.json();
   const {
-    clerkUserId,
     name,
-    genres, // array of strings
-    instruments, // array of strings
-    services, // array of strings
     location,
     bio,
     coverImage,
-    mediaUrls = [],
+    imageUrl,
+    genres: rawGenres,
+    instruments: rawInstruments,
+    services: rawServices,
+    mediaUrls: rawMediaUrls,
   } = body;
 
+  const genres = Array.isArray(rawGenres)
+    ? rawGenres
+    : rawGenres
+    ? [rawGenres]
+    : [];
+  const instruments = Array.isArray(rawInstruments)
+    ? rawInstruments
+    : rawInstruments
+    ? [rawInstruments]
+    : [];
+  const services = Array.isArray(rawServices)
+    ? rawServices
+    : rawServices
+    ? [rawServices]
+    : [];
+  const mediaUrls = Array.isArray(rawMediaUrls) ? rawMediaUrls : [];
+
   try {
-    // Find the user in the DB
-    const user = await prisma.user.findUnique({
-      where: { clerkUserId },
+    // ✅ Update user image
+    await prisma.user.update({
+      where: { id: dbUser.id },
+      data: { imageUrl },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    await prisma.musician.create({
+    const created = await prisma.musician.create({
       data: {
         name,
-        genres, // store array directly
-        instruments, // store array directly
-        services, // store array directly
+        genres,
+        instruments,
+        services,
         location,
         bio,
         coverImage,
         mediaUrls,
         user: {
-          connect: { id: user.id },
+          connect: { id: dbUser.id }, // 👈 connect musician to logged-in user
         },
       },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json(created);
   } catch (error) {
     console.error("Error setting up musician:", error);
     return NextResponse.json(
