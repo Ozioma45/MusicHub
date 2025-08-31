@@ -1,7 +1,7 @@
 // /app/components/MainLayout.tsx
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { Toaster } from "./ui/sonner";
+import { Toaster } from "sonner";
 import TopLoader from "./TopLoader";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
@@ -11,7 +11,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       <Navbar />
 
       <main className="flex-grow">{children}</main>
-      <Toaster />
+      <Toaster position="top-center" richColors />
       <Footer />
     </div>
   );

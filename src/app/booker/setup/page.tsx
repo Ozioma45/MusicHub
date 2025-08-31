@@ -1,24 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import { useUser } from "@clerk/nextjs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Briefcase } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import MainLayout from "@/components/MainLayout";
 
-type CloudinaryResult = {
-  event: string;
-  info: { secure_url: string };
-};
+// Validation schema
+const bookerSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  location: z.string().min(2, "Location is required"),
+  bio: z.string().min(10, "Bio must be at least 10 characters"),
+  imageUrl: z.string().optional(),
+  coverImage: z.string().optional(),
+});
+
+interface BookerForm {
+  name: string;
+  location: string;
+  bio: string;
+  imageUrl: string;
+  coverImage: string;
+}
 
 export default function SetupBookerPage() {
   const { user } = useUser();
   const router = useRouter();
-
-  const [form, setForm] = useState({
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState<BookerForm>({
     name: "",
     location: "",
     bio: "",
@@ -26,85 +41,105 @@ export default function SetupBookerPage() {
     coverImage: "",
   });
 
-  const handleImageUpload = () => {
-    // @ts-expect-error: Cloudinary widget global
-    if (!window.cloudinary) {
-      console.error("Cloudinary widget not loaded.");
-      return;
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof BookerForm, string>>
+  >({});
+
+  const handleChange = (field: keyof BookerForm, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Cloudinary helper
+  const uploadToCloudinary = async (
+    file: File,
+    preset: string
+  ): Promise<string | null> => {
+    const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", preset);
+
+    try {
+      const res = await fetch(url, { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      return data.secure_url;
+    } catch (err) {
+      console.error(err);
+      toast.error("Upload failed. Please try again.");
+      return null;
     }
-
-    // @ts-expect-error: Cloudinary widget global
-    window.cloudinary.openUploadWidget(
-      {
-        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: "musiconnect",
-        sources: ["local", "url", "camera"],
-        cropping: true,
-        multiple: false,
-        folder: "bookers",
-      },
-      (error: Error | null, result: CloudinaryResult) => {
-        if (!error && result && result.event === "success") {
-          setForm((prev) => ({
-            ...prev,
-            imageUrl: result.info.secure_url,
-          }));
-        }
-      }
-    );
   };
 
-  // Image Cover upload
-  const handleCoverUpload = () => {
-    // @ts-expect-error cloudinary global
-    window.cloudinary.openUploadWidget(
-      {
-        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-        uploadPreset: "musiconnect",
-        sources: ["local", "url", "camera"],
-        cropping: true,
-        multiple: false,
-        folder: "musicians",
-      },
-      (error: unknown, result: unknown) => {
-        if (
-          !error &&
-          typeof result === "object" &&
-          result &&
-          "event" in result &&
-          (result as { event: string }).event === "success"
-        ) {
-          const url = (result as { info?: { secure_url?: string } }).info
-            ?.secure_url;
-          if (url) {
-            setForm({ ...form, coverImage: url });
-            toast.success("Cover image uploaded!");
-          }
-        }
-      }
-    );
+  // Profile picture upload
+  const handleProfileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    toast.loading("Uploading profile picture...");
+    const url = await uploadToCloudinary(file, "musiconnect");
+    toast.dismiss();
+    if (url) {
+      setForm((prev) => ({ ...prev, imageUrl: url }));
+      toast.success("Profile picture uploaded!");
+    }
   };
 
+  // Cover image upload
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    toast.loading("Uploading cover image...");
+    const url = await uploadToCloudinary(file, "musiconnect");
+    toast.dismiss();
+    if (url) {
+      setForm((prev) => ({ ...prev, coverImage: url }));
+      toast.success("Cover image uploaded!");
+    }
+  };
+
+  // Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
-    /*  if (form.bio.trim().length < 20) {
-      alert("Your bio must be at least 20 characters long.");
-      return;
-    } */
+    setSaving(true);
+    setErrors({});
 
-    await axios.post("/api/booker/setup", {
-      clerkUserId: user.id,
-      ...form,
-    });
+    try {
+      // Validate form
+      const parsed = bookerSchema.parse(form);
 
-    router.push("/dashboard");
+      const res = await fetch("/api/booker/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clerkUserId: user.id, ...parsed }),
+      });
+
+      if (!res.ok) throw new Error();
+      toast.success("Profile completed!");
+      router.push("/dashboard");
+    } catch (err: any) {
+      if (err.errors) {
+        const fieldErrors: Partial<Record<keyof BookerForm, string>> = {};
+        err.errors.forEach((zErr: any) => {
+          fieldErrors[zErr.path[0] as keyof BookerForm] = zErr.message;
+        });
+        setErrors(fieldErrors);
+        toast.error(err.errors.map((e: any) => e.message).join(", "));
+      } else {
+        toast.error("Failed to save profile.");
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full p-8">
+    <MainLayout>
+      <div className="max-w-2xl mx-auto py-10">
         {/* Header */}
         <div className="flex justify-center items-center mb-6">
           <Briefcase className="h-7 w-7 text-green-600 mr-2" />
@@ -118,70 +153,73 @@ export default function SetupBookerPage() {
           Tell us more about yourself so musicians can connect with you.
         </p>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="text"
-            name="name"
-            placeholder="Your name or agency name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
-          />
-
-          <input
-            type="text"
-            name="location"
-            placeholder="Your location"
-            value={form.location}
-            onChange={(e) => setForm({ ...form, location: e.target.value })}
-            required
-            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
-          />
-
-          <textarea
-            name="bio"
-            placeholder="Tell us about yourself "
-            value={form.bio}
-            onChange={(e) => setForm({ ...form, bio: e.target.value })}
-            required
-            className="w-full p-3 border rounded-lg h-32 focus:ring-2 focus:ring-green-500"
-          />
-
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 bg-white rounded-2xl shadow-lg p-8"
+        >
+          {/* Name */}
           <div>
-            <label className="block font-medium mb-2">Profile Image</label>
-            <button
-              type="button"
-              onClick={handleImageUpload}
-              className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300"
-            >
-              Upload Profile Image
-            </button>
+            <label className="block font-semibold mb-1">Name</label>
+            <Input
+              name="name"
+              placeholder="Your name or agency name"
+              value={form.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm">{errors.name}</p>
+            )}
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className="block font-semibold mb-1">Location</label>
+            <Input
+              name="location"
+              placeholder="City, Country"
+              value={form.location}
+              onChange={(e) => handleChange("location", e.target.value)}
+            />
+            {errors.location && (
+              <p className="text-red-500 text-sm">{errors.location}</p>
+            )}
+          </div>
+
+          {/* Bio */}
+          <div>
+            <label className="block font-semibold mb-1">Bio</label>
+            <Textarea
+              name="bio"
+              placeholder="Tell us about yourself"
+              value={form.bio}
+              onChange={(e) => handleChange("bio", e.target.value)}
+            />
+            {errors.bio && <p className="text-red-500 text-sm">{errors.bio}</p>}
+          </div>
+
+          {/* Profile Picture */}
+          <div>
+            <label className="block font-semibold mb-2">Profile Picture</label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleProfileUpload}
+            />
             {form.imageUrl && (
-              <div className="relative w-full h-52 mt-3 rounded-lg overflow-hidden">
-                <Image
-                  src={form.imageUrl}
-                  alt="Profile"
-                  fill
-                  className="object-cover rounded-lg"
-                  sizes="100vw"
-                />
-              </div>
+              <Image
+                src={form.imageUrl}
+                alt="Profile Picture"
+                width={200}
+                height={200}
+                className="mt-3 rounded-full object-cover"
+              />
             )}
           </div>
 
           {/* Cover Image */}
           <div>
             <label className="block font-semibold mb-2">Cover Image</label>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCoverUpload}
-              className="w-full cursor-pointer"
-            >
-              Upload Cover Image
-            </Button>
+            <Input type="file" accept="image/*" onChange={handleCoverUpload} />
             {form.coverImage && (
               <Image
                 src={form.coverImage}
@@ -193,14 +231,15 @@ export default function SetupBookerPage() {
             )}
           </div>
 
-          <button
+          <Button
             type="submit"
-            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
+            disabled={saving}
+            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 cursor-pointer"
           >
-            Save & Continue
-          </button>
+            {saving ? "Saving..." : "Save & Continue"}
+          </Button>
         </form>
       </div>
-    </div>
+    </MainLayout>
   );
 }
