@@ -26,9 +26,12 @@ const Navbar = () => {
             Suggestion Box
           </Link>
 
-          {/* <Link href="/explore" className="font-semibold">
+          <Link
+            href="/explore"
+            className="font-semibold border-2 rounded px-3 hover:bg-blue-500 hover:text-white transition duration-[300ms]"
+          >
             Find Musician
-          </Link> */}
+          </Link>
 
           <SignedOut>
             <div className="flex gap-2">

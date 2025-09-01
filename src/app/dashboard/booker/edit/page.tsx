@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import MainLayout from "@/components/MainLayout";
 import { toast } from "sonner";
 import Image from "next/image";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default function EditBookerProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -144,16 +145,16 @@ export default function EditBookerProfilePage() {
 
   if (loading) {
     return (
-      <MainLayout>
+      <DashboardLayout role="BOOKER">
         <div className="flex justify-center items-center py-20 text-gray-500">
           Loading profile...
         </div>
-      </MainLayout>
+      </DashboardLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <DashboardLayout role="BOOKER">
       <div className="max-w-3xl mx-auto py-10">
         <h1 className="text-3xl font-bold mb-8 text-center">
           ✏️ Edit Booker Profile
@@ -249,6 +250,6 @@ export default function EditBookerProfilePage() {
           </Button>
         </form>
       </div>
-    </MainLayout>
+    </DashboardLayout>
   );
 }

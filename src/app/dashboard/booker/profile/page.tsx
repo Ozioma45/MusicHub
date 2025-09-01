@@ -107,7 +107,7 @@ export default async function BookerProfilePage() {
         <ReviewSection reviews={user.reviews} />
 
         {/* CTA */}
-        <div className="text-center">
+        {/* <div className="text-center">
           <Link href="./edit">
             <Button
               size="lg"
@@ -116,7 +116,7 @@ export default async function BookerProfilePage() {
               Edit Your Profile
             </Button>
           </Link>
-        </div>
+        </div> */}
       </div>
       <SubscribeSection />
     </DashboardLayout>
