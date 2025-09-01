@@ -3,12 +3,17 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SwitchCamera } from "lucide-react";
 
-export default function RoleSwitcher() {
+type Role = "MUSICIAN" | "BOOKER";
+
+export default function RoleSwitcher({ currentRole }: { currentRole: Role }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  async function handleRoleSwitch(role: "MUSICIAN" | "BOOKER") {
+  const oppositeRole: Role = currentRole === "MUSICIAN" ? "BOOKER" : "MUSICIAN";
+
+  async function handleRoleSwitch(role: Role) {
     setLoading(true);
 
     try {
@@ -40,19 +45,15 @@ export default function RoleSwitcher() {
   return (
     <div className="flex gap-2">
       <button
-        onClick={() => handleRoleSwitch("MUSICIAN")}
+        onClick={() => handleRoleSwitch(oppositeRole)}
         disabled={loading}
         className="bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
       >
-        Switch to Musician
+        <SwitchCamera size={16} />
+        {`Switch to ${
+          oppositeRole.charAt(0) + oppositeRole.slice(1).toLowerCase()
+        }`}
       </button>
-      {/* <button
-        onClick={() => handleRoleSwitch("BOOKER")}
-        disabled={loading}
-        className="px-4 py-2 bg-green-500 text-white rounded"
-      >
-        Switch to Booker
-      </button> */}
     </div>
   );
 }

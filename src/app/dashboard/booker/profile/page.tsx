@@ -8,6 +8,7 @@ import Image from "next/image";
 import { CalendarDays, MapPin } from "lucide-react";
 import MainLayout from "@/components/MainLayout";
 import SubscribeSection from "@/components/landing/SubscribeSection";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default async function BookerProfilePage() {
   const clerkUser = await currentUser();
@@ -44,7 +45,7 @@ export default async function BookerProfilePage() {
   const bookerLocation = bookerProfile?.location || " No location Provided";
 
   return (
-    <MainLayout>
+    <DashboardLayout role="BOOKER">
       {/* Hero Section */}
       <div className="relative w-full h-60 md:h-60 lg:h-70">
         <Image
@@ -118,7 +119,7 @@ export default async function BookerProfilePage() {
         </div>
       </div>
       <SubscribeSection />
-    </MainLayout>
+    </DashboardLayout>
   );
 }
 

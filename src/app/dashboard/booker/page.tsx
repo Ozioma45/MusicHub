@@ -2,13 +2,11 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import MainLayout from "@/components/MainLayout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Search, User } from "lucide-react";
 import Image from "next/image";
 import SubscribeSection from "@/components/landing/SubscribeSection";
-import RoleSwitcher from "@/components/Bookswitch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import MessageMusicianButton from "@/components/MessageMusicianButton";
+import DashboardLayout from "@/components/DashboardLayout";
 
 export default async function BookerDashboardPage() {
   const clerkUser = await currentUser();
@@ -86,7 +85,7 @@ export default async function BookerDashboardPage() {
   const reviewCount = dbUser.reviews.length;
 
   return (
-    <MainLayout>
+    <DashboardLayout role="BOOKER">
       <div className="max-w-6xl mx-auto py-10 px-4">
         {/* Greeting Section */}
         <div className="bg-gradient-to-r from-purple-200 to-indigo-300 rounded-xl p-6 mb-8 shadow-lg flex justify-between items-center">
@@ -121,7 +120,7 @@ export default async function BookerDashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-4 my-10 justify-between">
+        {/* <div className="flex flex-wrap gap-4 my-10 justify-between">
           <Link href="/explore">
             <Button className="bg-blue-600 text-white flex items-center gap-2 px-6 py-3 rounded-lg hover:bg-blue-700 cursor-pointer">
               <Search className="w-4 h-4" /> Discover Musicians
@@ -136,9 +135,7 @@ export default async function BookerDashboardPage() {
               <User className="w-4 h-4" /> View Profile
             </Button>
           </Link>
-
-          <RoleSwitcher />
-        </div>
+        </div> */}
 
         {/* Upcoming Bookings */}
 
@@ -317,7 +314,7 @@ export default async function BookerDashboardPage() {
           <SubscribeSection />
         </div>
       </div>
-    </MainLayout>
+    </DashboardLayout>
   );
 }
 

@@ -61,14 +61,14 @@ export default function MusicianProfilePage() {
 
   if (!musician) {
     return (
-      <DashboardLayout>
+      <DashboardLayout role="MUSICIAN">
         <div>Loading...</div>
       </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout role="MUSICIAN">
       {/* Hero Section */}
       <div className="relative w-full h-60 md:h-60 lg:h-70">
         <Image

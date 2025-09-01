@@ -193,7 +193,7 @@ export default function EditMusicianProfilePage() {
 
   if (loading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout role="MUSICIAN">
         <div className="flex justify-center items-center py-20 text-gray-500">
           Loading profile...
         </div>
@@ -202,7 +202,7 @@ export default function EditMusicianProfilePage() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout role="MUSICIAN">
       <div className="max-w-3xl mx-auto py-10">
         <h1 className="text-3xl font-bold mb-8 text-center">
           ✏️ Edit Musician Profile

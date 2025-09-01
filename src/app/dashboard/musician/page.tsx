@@ -1,14 +1,11 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import MainLayout from "@/components/MainLayout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Search, User } from "lucide-react";
 import Image from "next/image";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import { handleBookingAction } from "@/app/actions/bookingActions";
-import RoleSwitcher from "@/components/MusicSwitch";
 import MessageBookerButton from "@/components/MessgaeBookerButton";
 import DashboardLayout from "@/components/DashboardLayout";
 
@@ -88,7 +85,7 @@ export default async function MusicianDashboardPage() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout role="MUSICIAN">
       <div className="max-w-6xl mx-auto py-10 px-4 space-y-8">
         {/* Greeting */}
         <div className="bg-gradient-to-r from-blue-200 to-indigo-300 rounded-xl p-6 flex justify-between items-center">
