@@ -10,6 +10,7 @@ import SubscribeSection from "@/components/landing/SubscribeSection";
 import { handleBookingAction } from "@/app/actions/bookingActions";
 import RoleSwitcher from "@/components/MusicSwitch";
 import MessageBookerButton from "@/components/MessgaeBookerButton";
+import DashboardLayout from "@/components/DashboardLayout";
 
 import {
   DropdownMenu,
@@ -87,7 +88,7 @@ export default async function MusicianDashboardPage() {
   };
 
   return (
-    <MainLayout>
+    <DashboardLayout>
       <div className="max-w-6xl mx-auto py-10 px-4 space-y-8">
         {/* Greeting */}
         <div className="bg-gradient-to-r from-blue-200 to-indigo-300 rounded-xl p-6 flex justify-between items-center">
@@ -120,7 +121,7 @@ export default async function MusicianDashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-4 my-10 justify-between">
+        {/*  <div className="flex flex-wrap gap-4 my-10 justify-between">
           <Link href="/explore">
             <Button className="bg-blue-600 text-white flex items-center gap-2 px-6 py-3 rounded-lg hover:bg-blue-700 cursor-pointer">
               <Search className="w-4 h-4" /> Discover Musicians
@@ -137,7 +138,7 @@ export default async function MusicianDashboardPage() {
           </Link>
 
           <RoleSwitcher />
-        </div>
+        </div> */}
 
         {/* Upcoming & Past Gigs */}
         <section className="mb-10">
@@ -353,7 +354,7 @@ export default async function MusicianDashboardPage() {
 
         <SubscribeSection />
       </div>
-    </MainLayout>
+    </DashboardLayout>
   );
 }
 

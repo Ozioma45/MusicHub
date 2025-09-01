@@ -14,6 +14,7 @@ import {
   instrumentCategories,
   serviceCategories,
 } from "@/lib/categories";
+import DashboardLayout from "@/components/DashboardLayout";
 
 interface MusicianForm {
   name: string;
@@ -192,16 +193,16 @@ export default function EditMusicianProfilePage() {
 
   if (loading) {
     return (
-      <MainLayout>
+      <DashboardLayout>
         <div className="flex justify-center items-center py-20 text-gray-500">
           Loading profile...
         </div>
-      </MainLayout>
+      </DashboardLayout>
     );
   }
 
   return (
-    <MainLayout>
+    <DashboardLayout>
       <div className="max-w-3xl mx-auto py-10">
         <h1 className="text-3xl font-bold mb-8 text-center">
           ✏️ Edit Musician Profile
@@ -353,6 +354,6 @@ export default function EditMusicianProfilePage() {
           </Button>
         </form>
       </div>
-    </MainLayout>
+    </DashboardLayout>
   );
 }

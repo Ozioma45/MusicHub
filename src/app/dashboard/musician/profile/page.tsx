@@ -7,6 +7,7 @@ import MainLayout from "@/components/MainLayout";
 import { MapPin, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
+import DashboardLayout from "@/components/DashboardLayout";
 
 type Booking = {
   id: string;
@@ -58,10 +59,16 @@ export default function MusicianProfilePage() {
     fetchMusician();
   }, []);
 
-  if (!musician) return <div>Loading...</div>;
+  if (!musician) {
+    return (
+      <DashboardLayout>
+        <div>Loading...</div>
+      </DashboardLayout>
+    );
+  }
 
   return (
-    <MainLayout>
+    <DashboardLayout>
       {/* Hero Section */}
       <div className="relative w-full h-60 md:h-60 lg:h-70">
         <Image
@@ -251,6 +258,6 @@ export default function MusicianProfilePage() {
           </Link>
         </div>
       </div>
-    </MainLayout>
+    </DashboardLayout>
   );
 }

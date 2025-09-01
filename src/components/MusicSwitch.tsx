@@ -3,6 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SwitchCamera } from "lucide-react";
 
 export default function RoleSwitcher() {
   const router = useRouter();
@@ -51,6 +52,7 @@ export default function RoleSwitcher() {
         disabled={loading}
         className="bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
       >
+        <SwitchCamera />
         Switch to Booker
       </button>
     </div>
