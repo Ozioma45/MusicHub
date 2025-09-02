@@ -137,17 +137,18 @@ export default function MusicianProfilePage() {
             <div className="flex justify-between items-center flex-wrap gap-4">
               <h2 className="text-xl font-semibold">Profile Overview</h2>
 
-              {/*  <div className="flex gap-4">
+              <div className="flex gap-4">
+                {/*{" "}
                 <Link href={`/review/submit?musicianId=${musician.id}`}>
                   <Button>Submit Review</Button>
-                </Link>
-
+                </Link>{" "}
+                */}
                 <Link href={`/booking/request?musicianId=${musician.id}`}>
                   <Button className="bg-blue-600 text-white">
                     Request Booking
                   </Button>
                 </Link>
-              </div> */}
+              </div>
             </div>
 
             {/* Bio */}
