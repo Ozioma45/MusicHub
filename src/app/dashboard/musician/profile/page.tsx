@@ -70,7 +70,7 @@ export default function MusicianProfilePage() {
   return (
     <DashboardLayout role="MUSICIAN">
       {/* Hero Section */}
-      <div className="relative w-full h-60 md:h-60 lg:h-70">
+      <div className="relative h-60 md:h-40 lg:h-50 w-full">
         <Image
           src={musician.coverImage || "/default-cover.jpg"}
           alt="Cover"
@@ -78,8 +78,8 @@ export default function MusicianProfilePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/80 flex items-end">
-          <div className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center gap-6 p-6 justify-between">
-            <div className="flex items-center gap-6 p-6 text-white">
+          <div className="max-w-5xl mx-auto w-full flex flex-col sm:flex-row items-center gap-3 py-6 sm:gap-6 sm:p-6 justify-between">
+            <div className="flex items-center gap-3 p-3 sm:gap-6 sm:p-6 text-white">
               <Image
                 src={musician.imageUrl || "/default-avatar.png"}
                 alt={musician.name}
@@ -105,7 +105,7 @@ export default function MusicianProfilePage() {
               )} */}
               </div>
             </div>
-            <p className="bg-white text-black px-3 py-1 md:px-6 md:py-3 rounded-lg   font-bold">
+            <p className="bg-white text-black px-3 py-1 md:px-6 md:py-3 rounded-lg hover:bg-blue-700 hover:text-white font-bold cursor-pointer">
               Musician
             </p>
           </div>

@@ -87,7 +87,7 @@ export default function MusicianProfilePage() {
   return (
     <MainLayout>
       {/* Cover */}
-      <div className="relative h-40 md:h-50 lg:h-60 w-full">
+      <div className="relative h-60 md:h-60 lg:h-70 w-full">
         <Image
           src={musician.coverImage || "/default-cover.jpg"}
           alt="Cover"
@@ -95,7 +95,7 @@ export default function MusicianProfilePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/80 flex items-end">
-          <div className="max-w-6xl mx-auto w-full flex flex-col sm:flex-row items-center gap-6 p-6 justify-between">
+          <div className="max-w-5xl w-full mx-auto flex flex-col sm:flex-row items-center gap-6 p-6 justify-between">
             <div className="flex items-center gap-6 p-6 text-white">
               <Image
                 src={musician.user.imageUrl || "/default-avatar.png"}

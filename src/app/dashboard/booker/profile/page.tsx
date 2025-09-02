@@ -47,7 +47,7 @@ export default async function BookerProfilePage() {
   return (
     <DashboardLayout role="BOOKER">
       {/* Hero Section */}
-      <div className="relative w-full h-60 md:h-60 lg:h-70">
+      <div className="relative w-full h-60 md:h-40 lg:h-50">
         <Image
           src={bookerProfile?.coverImage || "/default-cover.jpg"}
           alt="Cover"
@@ -55,8 +55,8 @@ export default async function BookerProfilePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-black/100 flex items-end">
-          <div className="max-w-5xl mx-auto flex justify-between flex-col sm:flex-row w-full items-center">
-            <div className="flex items-center gap-6 p-6 text-white">
+          <div className="max-w-5xl mx-auto flex justify-between flex-col sm:flex-row w-full items-center gap-3 py-6 sm:gap-6 sm:p-6">
+            <div className="flex items-center gap-3 p-3 sm:gap-6 sm:p-6 text-white">
               <Image
                 src={profileImage}
                 alt={user.name || "BOOKER"}

@@ -84,6 +84,10 @@ const Navbar = () => {
             Find Musician
           </Link>
 
+          <Link href="/suggestions" className="font-semibold cursor-pointer">
+            Suggestion Box
+          </Link>
+
           <SignedOut>
             <div className="space-y-2">
               <Link href="/sign-in">
