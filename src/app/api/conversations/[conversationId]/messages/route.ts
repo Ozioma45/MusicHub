@@ -41,7 +41,22 @@ export async function POST(
         userId: dbUser.id,
         desc,
       },
-      include: { user: true },
+      include: { conversation: true, user: true },
+    });
+
+    // figure out the receiver
+    const convo = message.conversation;
+    const receiverId =
+      convo.userAId === dbUser.id ? convo.userBId : convo.userAId;
+
+    // 🔔 Notify receiver
+    await prisma.notification.create({
+      data: {
+        userId: receiverId,
+        type: "MESSAGE",
+        title: `New message from ${message.user.name || "Someone"}`,
+        message: message.desc.substring(0, 60) + "...",
+      },
     });
 
     return NextResponse.json(message, { status: 201 });

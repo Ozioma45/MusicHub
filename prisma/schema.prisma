@@ -41,6 +41,9 @@ model User {
   // New relations
   conversationsA Conversation[] @relation("ConversationUserA")
   conversationsB Conversation[] @relation("ConversationUserB")
+
+  //notification
+  Notification Notification[]
 }
 
 
@@ -178,3 +181,23 @@ model Message {
   updatedAt      DateTime @updatedAt
 }
 
+model Notification {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean  @default(false)
+
+
+  createdAt DateTime @default(now())
+}
+
+enum NotificationType {
+  BOOKING
+  MESSAGE
+  REVIEW
+  SYSTEM
+}

@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       where: { id: musicianId },
       select: {
         user: {
-          select: { clerkUserId: true },
+          select: { clerkUserId: true, id: true },
         },
       },
     });
@@ -57,6 +57,21 @@ export async function POST(req: Request) {
         location,
         message,
         status: "PENDING",
+      },
+      include: {
+        client: true,
+      },
+    });
+
+    // 🔔 Notify the musician (new booking request)
+    await prisma.notification.create({
+      data: {
+        userId: musician.user.id,
+        type: "BOOKING",
+        title: "New Booking Request",
+        message: `${
+          booking.client?.name || "A user"
+        } requested a booking for ${eventType}`,
       },
     });
 

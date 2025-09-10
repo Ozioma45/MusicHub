@@ -5,6 +5,7 @@ import { SignedOut, UserButton, SignedIn } from "@clerk/nextjs";
 import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import NotificationBell from "./NotificationPanel";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -58,6 +59,8 @@ const Navbar = () => {
               </Link>
 
               <UserButton />
+
+              <NotificationBell />
             </div>
           </SignedIn>
         </div>
