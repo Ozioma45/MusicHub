@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { Briefcase } from "lucide-react";
+import { Music } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import MainLayout from "@/components/MainLayout";
@@ -142,7 +142,7 @@ export default function SetupBookerPage() {
       <div className="max-w-2xl mx-auto py-10">
         {/* Header */}
         <div className="flex justify-center items-center mb-6">
-          <Briefcase className="h-7 w-7 text-green-600 mr-2" />
+          <Music className="h-7 w-7 text-blue-600 mr-2" />
           <span className="font-bold text-lg text-gray-900">MusiConnect</span>
         </div>
 
