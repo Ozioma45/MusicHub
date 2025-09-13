@@ -201,3 +201,18 @@ enum NotificationType {
   REVIEW
   SYSTEM
 }
+
+model Announcement {
+  id        String   @id @default(cuid())
+  message   String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id       String   @id @default(cuid())
+  username String   @unique
+  password String   // store a hashed password, not plain text!
+  createdAt DateTime @default(now())
+}
+

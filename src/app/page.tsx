@@ -8,10 +8,12 @@ import TestimonialsCarousel from "@/components/landing/Testimonials";
 import WhyChooseSection from "@/components/landing/WhyMusiconnect";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import CallToActionSection from "@/components/landing/CtaSection";
+import Announcement from "@/components/announcement";
 
 export default function Home() {
   return (
     <MainLayout>
+      <Announcement />
       <HeroSection />
       <HowItWorks />
       <FeaturedMusicians />
