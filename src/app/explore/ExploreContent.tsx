@@ -34,6 +34,7 @@ type MusicianFilter = {
 };
 
 export default function ExploreContent() {
+  const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const genreFromURL = searchParams.get("genre") || "";
 
@@ -74,10 +75,6 @@ export default function ExploreContent() {
 
     fetchMusicians();
   }, [filters]);
-
-  const handleSearch = () => {
-    // Trigger filtering (already handled by useEffect)
-  };
 
   return (
     <MainLayout>
@@ -122,10 +119,7 @@ export default function ExploreContent() {
               ))}
             </SelectContent>
           </Select>
-          <button
-            onClick={handleSearch}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-          >
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition cursor-pointer">
             Find Musicians
           </button>
         </div>
