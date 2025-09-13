@@ -247,7 +247,7 @@ export default function MusicianProfilePage() {
         </section>
 
         {/* CTA */}
-        <div className="text-center">
+        {/* <div className="text-center">
           <Link href="./edit">
             <Button
               size="lg"
@@ -256,7 +256,7 @@ export default function MusicianProfilePage() {
               Edit Your Profile
             </Button>
           </Link>
-        </div>
+        </div> */}
       </div>
     </DashboardLayout>
   );

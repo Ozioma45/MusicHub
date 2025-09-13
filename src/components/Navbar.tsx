@@ -12,9 +12,9 @@ const Navbar = () => {
 
   return (
     <div className="sticky top-0 z-30 border-b bg-background px-4 sm:px-6">
-      <div className="flex items-center justify-between mx-auto max-w-4xl h-16">
+      <div className="flex items-center justify-between mx-auto max-w-6xl h-16">
         {/* Logo */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 ">
           <Link href="/" className="flex items-center gap-2">
             <Music className="h-6 w-6" />
             <span className="font-bold">MusiConnect.</span>
@@ -22,7 +22,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-10 justify-between ">
           <Link href="/suggestions" className="font-semibold cursor-pointer">
             Suggestion Box
           </Link>
@@ -50,7 +50,7 @@ const Navbar = () => {
           </SignedOut>
 
           <SignedIn>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center justify-between bg-red">
               <Link
                 href="/dashboard"
                 className="text-sm font-medium text-muted-foreground hover:text-foreground"

@@ -25,6 +25,14 @@ export async function GET(req: Request) {
     include: {
       reviews: true,
       user: true,
+      _count: {
+        select: { bookings: true },
+      },
+    },
+    orderBy: {
+      bookings: {
+        _count: "desc", // 👈 order by most bookings
+      },
     },
   });
 
