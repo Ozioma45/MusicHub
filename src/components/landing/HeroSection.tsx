@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import LoadingButton from "../LoadingButton";
 
 export default function HeroSection() {
+  const [loadingLink, setLoadingLink] = useState<string | null>(null);
+
+  const handleClick = (target: string) => {
+    setLoadingLink(target);
+  };
+
   return (
     <section
       className="relative h-[80vh] flex items-center justify-center text-center bg-cover bg-center"
@@ -12,10 +18,8 @@ export default function HeroSection() {
         backgroundImage: "url('/images/hero-bg.jpeg')",
       }}
     >
-      {/* Overlay for better text visibility */}
       <div className="absolute inset-0 bg-black/80"></div>
 
-      {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-4">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
           Discover & Book <br /> Extraordinary Live Musicians
@@ -24,25 +28,28 @@ export default function HeroSection() {
           Connect with talented artists for your events, weddings, and parties.
         </p>
 
-        {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/sign-in">
             <LoadingButton
               size="lg"
               className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-              loading={false}
+              loading={loadingLink === "sign-in"}
+              onClick={() => handleClick("sign-in")}
             >
               Get Started
             </LoadingButton>
           </Link>
+
           <Link href="/explore">
-            <Button
+            <LoadingButton
               size="lg"
               variant="outline"
               className="bg-white text-blue-700 hover:bg-blue-100 cursor-pointer"
+              loading={loadingLink === "explore"}
+              onClick={() => handleClick("explore")}
             >
               Explore Musicians
-            </Button>
+            </LoadingButton>
           </Link>
         </div>
       </div>
