@@ -1,9 +1,8 @@
-// components/RoleSwitcher.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { SwitchCamera } from "lucide-react";
+import { SwitchCamera, Loader2 } from "lucide-react";
 
 type Role = "MUSICIAN" | "BOOKER";
 
@@ -47,12 +46,21 @@ export default function RoleSwitcher({ currentRole }: { currentRole: Role }) {
       <button
         onClick={() => handleRoleSwitch(oppositeRole)}
         disabled={loading}
-        className="bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+        className="bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
       >
-        <SwitchCamera size={16} />
-        {`Switch to ${
-          oppositeRole.charAt(0) + oppositeRole.slice(1).toLowerCase()
-        }`}
+        {loading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Switching...</span>
+          </>
+        ) : (
+          <>
+            <SwitchCamera size={16} />
+            {`Switch to ${
+              oppositeRole.charAt(0) + oppositeRole.slice(1).toLowerCase()
+            }`}
+          </>
+        )}
       </button>
     </div>
   );

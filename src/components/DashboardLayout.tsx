@@ -1,4 +1,3 @@
-// components/DashboardLayout.tsx
 "use client";
 
 import Link from "next/link";
@@ -9,7 +8,6 @@ import { Music, Menu, X } from "lucide-react";
 import MainLayout from "./MainLayout";
 import { useState } from "react";
 import RoleSwitcher from "@/components/Roleswitcher";
-
 import { musicianNav, bookerNav } from "@/lib/navItems";
 
 type Props = {
@@ -20,9 +18,15 @@ type Props = {
 export default function DashboardLayout({ children, role }: Props) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loadingLink, setLoadingLink] = useState<string | null>(null); // track which link is loading
   const { openUserProfile } = useClerk();
 
   const navItems = role === "MUSICIAN" ? musicianNav : bookerNav;
+
+  const handleNavClick = (href: string) => {
+    setLoadingLink(href);
+    setSidebarOpen(false);
+  };
 
   return (
     <MainLayout>
@@ -56,14 +60,14 @@ export default function DashboardLayout({ children, role }: Props) {
                   <Link
                     key={href}
                     href={href}
-                    onClick={() => setSidebarOpen(false)}
+                    onClick={() => handleNavClick(href)}
                     className={cn(
                       "flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600",
                       isActive && "bg-blue-100 text-blue-700 font-semibold"
                     )}
                   >
                     <Icon className="w-5 h-5" />
-                    {label}
+                    {loadingLink === href ? "Loading..." : label}
                   </Link>
                 );
               })}
@@ -97,13 +101,14 @@ export default function DashboardLayout({ children, role }: Props) {
                 <Link
                   key={href}
                   href={href}
+                  onClick={() => handleNavClick(href)}
                   className={cn(
                     "flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600",
                     isActive && "bg-blue-100 text-blue-700 font-semibold"
                   )}
                 >
                   <Icon className="w-5 h-5" />
-                  {label}
+                  {loadingLink === href ? "Loading..." : label}
                 </Link>
               );
             })}
