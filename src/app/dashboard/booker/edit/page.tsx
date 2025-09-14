@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import MainLayout from "@/components/MainLayout";
 import { toast } from "sonner";
 import Image from "next/image";
 import DashboardLayout from "@/components/DashboardLayout";

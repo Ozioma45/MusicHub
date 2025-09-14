@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import MainLayout from "@/components/MainLayout";
 import { MapPin, CalendarDays } from "lucide-react";
-import Link from "next/link";
 import { format } from "date-fns";
 import DashboardLayout from "@/components/DashboardLayout";
 

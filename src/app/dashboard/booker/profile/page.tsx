@@ -1,12 +1,9 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import Link from "next/link";
 import Image from "next/image";
 import { CalendarDays, MapPin } from "lucide-react";
-import MainLayout from "@/components/MainLayout";
 import SubscribeSection from "@/components/landing/SubscribeSection";
 import DashboardLayout from "@/components/DashboardLayout";
 

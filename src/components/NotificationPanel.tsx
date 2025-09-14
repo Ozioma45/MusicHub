@@ -4,9 +4,19 @@ import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import Link from "next/link";
 
+interface Notification {
+  id: string;
+  userId: string;
+  type: "BOOKING" | "MESSAGE" | "REVIEW" | "SYSTEM";
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
 export default function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,7 +77,7 @@ export default function NotificationBell() {
             {notifications.length === 0 ? (
               <p className="p-4 text-sm text-gray-500">No notifications</p>
             ) : (
-              notifications.map((n) => (
+              notifications.map((n: Notification) => (
                 <div
                   key={n.id}
                   onClick={() => markAsRead(n.id)}

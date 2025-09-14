@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,7 @@ import {
   instrumentCategories,
   serviceCategories,
 } from "@/lib/categories";
+import { ZodError, ZodIssue } from "zod";
 
 interface MusicianForm {
   name: string;
@@ -47,7 +48,10 @@ export default function SetupMusicianPage() {
     Partial<Record<keyof MusicianForm, string>>
   >({});
 
-  const handleChange = (field: keyof MusicianForm, value: any) => {
+  const handleChange = <K extends keyof MusicianForm>(
+    field: K,
+    value: MusicianForm[K]
+  ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -128,25 +132,6 @@ export default function SetupMusicianPage() {
     }
   };
 
-  // Array fields
-  const handleArrayChange = (
-    field: "genres" | "instruments" | "services",
-    index: number,
-    value: string
-  ) => {
-    const updated = [...form[field]];
-    updated[index] = value;
-    setForm({ ...form, [field]: updated });
-  };
-
-  const addArrayField = (field: "genres" | "instruments" | "services") =>
-    setForm({ ...form, [field]: [...form[field], ""] });
-
-  const removeArrayField = (
-    field: "genres" | "instruments" | "services",
-    index: number
-  ) => setForm({ ...form, [field]: form[field].filter((_, i) => i !== index) });
-
   // Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,18 +147,18 @@ export default function SetupMusicianPage() {
         body: JSON.stringify(parsed),
       });
 
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error("Failed to save profile");
       toast.success("Profile completed!");
       router.push("/dashboard");
-    } catch (err: any) {
-      if (err.errors) {
+    } catch (err) {
+      if (err instanceof ZodError) {
         const fieldErrors: Partial<Record<keyof MusicianForm, string>> = {};
-        err.errors.forEach((zErr: any) => {
+        err.errors.forEach((zErr: ZodIssue) => {
           fieldErrors[zErr.path[0] as keyof MusicianForm] = zErr.message;
         });
         setErrors(fieldErrors);
 
-        toast.error(err.errors.map((e: any) => e.message).join(", "));
+        toast.error(err.errors.map((e) => e.message).join(", "));
       } else {
         toast.error("Update failed.");
       }

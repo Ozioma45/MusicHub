@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import MainLayout from "@/components/MainLayout";
 import { toast } from "sonner";
 import Image from "next/image";
 import CategorySelector from "@/components/CategorySelector";
@@ -151,25 +150,6 @@ export default function EditMusicianProfilePage() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => setForm({ ...form, [e.target.name]: e.target.value });
-
-  // Array fields
-  const handleArrayChange = (
-    field: "genres" | "instruments" | "services",
-    index: number,
-    value: string
-  ) => {
-    const updated = [...form[field]];
-    updated[index] = value;
-    setForm({ ...form, [field]: updated });
-  };
-
-  const addArrayField = (field: "genres" | "instruments" | "services") =>
-    setForm({ ...form, [field]: [...form[field], ""] });
-
-  const removeArrayField = (
-    field: "genres" | "instruments" | "services",
-    index: number
-  ) => setForm({ ...form, [field]: form[field].filter((_, i) => i !== index) });
 
   // Submit form
   const handleSubmit = async (e: React.FormEvent) => {

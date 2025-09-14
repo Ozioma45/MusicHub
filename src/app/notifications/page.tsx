@@ -5,8 +5,19 @@ import { useEffect, useState } from "react";
 import { CheckCircle } from "lucide-react";
 import MainLayout from "@/components/MainLayout";
 
+interface Notification {
+  id: string;
+  userId: string;
+  type: "BOOKING" | "MESSAGE" | "REVIEW" | "SYSTEM";
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -65,7 +76,7 @@ export default function NotificationsPage() {
               No notifications yet
             </p>
           ) : (
-            notifications.map((n) => (
+            notifications.map((n: Notification) => (
               <div
                 key={n.id}
                 className={`p-4 transition-colors ${

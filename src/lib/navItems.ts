@@ -1,5 +1,5 @@
 // lib/navItems.ts
-import { Layout, User, Settings, Search, Calendar } from "lucide-react";
+import { Layout, User, Settings, Search } from "lucide-react";
 
 export const musicianNav = [
   { label: "Dashboard", href: "/dashboard/musician", icon: Layout },

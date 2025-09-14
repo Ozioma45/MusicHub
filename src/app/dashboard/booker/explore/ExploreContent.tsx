@@ -9,7 +9,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import Link from "next/link";
-import MainLayout from "@/components/MainLayout";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import DashboardLayout from "@/components/DashboardLayout";

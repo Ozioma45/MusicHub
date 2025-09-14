@@ -34,7 +34,6 @@ type MusicianFilter = {
 };
 
 export default function ExploreContent() {
-  const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const genreFromURL = searchParams.get("genre") || "";
 

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Music } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
+import { z, ZodError, ZodIssue } from "zod";
 import MainLayout from "@/components/MainLayout";
 
 // Validation schema
@@ -101,6 +101,7 @@ export default function SetupBookerPage() {
   };
 
   // Submit form
+  // Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -118,17 +119,18 @@ export default function SetupBookerPage() {
         body: JSON.stringify({ clerkUserId: user.id, ...parsed }),
       });
 
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error("Failed to save profile");
       toast.success("Profile completed!");
       router.push("/dashboard");
-    } catch (err: any) {
-      if (err.errors) {
+    } catch (err) {
+      if (err instanceof ZodError) {
+        // handle Zod validation errors
         const fieldErrors: Partial<Record<keyof BookerForm, string>> = {};
-        err.errors.forEach((zErr: any) => {
+        err.errors.forEach((zErr: ZodIssue) => {
           fieldErrors[zErr.path[0] as keyof BookerForm] = zErr.message;
         });
         setErrors(fieldErrors);
-        toast.error(err.errors.map((e: any) => e.message).join(", "));
+        toast.error(err.errors.map((e) => e.message).join(", "));
       } else {
         toast.error("Failed to save profile.");
       }
