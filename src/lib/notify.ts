@@ -1,5 +1,6 @@
+// lib/notify.ts
 import { prisma } from "@/lib/db";
-import { sendNotificationEmail } from "@/lib/email"; // from earlier setup
+import { sendNotificationEmail } from "@/lib/email";
 import { NotificationType } from "@prisma/client";
 
 export async function notifyUser({
@@ -13,20 +14,20 @@ export async function notifyUser({
   title: string;
   message: string;
 }) {
-  // save notification
+  // 1️⃣ Create notification in DB
   const notification = await prisma.notification.create({
     data: { userId, type, title, message },
   });
 
-  // find user email
+  // 2️⃣ Get user’s email
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { email: true },
   });
 
-  // send email if available
+  // 3️⃣ Send styled email
   if (user?.email) {
-    await sendNotificationEmail(user.email, title, message);
+    await sendNotificationEmail(user.email, title, message, type);
   }
 
   return notification;
