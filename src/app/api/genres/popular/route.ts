@@ -10,7 +10,7 @@ export async function GET() {
   const genreCounts: Record<string, number> = {};
   musicians.forEach((m) => {
     m.genres
-      .filter((g) => g && g.trim() !== "") // <-- skip empty
+      .filter((g) => g && g.trim() !== "")
       .forEach((g) => {
         genreCounts[g] = (genreCounts[g] || 0) + 1;
       });

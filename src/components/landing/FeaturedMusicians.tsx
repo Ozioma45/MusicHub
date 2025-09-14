@@ -1,3 +1,4 @@
+// /components/FeaturedMusicians.tsx
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/db";
@@ -9,12 +10,19 @@ type Musician = {
   location: string | null;
   instruments: string[];
   coverImage?: string | null;
+  _count: {
+    bookings: number;
+  };
 };
 
 export default async function FeaturedMusicians() {
-  const musicians: Musician[] = await prisma.musician.findMany({
+  const musicians = await prisma.musician.findMany({
     take: 5,
-    orderBy: { name: "asc" },
+    orderBy: {
+      bookings: {
+        _count: "desc", // order by most bookings
+      },
+    },
     select: {
       id: true,
       name: true,
@@ -22,6 +30,9 @@ export default async function FeaturedMusicians() {
       instruments: true,
       location: true,
       coverImage: true,
+      _count: {
+        select: { bookings: true },
+      },
     },
   });
 
@@ -46,8 +57,10 @@ export default async function FeaturedMusicians() {
               <div className="p-4 text-left">
                 <h3 className="text-lg font-semibold">{musician.name}</h3>
                 <p className="text-sm text-gray-600">
-                  {musician.instruments.join(", ")}
-                  {/* {musician.genres.join(", ")} */} • {musician.location}
+                  {musician.instruments.join(", ")} • {musician.location}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {musician._count.bookings} bookings
                 </p>
                 <Link
                   href={`/musician/${musician.id}`}
