@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { notifyUser } from "@/lib/notify";
 
 export async function POST(req: Request) {
   const { userId } = await auth();
@@ -64,15 +65,13 @@ export async function POST(req: Request) {
     });
 
     // 🔔 Notify the musician (new booking request)
-    await prisma.notification.create({
-      data: {
-        userId: musician.user.id,
-        type: "BOOKING",
-        title: "New Booking Request",
-        message: `${
-          booking.client?.name || "A user"
-        } requested a booking for ${eventType}`,
-      },
+    await notifyUser({
+      userId: musician.user.id,
+      type: "BOOKING",
+      title: "New Booking Request",
+      message: `${
+        booking.client?.name || "A user"
+      } requested a booking for ${eventType}`,
     });
 
     return NextResponse.json(booking);

@@ -1,5 +1,6 @@
 // /app/api/bookings/[id]/accept/route.ts
 import { prisma } from "@/lib/db";
+import { notifyUser } from "@/lib/notify";
 
 export async function POST(
   req: Request,
@@ -14,13 +15,11 @@ export async function POST(
   });
 
   // 🔔 Notify client that their booking was accepted
-  await prisma.notification.create({
-    data: {
-      userId: booking.clientId,
-      type: "BOOKING",
-      title: "Booking Accepted",
-      message: `${booking.musician.name} accepted your booking request.`,
-    },
+  await notifyUser({
+    userId: booking.clientId,
+    type: "BOOKING",
+    title: "Booking Accepted",
+    message: `${booking.musician.name} accepted your booking request.`,
   });
 
   return Response.json(booking);

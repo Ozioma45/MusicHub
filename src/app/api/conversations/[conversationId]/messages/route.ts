@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
+import { notifyUser } from "@/lib/notify";
 
 type Params = { params: { conversationId: string } };
 
@@ -50,13 +51,11 @@ export async function POST(
       convo.userAId === dbUser.id ? convo.userBId : convo.userAId;
 
     // 🔔 Notify receiver
-    await prisma.notification.create({
-      data: {
-        userId: receiverId,
-        type: "MESSAGE",
-        title: `New message from ${message.user.name || "Someone"}`,
-        message: message.desc.substring(0, 60) + "...",
-      },
+    await notifyUser({
+      userId: receiverId,
+      type: "MESSAGE",
+      title: `New message from ${message.user.name || "Someone"}`,
+      message: message.desc.substring(0, 60) + "...",
     });
 
     return NextResponse.json(message, { status: 201 });
