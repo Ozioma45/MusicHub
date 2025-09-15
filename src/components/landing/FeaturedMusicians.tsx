@@ -3,18 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/db";
 
-type Musician = {
-  id: string;
-  name: string;
-  genres: string[];
-  location: string | null;
-  instruments: string[];
-  coverImage?: string | null;
-  _count: {
-    bookings: number;
-  };
-};
-
 export default async function FeaturedMusicians() {
   const musicians = await prisma.musician.findMany({
     take: 5,
